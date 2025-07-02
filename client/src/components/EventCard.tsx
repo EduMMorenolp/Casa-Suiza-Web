@@ -1,3 +1,7 @@
+import { useState } from 'react';
+import BuyModal from "./modals/BuyModal";
+
+// Tipos
 interface EventProps {
   title: string;
   artists: string[];
@@ -7,7 +11,38 @@ interface EventProps {
   promo?: boolean;
 }
 
+interface TicketType {
+  name: string;
+  description: string;
+  price: number;
+  quantity: number;
+}
+
 export default function EventCard({ event }: { event: EventProps }) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Datos de ejemplo para los tipos de entradas
+  const ticketTypes: TicketType[] = [
+    {
+      name: 'Entrada general (Preventa 2)',
+      description: 'Las ubicaciones son por orden de llegada.',
+      price: 12000,
+      quantity: 0,
+    },
+    {
+      name: 'Beneficio x 2 entradas',
+      description: 'Compras 1 y recibes 2. Ubicación por orden de llegada.',
+      price: 18000,
+      quantity: 0,
+    },
+    {
+      name: 'Entrada general (Preventa 1)',
+      description: 'Las ubicaciones son por orden de llegada.',
+      price: 10000,
+      quantity: 0,
+    },
+  ];
+
   return (
     <div className="bg-white shadow-md rounded-lg overflow-hidden relative">
       {/* Bandera de promoción - estilo esquina */}
@@ -61,10 +96,20 @@ export default function EventCard({ event }: { event: EventProps }) {
         </div>
 
         {/* Botón de compra */}
-        <button className="mt-4 bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition w-full">
+        <button
+          className="mt-4 bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition w-full"
+          onClick={() => setIsModalOpen(true)}
+        >
           Comprar Tickets
         </button>
       </div>
+      {/* Modal de compra */}
+      <BuyModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        eventName={event.title}
+        ticketTypes={ticketTypes}
+      />
     </div>
   );
 }
