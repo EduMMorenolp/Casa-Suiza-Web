@@ -1,6 +1,6 @@
-import EventCard from "../components/EventCard";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
+import EventCard from "./components/EventCard";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
 
 const events = [
   {
