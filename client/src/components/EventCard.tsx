@@ -9,10 +9,14 @@ interface EventProps {
 
 export default function EventCard({ event }: { event: EventProps }) {
   return (
-    <div className="bg-white shadow-md rounded-lg overflow-hidden">
-      {/* Bandera de promoción */}
+    <div className="bg-white shadow-md rounded-lg overflow-hidden relative">
+      {/* Bandera de promoción - estilo esquina */}
       {event.promo && (
-        <div className="absolute top-0 left-0 bg-yellow-500 text-white px-4 py-2 transform -translate-y-full">
+        <div className="
+        absolute top-22 bg-yellow-500 text-white text-lg font-extrabold uppercase
+        px-12 py-1 rotate-[-45deg] origin-top-left translate-x-[-15%] 
+        shadow-lg
+      ">
           PROMO
         </div>
       )}
