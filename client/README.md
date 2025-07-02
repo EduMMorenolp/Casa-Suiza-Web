@@ -1,69 +1,96 @@
-# React + TypeScript + Vite
+🎉 Casa Suiza Web – Frontend
+Este es el repositorio del frontend de Casa Suiza , una aplicación web desarrollada con Vite + React y estilizada con TailwindCSS . Permite mostrar próximos eventos y vender entradas online, todo desde una interfaz moderna y responsiva.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+🧩 Tecnologías utilizadas
+React – Para construcción de componentes UI
+Vite – Entorno de desarrollo rápido y moderno
+Tailwind CSS – Estilos rápidos y responsivos
+react-router-dom – Navegación entre páginas
+TypeScript (opcional) – Tipado seguro (si lo usaste)
+📦 Requisitos previos
+Node.js >= 16.x
+npm o yarn instalado
+🚀 Instalación
+bash
 
-Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+1
+2
+3
+4
+5
+6
+# Clona el repositorio
+git clone https://github.com/tu-usuario/casasuiza-web.git 
+cd casasuiza-web
 
-## Expanding the ESLint configuration
+# Instala dependencias
+npm install
+🛠 Desarrollo local
+bash
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+1
+2
+# Inicia el servidor de desarrollo
+npm run dev
+Abre http://localhost:5173 en tu navegador.
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+📦 Construir para producción
+bash
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+
+1
+2
+# Genera la versión optimizada para producción
+npm run build
+Los archivos estarán listos para deploy en la carpeta dist/.
+
+🖥 Scripts disponibles
+npm run dev
+Iniciar entorno de desarrollo
+npm run build
+Construir versión de producción
+npm run preview
+Previsualizar la build local
+🗂️ Estructura del proyecto
+```bash
+src/
+├── components/         # Componentes reutilizables
+│   ├── Header.jsx
+│   ├── Hero.jsx
+│   ├── EventCard.jsx
+│   └── Footer.jsx
+├── pages/              # Páginas principales
+│   └── Home.jsx
+├── App.jsx             # Enrutamiento principal
+└── main.jsx            # Punto de entrada de React
 ```
+🎨 Paleta de colores
+Basados en el logo de Casa Suiza:
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Rojo principal : #FF0000
+Blanco : #FFFFFF
+Negro : #000000
+Azul oscuro : #2C3E50
+Gris claro : #F7F7F7
+🌐 Rutas definidas
+/
+Página principal con próximos eventos
+/eventos/:id
+Detalle de evento (pendiente de implementar)
+💬 Soporte y preguntas
+Si necesitas ayuda con:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Integración con backend
+Conexión a MercadoPago
+Panel de administración
+Diseño de nuevas vistas
+👉 No dudes en contactarme. ¡Estoy acá para ayudarte!
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+✅ Próximos pasos
+Integrar datos dinámicos desde API
+Agregar página de detalle de evento
+Implementar carrito de compras
+Configurar panel de administrador
+Conectar con MercadoPago
