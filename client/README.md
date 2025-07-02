@@ -57,14 +57,13 @@ Previsualizar la build local
 ```bash
 src/
 ├── components/         # Componentes reutilizables
-│   ├── Header.jsx
-│   ├── Hero.jsx
-│   ├── EventCard.jsx
-│   └── Footer.jsx
+│   ├── Header.tsx
+│   ├── EventCard.tsx
+│   └── Footer.tsx
 ├── pages/              # Páginas principales
-│   └── Home.jsx
-├── App.jsx             # Enrutamiento principal
-└── main.jsx            # Punto de entrada de React
+│   └── Home.tsx
+├── App.tsx             # Enrutamiento principal
+└── main.tsx            # Punto de entrada de React
 ```
 🎨 Paleta de colores
 Basados en el logo de Casa Suiza:
