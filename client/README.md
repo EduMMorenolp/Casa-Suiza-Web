@@ -11,15 +11,6 @@ TypeScript (opcional) – Tipado seguro (si lo usaste)
 Node.js >= 16.x
 npm o yarn instalado
 🚀 Instalación
-bash
-
-
-1
-2
-3
-4
-5
-6
 # Clona el repositorio
 git clone https://github.com/tu-usuario/casasuiza-web.git 
 cd casasuiza-web
@@ -27,21 +18,12 @@ cd casasuiza-web
 # Instala dependencias
 npm install
 🛠 Desarrollo local
-bash
 
-
-1
-2
 # Inicia el servidor de desarrollo
 npm run dev
 Abre http://localhost:5173 en tu navegador.
 
 📦 Construir para producción
-bash
-
-
-1
-2
 # Genera la versión optimizada para producción
 npm run build
 Los archivos estarán listos para deploy en la carpeta dist/.
@@ -53,6 +35,7 @@ npm run build
 Construir versión de producción
 npm run preview
 Previsualizar la build local
+
 🗂️ Estructura del proyecto
 ```bash
 src/
@@ -68,16 +51,16 @@ src/
 🎨 Paleta de colores
 Basados en el logo de Casa Suiza:
 
-Rojo principal : #FF0000
+Rojo principal : #c9252d
 Blanco : #FFFFFF
 Negro : #000000
 Azul oscuro : #2C3E50
 Gris claro : #F7F7F7
+
 🌐 Rutas definidas
-/
+
 Página principal con próximos eventos
-/eventos/:id
-Detalle de evento (pendiente de implementar)
+
 💬 Soporte y preguntas
 Si necesitas ayuda con:
 
@@ -90,6 +73,5 @@ Diseño de nuevas vistas
 ✅ Próximos pasos
 Integrar datos dinámicos desde API
 Agregar página de detalle de evento
-Implementar carrito de compras
 Configurar panel de administrador
 Conectar con MercadoPago
