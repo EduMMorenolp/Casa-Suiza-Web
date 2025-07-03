@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Calendar, MapPin, DollarSign, Users, Star, Heart } from 'lucide-react';
+import { Calendar, MapPin, DollarSign, Clock, Users, Star, Heart } from 'lucide-react';
 import BuyModal from './modals/BuyModal';
 
 // Tipos
@@ -7,6 +7,7 @@ interface EventProps {
   title?: string;
   artists?: string[];
   date?: string;
+  time?: string;
   price?: number;
   image?: string;
   promo?: boolean;
@@ -111,6 +112,10 @@ export default function EventCard({ event }: { event: EventProps }) {
               <Calendar className="w-4 h-4 mr-2 text-red-600" />
               <span className="text-sm font-medium text-red-600">
                 {formatDate(safeEvent.date)}
+              </span>
+              <Clock className="h-4 text-red-600" />
+              <span className="text-sm font-medium text-red-600">
+                {safeEvent.time}
               </span>
             </div>
           </div>
