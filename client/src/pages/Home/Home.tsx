@@ -8,8 +8,8 @@ const events = [
     id: 1,
     title: "Edu Schmidt y los enroscas",
     artists: ["Edu Schmidt", "los enroscas"],
-    date: "04 de Julio 2025 a las 21:00",
-    price: 12,
+    date: "06/04/25",
+    price: 15000,
     image: foto,
     promo: true,
   },
@@ -17,18 +17,22 @@ const events = [
     id: 2,
     title: "Roma Ramirez + Néstor Gomez",
     artists: ["Roma Ramirez", "Néstor Gomez"],
-    date: "05 de Julio 2025 a las 21:00",
-    price: 12,
+    date: "07/05/25",
+    price: 12000,
     image: foto,
   },
   {
     id: 3,
     title: "Argentas",
     artists: ["Argentas"],
-    date: "11 de Julio 2025 a las 21:00",
-    price: 10,
+    date: "07/11/25",
+    price: 10000,
     image: foto,
   },
+  {
+    id: 4,
+    image: foto
+  }
 ];
 
 export default function Home() {

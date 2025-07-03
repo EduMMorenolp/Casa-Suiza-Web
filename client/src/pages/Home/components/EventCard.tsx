@@ -1,14 +1,16 @@
 import { useState } from 'react';
-import BuyModal from "./modals/BuyModal";
+import { Calendar, MapPin, DollarSign, Users, Star, Heart } from 'lucide-react';
+import BuyModal from './modals/BuyModal';
 
 // Tipos
 interface EventProps {
-  title: string;
-  artists: string[];
-  date: string;
-  price: number;
-  image: string;
+  title?: string;
+  artists?: string[];
+  date?: string;
+  price?: number;
+  image?: string;
   promo?: boolean;
+  soldOut?: boolean;
 }
 
 interface TicketType {
@@ -19,7 +21,19 @@ interface TicketType {
 }
 
 export default function EventCard({ event }: { event: EventProps }) {
+  // Valores por defecto para evitar errores
+  const safeEvent = {
+    ...event,
+    title: event.title || 'Evento Casa Suiza',
+    artists: event.artists || ['Artista Principal'],
+    date: event.date || '2025-08-15',
+    price: event.price || 8500,
+    image: event.image || '/api/placeholder/400/300',
+    promo: event.promo || false,
+    soldOut: event.soldOut || false,
+  };
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
 
   // Datos de ejemplo para los tipos de entradas
   const ticketTypes: TicketType[] = [
@@ -43,73 +57,121 @@ export default function EventCard({ event }: { event: EventProps }) {
     },
   ];
 
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const options: Intl.DateTimeFormatOptions = {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    };
+    return date.toLocaleDateString('es-ES', options);
+  };
+
   return (
-    <div className="bg-white shadow-md rounded-lg overflow-hidden relative">
-      {/* Bandera de promoción - estilo esquina */}
-      {event.promo && (
-        <div className="
-        absolute top-22 bg-yellow-500 text-white text-lg font-extrabold uppercase
-        px-12 py-1 rotate-[-45deg] origin-top-left translate-x-[-15%] 
-        shadow-lg
-      ">
-          PROMO
-        </div>
-      )}
+    <div>
+      <div className="group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:-translate-y-1">
+        {/* Contenedor de imagen con overlay */}
+        <div className="relative overflow-hidden">
+          <img
+            src={safeEvent.image}
+            alt={safeEvent.title}
+            className="w-full h-56 object-cover transition-transform duration-500 group-hover:scale-110"
+          />
 
-      {/* Imagen del evento */}
-      <img
-        src={event.image}
-        alt={event.title}
-        className="w-full h-48 object-cover"
-      />
+          {/* Overlay gradiente */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-      {/* Contenido del evento */}
-      <div className="p-4">
-        {/* Fecha */}
-        <div className="flex items-center mb-2">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 mr-1">
-            <path d="M12 12H12v12h0l-6-6h12z" />
-          </svg>
-          <span className="text-sm text-gray-500">{event.date}</span>
-        </div>
+          {/* Bandera de promoción mejorada */}
+          {safeEvent.promo && (
+            <div className="absolute top-3 left-3">
+              <div className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg animate-pulse">
+                🔥 PROMO
+              </div>
+            </div>
+          )}
 
-        {/* Título */}
-        <h3 className="text-xl font-bold text-primary">{event.title}</h3>
+          {/* Botón de favorito */}
+          <button
+            onClick={() => setIsFavorite(!isFavorite)}
+            className="absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-white transition-all duration-200"
+          >
+            <Heart
+              className={`w-5 h-5 transition-colors duration-200 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-600'
+                }`}
+            />
+          </button>
 
-        {/* Artistas */}
-        <p className="text-darkBlue mt-2">{event.artists.join(' + ')}</p>
-
-        {/* Ubicación */}
-        <div className="flex items-center mt-2">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 mr-1">
-            <path d="M12 12H12v12h0l-6-6h12z" />
-          </svg>
-          <span className="text-sm text-gray-500">Casa Suiza</span>
         </div>
 
-        {/* Precio */}
-        <div className="flex items-center mt-2">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 mr-1">
-            <path d="M12 12H12v12h0l-6-6h12z" />
-          </svg>
-          <span className="text-sm text-gray-500">Desde ${event.price}.-</span>
-        </div>
+        {/* Contenido del evento */}
+        <div className="p-5">
+          {/* Fecha destacada */}
+          <div className="flex items-center mb-3">
+            <div className="flex items-center bg-red-50 px-3 py-1 rounded-full">
+              <Calendar className="w-4 h-4 mr-2 text-red-600" />
+              <span className="text-sm font-medium text-red-600">
+                {formatDate(safeEvent.date)}
+              </span>
+            </div>
+          </div>
 
-        {/* Botón de compra */}
-        <button
-          className="mt-4 bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition w-full"
-          onClick={() => setIsModalOpen(true)}
-        >
-          Comprar Tickets
-        </button>
+          {/* Artistas */}
+          <div className="flex items-center mb-3">
+            <Users className="w-4 h-4 mr-2 text-gray-500" />
+            <p className="text-gray-700 font-medium">
+              {safeEvent.artists.join(' • ')}
+            </p>
+          </div>
+
+          {/* Información adicional */}
+          <div className="space-y-2 mb-4">
+            {/* Ubicación */}
+            <div className="flex items-center text-gray-600 text-sm">
+              <MapPin className="w-4 h-4 mr-2" />
+              <span>Casa Suiza - La Plata</span>
+            </div>
+          </div>
+
+          {/* Precio y rating */}
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center">
+              <DollarSign className="w-4 h-4 mr-1 text-green-600" />
+              <span className="text-lg font-bold text-green-600">
+                Desde ${safeEvent.price.toLocaleString()}
+              </span>
+            </div>
+            <div className="flex items-center">
+              <Star className="w-4 h-4 text-yellow-400 fill-current" />
+              <span className="text-sm text-gray-600 ml-1">4.8</span>
+            </div>
+          </div>
+
+          {/* Botón de compra */}
+          <button
+            className={`w-full py-3 rounded-xl font-semibold transition-all duration-200 transform hover:scale-[1.02] ${safeEvent.soldOut
+              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              : 'bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white shadow-lg hover:shadow-xl'
+              }`}
+            onClick={() => !safeEvent.soldOut && setIsModalOpen(true)}
+            disabled={safeEvent.soldOut}
+          >
+            {safeEvent.soldOut ? (
+              '🚫 Agotado'
+            ) : (
+              <>
+                🎫 Comprar Tickets
+              </>
+            )}
+          </button>
+        </div>
       </div>
       {/* Modal de compra */}
       <BuyModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        eventName={event.title}
+        eventName={safeEvent.title}
         ticketTypes={ticketTypes}
       />
-    </div>
+    </div >
   );
 }
