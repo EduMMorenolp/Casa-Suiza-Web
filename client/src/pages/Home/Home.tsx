@@ -1,6 +1,7 @@
 import EventCard from "./components/EventCard";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import foto from "../../assets/foto.png"
 
 const events = [
   {
@@ -9,7 +10,7 @@ const events = [
     artists: ["Edu Schmidt", "los enroscas"],
     date: "04 de Julio 2025 a las 21:00",
     price: 12,
-    image: "/images/event1.jpg",
+    image: foto,
     promo: true,
   },
   {
@@ -18,7 +19,7 @@ const events = [
     artists: ["Roma Ramirez", "Néstor Gomez"],
     date: "05 de Julio 2025 a las 21:00",
     price: 12,
-    image: "/images/event2.jpg",
+    image: foto,
   },
   {
     id: 3,
@@ -26,7 +27,7 @@ const events = [
     artists: ["Argentas"],
     date: "11 de Julio 2025 a las 21:00",
     price: 10,
-    image: "/images/event3.jpg",
+    image: foto,
   },
 ];
 
