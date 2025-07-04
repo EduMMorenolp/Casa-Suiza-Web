@@ -33,6 +33,7 @@ const events = [
     time: "21:00hs",
     price: 10000,
     image: foto,
+    promo: true
   },
   {
     id: 4,

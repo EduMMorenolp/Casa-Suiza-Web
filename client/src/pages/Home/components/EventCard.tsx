@@ -13,7 +13,6 @@ interface EventProps {
   promo?: boolean;
   soldOut?: boolean;
 }
-
 interface TicketType {
   name: string;
   description: string;
@@ -85,7 +84,7 @@ export default function EventCard({ event }: { event: EventProps }) {
           {/* Bandera de promoción mejorada */}
           {safeEvent.promo && (
             <div className="absolute top-3 left-3">
-              <div className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg animate-pulse">
+              <div className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-white font-bold px-3 py-1 rounded-full shadow-lg animate-pulse">
                 🔥 PROMO
               </div>
             </div>
