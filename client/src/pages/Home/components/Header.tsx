@@ -21,7 +21,7 @@ export default function Header() {
 
   const navItems = [
     { href: '/', label: 'Inicio', active: true },
-    { href: '/contacto', label: 'Contacto', active: false }
+    { href: '#contacto', label: 'Contacto', active: false }
   ];
 
   return (

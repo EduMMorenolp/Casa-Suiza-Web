@@ -1,4 +1,4 @@
-import { MapPin, Phone, Mail, Facebook, Instagram, Twitter } from 'lucide-react';
+import { MapPin, Mail, Facebook, Instagram, Twitter, PhoneForwarded } from 'lucide-react';
 import fotoCasaSuiza from '../../../assets/logoCasaSuiza.png'
 
 export default function Footer() {
@@ -7,11 +7,13 @@ export default function Footer() {
   const socialLinks = [
     { icon: Facebook, href: 'https://facebook.com/casasuizalp', label: 'Facebook' },
     { icon: Instagram, href: 'https://instagram.com/casasuizalp', label: 'Instagram' },
-    { icon: Twitter, href: 'https://twitter.com/casasuizalp', label: 'Twitter' }
+    { icon: Twitter, href: 'https://twitter.com/casasuizalp', label: 'Twitter' },
+    { icon: PhoneForwarded, href: 'https://wa.me/5492214362666?text=Hola%20Casa%20Suiza!', label: 'Whatsapp' },
+    { icon: Mail, href: 'mailto:contacto@casasuiza.com.ar', label: 'Mail' }
   ];
 
   return (
-    <footer className="bg-custom-red text-white">
+    <footer id="contacto" className="bg-custom-red text-white">
       {/* Main Footer Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -47,7 +49,6 @@ export default function Footer() {
 
           {/* Contact Info */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Contacto</h3>
             <div className="space-y-3">
               <div className="flex items-start space-x-3">
                 <MapPin className="h-5 w-5 mt-0.5 flex-shrink-0 text-white/80" />
@@ -56,26 +57,10 @@ export default function Footer() {
                   <p className="text-sm text-white/90">La Plata, Buenos Aires</p>
                 </div>
               </div>
-
-              <div className="flex items-center space-x-3">
-                <Phone className="h-5 w-5 flex-shrink-0 text-white/80" />
-                <a
-                  href="tel:+542214000000"
-                  className="text-sm text-white/90 hover:text-white transition-colors duration-200"
-                >
-                  +54 221 400-0000
-                </a>
-              </div>
-
-              <div className="flex items-center space-x-3">
-                <Mail className="h-5 w-5 flex-shrink-0 text-white/80" />
-                <a
-                  href="mailto:info@casasuiza.com.ar"
-                  className="text-sm text-white/90 hover:text-white transition-colors duration-200"
-                >
-                  info@casasuiza.com.ar
-                </a>
-              </div>
+                <iframe
+                className="rounded-lg border-4 border-gray-900 hover:border-yellow-500 transition-colors duration-300"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d204.49980255571754!2d-57.949954569339724!3d-34.90652878896529!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95a2e6462c654913%3A0x198205b6aa07b9f5!2sHelvecia%20Sociedad%20Suiza%20de%20S.M.%20La%20Plata!5e0!3m2!1ses!2sar!4v1751594996917!5m2!1ses!2sar"
+                ></iframe>
             </div>
           </div>
         </div>
