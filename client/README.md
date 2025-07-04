@@ -39,11 +39,17 @@ Previsualizar la build local
 🗂️ Estructura del proyecto
 ```bash
 src/
-├── components/         # Componentes reutilizables
-│   ├── Header.tsx
-│   ├── EventCard.tsx
-│   └── Footer.tsx
+├── assets/ 
 ├── pages/              # Páginas principales
+│   ├── Admin/
+│   │   ├── Admin.tsx
+│   ├── Home/
+│   │   ├── components/
+│   │   │   ├── modals/
+│   │   │   │   └── BuyModal.tsx
+│   │   │   ├── Header.tsx 
+│   │   │   ├── EventCard.tsx  
+│   │   │   └── Footer.tsx
 │   └── Home.tsx
 ├── App.tsx             # Enrutamiento principal
 └── main.tsx            # Punto de entrada de React
