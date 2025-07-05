@@ -20,17 +20,17 @@ export default function Header() {
   };
 
   const navItems = [
-    { href: '/', label: 'Inicio', active: true },
-    { href: '#contacto', label: 'Contacto', active: false }
+    { href: '/Casa-Suiza-Web/', label: 'Inicio', active: true },
+    { href: '/Casa-Suiza-Web/#contacto', label: 'Contacto', active: false },
+    { href: '/Casa-Suiza-Web/admin', label: 'Admin', active: true }
   ];
 
   return (
-    <header 
-      className={`sticky w-full top-0 z-50 transition-all duration-300 ${
-        isScrolled 
-        ? 'bg-custom-red backdrop-blur-md shadow-lg' 
-        : 'bg-custom-red'
-      }`}
+    <header
+      className={`sticky w-full top-0 z-50 transition-all duration-300 ${isScrolled
+          ? 'bg-custom-red backdrop-blur-md shadow-lg'
+          : 'bg-custom-red'
+        }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16 md:h-20">
@@ -38,10 +38,10 @@ export default function Header() {
           <div className="flex-shrink-0 group">
             <a href="/" className="flex items-center space-x-3">
               <div className="relative">
-                <img 
-                  src= {fotoCasaSuiza}
-                  alt="Casa Suiza" 
-                  className="h-8 md:h-12 w-auto transition-transform duration-300 group-hover:scale-110" 
+                <img
+                  src={fotoCasaSuiza}
+                  alt="Casa Suiza"
+                  className="h-8 md:h-12 w-auto transition-transform duration-300 group-hover:scale-110"
                 />
               </div>
             </a>
@@ -54,16 +54,14 @@ export default function Header() {
                 <li key={item.href}>
                   <a
                     href={item.href}
-                    className={`relative px-3 py-2 text-sm font-medium transition-all duration-300 group ${
-                      item.active
+                    className={`relative px-3 py-2 text-sm font-medium transition-all duration-300 group ${item.active
                         ? 'text-white font-semibold'
                         : 'text-white/90 hover:text-white'
-                    }`}
+                      }`}
                   >
                     {item.label}
-                    <span className={`absolute bottom-0 left-0 h-0.5 bg-white transition-all duration-300 ${
-                      item.active ? 'w-full' : 'w-0 group-hover:w-full'
-                    }`}></span>
+                    <span className={`absolute bottom-0 left-0 h-0.5 bg-white transition-all duration-300 ${item.active ? 'w-full' : 'w-0 group-hover:w-full'
+                      }`}></span>
                   </a>
                 </li>
               ))}
@@ -87,22 +85,20 @@ export default function Header() {
       </div>
 
       {/* Mobile Navigation */}
-      <div className={`md:hidden transition-all duration-300 ease-in-out ${
-        isMenuOpen 
-          ? 'max-h-96 opacity-100' 
+      <div className={`md:hidden transition-all duration-300 ease-in-out ${isMenuOpen
+          ? 'max-h-96 opacity-100'
           : 'max-h-0 opacity-0 overflow-hidden'
-      }`}>
+        }`}>
         <div className="px-4 pt-2 pb-4 bg-custom-red backdrop-blur-md border-t border-red-800">
           <nav className="space-y-2">
             {navItems.map((item) => (
               <a
                 key={item.href}
                 href={item.href}
-                className={`block px-3 py-3 rounded-lg text-base font-medium transition-all duration-200 ${
-                  item.active
+                className={`block px-3 py-3 rounded-lg text-base font-medium transition-all duration-200 ${item.active
                     ? 'bg-white text-red-600'
                     : 'text-white hover:bg-red-800 hover:text-white'
-                }`}
+                  }`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 {item.label}
