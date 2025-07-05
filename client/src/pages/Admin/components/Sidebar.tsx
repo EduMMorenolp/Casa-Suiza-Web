@@ -54,21 +54,23 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOpen, onCl
                 </div>
 
                 {/* Menú de navegación */}
-                <nav className="mt-6">
-                    {menuItems.map((item) => (
-                        <button
-                            key={item.id}
-                            onClick={() => handleMenuItemClick(item.id)}
-                            className={`w-full flex items-center px-6 py-3 text-left transition-colors ${activeTab === item.id
-                                ? 'bg-red-50 text-red-600 border-r-4 border-red-600'
-                                : 'text-gray-700 hover:bg-gray-50'
-                                }`}
-                        >
-                            <item.icon className="w-5 h-5 mr-3" />
-                            {item.label}
-                        </button>
-                    ))}
-                </nav>
+                <div className="mt-6 flex-grow">
+                    <nav>
+                        {menuItems.map((item) => (
+                            <button
+                                key={item.id}
+                                onClick={() => handleMenuItemClick(item.id)}
+                                className={`w-full flex items-center px-6 py-3 text-left transition-colors ${activeTab === item.id
+                                    ? 'bg-red-50 text-red-600 border-r-4 border-red-600'
+                                    : 'text-gray-700 hover:bg-gray-50'
+                                    }`}
+                            >
+                                <item.icon className="w-5 h-5 mr-3" />
+                                {item.label}
+                            </button>
+                        ))}
+                    </nav>
+                </div>
 
                 {/* Logout button */}
                 <div className="p-4">
