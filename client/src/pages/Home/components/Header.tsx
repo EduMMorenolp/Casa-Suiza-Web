@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
-import { Menu, X } from 'lucide-react';
-import fotoCasaSuiza from '../../../assets/logoCasaSuiza.png'
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { Menu, X } from "lucide-react";
+import fotoCasaSuiza from "../../../assets/logoCasaSuiza.png";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -11,8 +12,8 @@ export default function Header() {
       setIsScrolled(window.scrollY > 20);
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const toggleMenu = () => {
@@ -20,31 +21,32 @@ export default function Header() {
   };
 
   const navItems = [
-    { href: '/Casa-Suiza-Web/', label: 'Inicio', active: true },
-    { href: '/Casa-Suiza-Web/#contacto', label: 'Contacto', active: false },
-    { href: '/Casa-Suiza-Web/admin', label: 'Admin', active: true }
+    { href: "/Casa-Suiza-Web/", label: "Inicio", active: true },
+    { href: "/Casa-Suiza-Web/#contacto", label: "Contacto", active: false },
+    { href: "/Casa-Suiza-Web/admin", label: "Admin", active: true },
   ];
 
   return (
     <header
-      className={`sticky w-full top-0 z-50 transition-all duration-300 ${isScrolled
-          ? 'bg-custom-red backdrop-blur-md shadow-lg'
-          : 'bg-custom-red'
-        }`}
+      className={`sticky w-full top-0 z-50 transition-all duration-300 ${
+        isScrolled
+          ? "bg-custom-red backdrop-blur-md shadow-lg"
+          : "bg-custom-red"
+      }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16 md:h-20">
           {/* Logo */}
           <div className="flex-shrink-0 group">
-            <a href="/" className="flex items-center space-x-3">
+          <Link to="/" className="flex items-center space-x-3">
               <div className="relative">
                 <img
                   src={fotoCasaSuiza}
                   alt="Casa Suiza"
-                  className="h-8 md:h-12 w-auto transition-transform duration-300 group-hover:scale-110"
+                  className="h-8 md:h-12 w-auto transition-transform duration-300 >group-hover:scale-110"
                 />
               </div>
-            </a>
+            </Link>
           </div>
 
           {/* Desktop Navigation */}
@@ -52,17 +54,21 @@ export default function Header() {
             <ul className="flex items-center space-x-8">
               {navItems.map((item) => (
                 <li key={item.href}>
-                  <a
-                    href={item.href}
-                    className={`relative px-3 py-2 text-sm font-medium transition-all duration-300 group ${item.active
-                        ? 'text-white font-semibold'
-                        : 'text-white/90 hover:text-white'
-                      }`}
+                  <Link
+                    to={item.href}
+                    className={`relative px-3 py-2 text-sm font-medium transition-all duration-300 group ${
+                      item.active
+                        ? "text-white font-semibold"
+                        : "text-white/90 hover:text-white"
+                    }`}
                   >
                     {item.label}
-                    <span className={`absolute bottom-0 left-0 h-0.5 bg-white transition-all duration-300 ${item.active ? 'w-full' : 'w-0 group-hover:w-full'
-                      }`}></span>
-                  </a>
+                    <span
+                      className={`absolute bottom-0 left-0 h-0.5 bg-white transition-all duration-300 ${
+                        item.active ? "w-full" : "w-0 group-hover:w-full"
+                      }`}
+                    ></span>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -85,24 +91,28 @@ export default function Header() {
       </div>
 
       {/* Mobile Navigation */}
-      <div className={`md:hidden transition-all duration-300 ease-in-out ${isMenuOpen
-          ? 'max-h-96 opacity-100'
-          : 'max-h-0 opacity-0 overflow-hidden'
-        }`}>
+      <div
+        className={`md:hidden transition-all duration-300 ease-in-out ${
+          isMenuOpen
+            ? "max-h-96 opacity-100"
+            : "max-h-0 opacity-0 overflow-hidden"
+        }`}
+      >
         <div className="px-4 pt-2 pb-4 bg-custom-red backdrop-blur-md border-t border-red-800">
           <nav className="space-y-2">
             {navItems.map((item) => (
-              <a
+              <Link
                 key={item.href}
-                href={item.href}
-                className={`block px-3 py-3 rounded-lg text-base font-medium transition-all duration-200 ${item.active
-                    ? 'bg-white text-red-600'
-                    : 'text-white hover:bg-red-800 hover:text-white'
-                  }`}
+                to={item.href}
+                className={`block px-3 py-3 rounded-lg text-base font-medium transition-all duration-200 ${
+                  item.active
+                    ? "bg-white text-red-600"
+                    : "text-white hover:bg-red-800 hover:text-white"
+                }`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 {item.label}
-              </a>
+              </Link>
             ))}
           </nav>
         </div>
