@@ -41,8 +41,17 @@ Previsualizar la build local
 src/
 ├── assets/ 
 ├── pages/              # Páginas principales
+│   ├── Auth/
+│   │   ├── components/
+│   │   │   └── ProtectedRoute.tsx 
+│   │   ├── context/
+│   │   │   └── AuthContext.tsx 
+│   │   └── Admin.tsx
 │   ├── Admin/
-│   │   ├── Admin.tsx
+│   │   ├── components/
+│   │   │   ├── AddEventForm.tsx 
+│   │   │   └── Sidevbar.tsx 
+│   │   └── Admin.tsx
 │   ├── Home/
 │   │   ├── components/
 │   │   │   ├── modals/
@@ -50,7 +59,7 @@ src/
 │   │   │   ├── Header.tsx 
 │   │   │   ├── EventCard.tsx  
 │   │   │   └── Footer.tsx
-│   └── Home.tsx
+│   └── └── Home.tsx
 ├── App.tsx             # Enrutamiento principal
 └── main.tsx            # Punto de entrada de React
 ```
