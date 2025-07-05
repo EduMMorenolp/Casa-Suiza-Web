@@ -47,6 +47,13 @@ export default function Login() {
           >
             Entrar
           </button>
+          <button
+            type="button"
+            onClick={() => navigate('/')}
+            className="w-full bg-gray-300 hover:bg-gray-400 text-gray-800 py-2 rounded"
+          >
+            Volver
+          </button>
         </form>
       </div>
     </div>
