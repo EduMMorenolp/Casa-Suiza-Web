@@ -9,6 +9,15 @@ import Settings from './components/Settings';
 
 const Admin: React.FC = () => {
     const [activeTab, setActiveTab] = useState('dashboard');
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+
+    const toggleSidebar = () => {
+        setSidebarOpen(!sidebarOpen);
+    };
+
+    const closeSidebar = () => {
+        setSidebarOpen(false);
+    };
 
     const renderContent = () => {
         switch (activeTab) {
@@ -30,12 +39,20 @@ const Admin: React.FC = () => {
     return (
         <div className="min-h-screen bg-gray-100 flex">
             {/* Sidebar */}
-            <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+            <Sidebar
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
+                isOpen={sidebarOpen}
+                onClose={closeSidebar}
+            />
 
             {/* Main Content */}
-            <div className="flex-1 flex flex-col">
+            <div className="flex-1 flex flex-col lg:ml-0">
                 {/* Header */}
-                <Header activeTab={activeTab} />
+                <Header
+                    activeTab={activeTab}
+                    onMenuClick={toggleSidebar}
+                />
 
                 {/* Content Area */}
                 <main className="flex-1 p-6">
