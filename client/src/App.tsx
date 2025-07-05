@@ -1,5 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home/Home.tsx';
+import Admin from './pages/Admin/Admin.tsx';
+import Login from './pages/Auth/Login.tsx';
+import ProtectedRoute from './pages/Auth/components/ProtectedRoute.tsx';
 
 function App() {
 
@@ -7,6 +10,15 @@ function App() {
     <Router basename="/Casa-Suiza-Web">
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <Admin />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </Router>
   )
