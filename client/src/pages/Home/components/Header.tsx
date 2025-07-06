@@ -21,9 +21,9 @@ export default function Header() {
   };
 
   const navItems = [
-    { href: "/Casa-Suiza-Web/", label: "Inicio", active: true },
-    { href: "/Casa-Suiza-Web/#contacto", label: "Contacto", active: false },
-    { href: "/Casa-Suiza-Web/admin", label: "Admin", active: true },
+    { href: "/", label: "Inicio", active: true },
+    { href: "#contacto", label: "Contacto", active: false },
+    { href: "/login", label: "Login", active: true },
   ];
 
   return (
