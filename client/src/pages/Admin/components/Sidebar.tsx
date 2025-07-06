@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, Users, Calendar, BarChart3, Settings, LogOut, X } from 'lucide-react';
+import { Plus, Users, Calendar, BarChart3, Settings, LogOut, X, BookIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 interface SidebarProps {
@@ -14,6 +14,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOpen, onCl
         { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
         { id: 'events', label: 'Eventos', icon: Calendar },
         { id: 'add-event', label: 'Agregar Evento', icon: Plus },
+        { id: 'reports', label: 'Reportes', icon: BookIcon },
         { id: 'users', label: 'Usuarios', icon: Users },
         { id: 'settings', label: 'Configuración', icon: Settings },
     ];
