@@ -1,5 +1,6 @@
 import React from 'react';
 import { Plus, Users, Calendar, BarChart3, Settings, LogOut, X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface SidebarProps {
     activeTab: string;
@@ -22,6 +23,13 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOpen, onCl
         onClose();
     };
 
+    const navigate = useNavigate();
+
+    const handleLogout = async () => {
+        // await logout();
+        navigate('/');
+    };
+
     return (
         <>
             {/* Overlay para móvil */}
@@ -34,10 +42,11 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOpen, onCl
 
             {/* Sidebar */}
             <div className={`
-        fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white shadow-lg h-full
-        transform transition-transform duration-300 ease-in-out
-        ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-      `}>
+  fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white shadow-lg h-full
+  transform transition-transform duration-300 ease-in-out
+  ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+  flex flex-col
+`}>
                 {/* Header del sidebar */}
                 <div className="p-6 border-b border-gray-200 flex items-center justify-between">
                     <div>
@@ -72,9 +81,12 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOpen, onCl
                     </nav>
                 </div>
 
-                {/* Logout button */}
+                {/* Logout button abajo del todo */}
                 <div className="p-4">
-                    <button className="w-full flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
+                    <button
+                        className="w-full flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+                        onClick={handleLogout}
+                    >
                         <LogOut className="w-5 h-5 mr-3" />
                         Cerrar Sesión
                     </button>
