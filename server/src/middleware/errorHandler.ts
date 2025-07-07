@@ -39,18 +39,19 @@ export const handleValidationErrors = (
   req: Request,
   res: Response,
   next: NextFunction
-): Response | void => {
+): void => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    return res.status(400).json({
+    res.status(400).json({
       status: "error",
       message: "Datos de entrada inválidos",
-      errors: errors.array().map((error : validationError) => ({
+      errors: errors.array().map((error: validationError) => ({
         campo: error.param,
         mensaje: error.msg,
       })),
     });
+    return;
   }
   next();
 };
