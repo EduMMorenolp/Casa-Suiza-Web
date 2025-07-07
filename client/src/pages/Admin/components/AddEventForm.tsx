@@ -31,8 +31,6 @@ const AddEventForm: React.FC = () => {
     return (
         <div className="max-w-2xl mx-auto">
             <div className="bg-white rounded-lg shadow-lg p-6">
-                <h2 className="text-2xl font-bold text-gray-800 mb-6">Agregar Nuevo Evento</h2>
-
                 <div className="space-y-6">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">

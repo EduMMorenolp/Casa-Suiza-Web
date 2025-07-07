@@ -6,6 +6,7 @@ import Events from './components/Events';
 import AddEventForm from './components/AddEventForm';
 import Users from './components/Users';
 import Settings from './components/Settings';
+import Reports from './components/Reports';
 
 const Admin: React.FC = () => {
     const [activeTab, setActiveTab] = useState('dashboard');
@@ -31,6 +32,8 @@ const Admin: React.FC = () => {
                 return <Users />;
             case 'settings':
                 return <Settings />;
+            case `reports`:
+                return <Reports />
             default:
                 return <Dashboard />;
         }

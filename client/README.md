@@ -50,6 +50,11 @@ src/
 │   ├── Admin/
 │   │   ├── components/
 │   │   │   ├── AddEventForm.tsx 
+│   │   │   ├── Dashboard.tsx 
+│   │   │   ├── Events.tsx 
+│   │   │   ├── Header.tsx 
+│   │   │   ├── Settings.tsx 
+│   │   │   ├── Users.tsx 
 │   │   │   └── Sidevbar.tsx 
 │   │   └── Admin.tsx
 │   ├── Home/
