@@ -20,14 +20,27 @@ Este es el backend de **Casa Suiza**, una plataforma para la gestión y venta de
 
 ## 📂 Estructura del proyecto
 ```bash
-src/
-├── controllers/        # Lógica de negocio
-├── routes/             # Endpoints de la API
-├── models/             # Modelos de datos
-├── middlewares/        # Validaciones, autenticación
-├── services/           # Integración externa (MercadoPago)
-├── config/             # Conexión DB, variables de entorno
-└── index.js            # Punto de entrada principal
+server/
+├── src/
+│   ├── config/
+│   │   └── prisma.ts
+│   ├── controllers/
+│   │   └── auth.controller.ts
+│   ├── middlewares/
+│   │   └── auth.middleware.ts
+│   ├── routes/
+│   │   └── auth.routes.ts
+│   ├── services/
+│   │   └── auth.service.ts
+│   ├── utils/
+│   │   └── jwt.ts
+│   ├── app.ts
+│   └── server.ts
+├── prisma/
+│   └── schema.prisma
+├── .env
+├── tsconfig.json
+└── package.json
 ```
 
 ## 🧪 Endpoints principales
