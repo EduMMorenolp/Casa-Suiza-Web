@@ -1,15 +1,45 @@
+// ./src/app.js
+
 import express from "express";
-import cors from "cors";
 import dotenv from "dotenv";
-import authRoutes from "./routes/auth.routes";
+import { corsMiddleware } from "./middleware/corsMiddleware";
 
+// Import Middleware
+import { errorHandler } from "./middleware/errorHandler";
+
+// Import Routes
+import adminRoutes from "./routes/adminRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
+
+// Configuracion
 dotenv.config();
-
 const app = express();
-
-app.use(cors());
 app.use(express.json());
 
-app.use("/auth", authRoutes);
+// Aplicar el middleware de CORS
+app.use(corsMiddleware);
+
+// Swagger
+// @ts-ignore
+import setupSwaggerV1 from "../swagger/v1/main.js";
+setupSwaggerV1(app);
+
+// Morgan
+import morgan from "morgan";
+app.use(
+  morgan(":method :url :status :res[content-length] - :response-time ms")
+);
+
+const BASE_PATH = process.env.BASE_PATH || "";
+const VERSIONS_API = process.env.VERSIONS_API || "";
+
+// Routes
+app.use(`/${BASE_PATH}/${VERSIONS_API}`, authRoutes);
+app.use(`/${BASE_PATH}/${VERSIONS_API}`, userRoutes);
+app.use(`/${BASE_PATH}/${VERSIONS_API}`, adminRoutes);
+
+// Middleware para manejar errores
+app.use(errorHandler);
 
 export default app;
