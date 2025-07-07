@@ -4,9 +4,9 @@ import {
   loginUserService,
   logoutUserService,
   generateAuthTokenForUser,
-} from "../services/authService.js";
+} from "../services/authService";
 
-import { CustomError } from "../utils/CustomError.js";
+import { CustomError } from "../utils/CustomError";
 
 /**
  * Controlador de nuevo usuario

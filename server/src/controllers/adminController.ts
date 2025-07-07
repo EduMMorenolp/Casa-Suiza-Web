@@ -9,9 +9,9 @@ import {
   updateUserService,
   restoreUserService,
   searchUsersService,
-} from "../services/adminService.js";
+} from "../services/adminService";
 // Importar la clase de error personalizado
-import { CustomError } from "../utils/CustomError.js";
+import { CustomError } from "../utils/CustomError";
 
 /**
  * Obtener todos los usuarios

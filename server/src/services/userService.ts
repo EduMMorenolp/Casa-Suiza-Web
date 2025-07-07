@@ -4,9 +4,9 @@ import {
   deleteUser,
   getUserById,
   updateUser,
-} from "../repositories/userRepository.js";
-import { hashPassword } from "../utils/bcrypt.js";
-import { CustomError } from "../utils/CustomError.js";
+} from "../repositories/userRepository";
+import { hashPassword } from "../utils/bcrypt";
+import { CustomError } from "../utils/CustomError";
 
 /**
  * Obtener usuario por ID

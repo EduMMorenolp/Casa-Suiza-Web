@@ -1,5 +1,5 @@
-import { checkUserActive } from "../repositories/userRepository.js";
-import { CustomError } from "../utils/CustomError.js";
+import { checkUserActive } from "../repositories/userRepository";
+import { CustomError } from "../utils/CustomError";
 import { NextFunction, Request, Response } from "express";
 
 /**

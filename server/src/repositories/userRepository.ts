@@ -1,8 +1,8 @@
 // ./src/repositories/userRepository.js
 
 import exp from "constants";
-import prisma from "../config/prismaClient.js";
-import { CustomError } from "../utils/CustomError.js";
+import prisma from "../config/prismaClient";
+import { CustomError } from "../utils/CustomError";
 
 /**
  * Verificar si el usuario está activo

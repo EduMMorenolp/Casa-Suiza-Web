@@ -1,7 +1,7 @@
 // ./src/repositories/authRepository.js
 
-import prisma from "../config/prismaClient.js";
-import { CustomError } from "../utils/CustomError.js";
+import prisma from "../config/prismaClient";
+import { CustomError } from "../utils/CustomError";
 
 /**
  * Crear Usuario

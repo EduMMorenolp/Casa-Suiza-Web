@@ -8,15 +8,15 @@ import {
   updateUserController,
   restoreUserController,
   searchUserController,
-} from "../controllers/adminController.js";
+} from "../controllers/adminController";
 
 // Middlewares
-import { authenticateToken } from "../middleware/authTokenMiddleware.js";
-import { verifyAdmin } from "../middleware/verifyAdmin.js";
-import { checkUserActiveMiddleware } from "../middleware/checkUserActiveMiddleware.js";
+import { authenticateToken } from "../middleware/authTokenMiddleware";
+import { verifyAdmin } from "../middleware/verifyAdmin";
+import { checkUserActiveMiddleware } from "../middleware/checkUserActiveMiddleware";
 
-import { validateUpdateUser } from "../validation/userValidate.js";
-import { handleValidationErrors } from "../middleware/errorHandler.js";
+import { validateUpdateUser } from "../validation/userValidate";
+import { handleValidationErrors } from "../middleware/errorHandler";
 
 const router = express.Router();
 

@@ -1,8 +1,8 @@
 // ./src/middleware/authMiddleware.js
 
 import { Request, Response, NextFunction } from "express";
-import { verifyAuthToken } from "../utils/jwt.js";
-import { CustomError } from "../utils/CustomError.js";
+import { verifyAuthToken } from "../utils/jwt";
+import { CustomError } from "../utils/CustomError";
 
 interface JwtPayload {
   userId: string;

@@ -5,15 +5,15 @@ import {
   registerUser,
   loginUserController,
   logoutUserController,
-} from "../controllers/authController.js";
-import { authenticateToken } from "../middleware/authTokenMiddleware.js";
+} from "../controllers/authController";
+import { authenticateToken } from "../middleware/authTokenMiddleware";
 
 import {
   validateUserLogin,
   validateUserRegister,
-} from "../validation/authValidate.js";
+} from "../validation/authValidate";
 
-import { handleValidationErrors } from "../middleware/errorHandler.js";
+import { handleValidationErrors } from "../middleware/errorHandler";
 
 // Middlewares
 const router = express.Router();

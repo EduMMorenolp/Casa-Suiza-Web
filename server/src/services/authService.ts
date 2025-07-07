@@ -1,17 +1,17 @@
 // ./src/services/authService.js
 
-import { getUserByEmail } from "../repositories/userRepository.js";
+import { getUserByEmail } from "../repositories/userRepository";
 import {
   createUser,
   loginUser,
   logoutUser,
-} from "../repositories/authRepository.js";
+} from "../repositories/authRepository";
 // Importa las funciones de cifrado y comparación de contraseñas
-import { comparePassword, hashPassword } from "../utils/bcrypt.js";
+import { comparePassword, hashPassword } from "../utils/bcrypt";
 // Importa la clase de error personalizado
-import { CustomError } from "../utils/CustomError.js";
+import { CustomError } from "../utils/CustomError";
 // Importa la función para generar el token JWT
-import { generateAuthToken } from "../utils/jwt.js";
+import { generateAuthToken } from "../utils/jwt";
 
 /**
  * Crear un nuevo usuario

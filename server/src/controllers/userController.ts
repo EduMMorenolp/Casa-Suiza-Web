@@ -6,9 +6,9 @@ import {
   deleteUserService,
   getUserByIdService,
   updateUserService,
-} from "../services/userService.js";
+} from "../services/userService";
 // Importar la clase de error personalizado
-import { CustomError } from "../utils/CustomError.js";
+import { CustomError } from "../utils/CustomError";
 
 /**
  * Obtener usuario por ID

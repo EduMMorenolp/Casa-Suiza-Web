@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 // @ts-ignore
 import { validationResult, validationError } from "express-validator";
 
-import { CustomError } from "../utils/CustomError.js";
+import { CustomError } from "../utils/CustomError";
 
 /**
  * Manejador de errores

@@ -1,4 +1,4 @@
-// ./src/app.js
+// ./src/app.ts
 
 import express from "express";
 import dotenv from "dotenv";
@@ -8,9 +8,9 @@ import { corsMiddleware } from "./middleware/corsMiddleware";
 import { errorHandler } from "./middleware/errorHandler";
 
 // Import Routes
-import adminRoutes from "./routes/adminRoutes.js";
-import userRoutes from "./routes/userRoutes.js";
-import authRoutes from "./routes/authRoutes.js";
+import adminRoutes from "./routes/adminRoutes";
+import userRoutes from "./routes/userRoutes";
+import authRoutes from "./routes/authRoutes";
 
 // Configuracion
 dotenv.config();
@@ -22,7 +22,7 @@ app.use(corsMiddleware);
 
 // Swagger
 // @ts-ignore
-import setupSwaggerV1 from "../swagger/v1/main.js";
+import setupSwaggerV1 from "../swagger/v1/main";
 setupSwaggerV1(app);
 
 // Morgan
