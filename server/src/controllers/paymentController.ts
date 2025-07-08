@@ -51,7 +51,13 @@ export async function createPaymentPreferenceHandler(
 
     const preference = await createPreference(preferenceData, "approved");
 
-    console.log(preference.status);
+    const now = new Date().toLocaleString();
+
+    console.log("===============================================");
+    console.log(`🕒 [${now}] Preferencia de pago creada:`);
+    console.log(`📦 Estado: ${preference.status}`);
+    console.log(`🪪 ID Preferencia: ${preference.id}`);
+    console.log("===============================================\n");
 
     res
       .status(201)
