@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { Calendar, MapPin, DollarSign, Clock, Users, Star, Heart } from 'lucide-react';
+import { Calendar, MapPin, DollarSign, Clock, Users, Heart } from 'lucide-react';
 import BuyModal from './modals/BuyModal';
+import foto from '../../../assets/foto.png';
 
 // Tipos
 interface EventProps {
   title?: string;
-  artists?: string[];
+  description?: string;
+  location?: string
   date?: string;
   time?: string;
   price?: number;
@@ -25,10 +27,10 @@ export default function EventCard({ event }: { event: EventProps }) {
   const safeEvent = {
     ...event,
     title: event.title || 'Evento Casa Suiza',
-    artists: event.artists || ['Artista Principal'],
     date: event.date || '2025-08-15',
+    time: event.time || "2hs",
     price: event.price || 8500,
-    image: event.image || '/api/placeholder/400/300',
+    image: event.image || foto,
     promo: event.promo || false,
     soldOut: event.soldOut || false,
   };
@@ -123,7 +125,7 @@ export default function EventCard({ event }: { event: EventProps }) {
           <div className="flex items-center mb-3">
             <Users className="w-4 h-4 mr-2 text-gray-500" />
             <p className="text-gray-700 font-medium">
-              {safeEvent.artists.join(' • ')}
+              {safeEvent.title}
             </p>
           </div>
 
@@ -143,10 +145,6 @@ export default function EventCard({ event }: { event: EventProps }) {
               <span className="text-lg font-bold text-green-600">
                 Desde ${safeEvent.price.toLocaleString()}
               </span>
-            </div>
-            <div className="flex items-center">
-              <Star className="w-4 h-4 text-yellow-400 fill-current" />
-              <span className="text-sm text-gray-600 ml-1">4.8</span>
             </div>
           </div>
 
