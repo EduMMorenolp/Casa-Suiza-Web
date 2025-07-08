@@ -25,9 +25,15 @@ const Admin: React.FC = () => {
             case 'dashboard':
                 return <Dashboard />;
             case 'events':
-                return <Events />;
+                return <Events setActiveTab={setActiveTab} />;
             case 'add-event':
-                return <AddEventForm />;
+                return <AddEventForm
+                    onSubmit={(data, isEdit) => {
+                        console.log('Submit:', data, isEdit);
+                    }}
+                    onClose={() => setActiveTab('events')}
+                    onRedirectToEvents={() => setActiveTab('events')}
+                />
             case 'users':
                 return <Users />;
             case 'settings':

@@ -1,35 +1,127 @@
-import React, { useState } from 'react';
-import { Plus, Edit, Trash2, Eye, Search } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { Plus, Edit, Trash2, Eye, Search } from "lucide-react";
+import type { EventData } from "../../../api/events";
+import { getEvents, deleteEvent } from "../../../api/events";
+import AddEventForm from "./AddEventForm";
 
-interface Event {
-    id: number;
-    title: string;
-    date: string;
-    status: 'active' | 'soldout';
+interface Event extends EventData {
+    status: "active" | "soldout";
     sold: number;
 }
 
-const Events: React.FC = () => {
-    const [searchTerm, setSearchTerm] = useState('');
-    const [filterStatus, setFilterStatus] = useState('all');
+interface EventsProps {
+    setActiveTab: React.Dispatch<React.SetStateAction<string>>;
+  }
 
-    const events: Event[] = [
-        { id: 1, title: 'Noche de Tango', date: '2025-08-15', status: 'active', sold: 45 },
-        { id: 2, title: 'Jazz en Casa Suiza', date: '2025-08-20', status: 'soldout', sold: 100 },
-        { id: 3, title: 'Folklore Argentino', date: '2025-08-25', status: 'active', sold: 23 },
-    ];
+function getStatus(soldOut?: boolean): "active" | "soldout" {
+    return soldOut ? "soldout" : "active";
+}
+
+const Events: React.FC<EventsProps> = ({ setActiveTab }) => {
+    const [searchTerm, setSearchTerm] = useState("");
+    const [filterStatus, setFilterStatus] = useState<"all" | "active" | "soldout">("all");
+    const [events, setEvents] = useState<Event[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [showForm, setShowForm] = useState(false);
+    const [editingEvent, setEditingEvent] = useState<EventData | null>(null);
+
+    useEffect(() => {
+        async function fetchEvents() {
+            setLoading(true);
+            setError(null);
+            try {
+                const data = await getEvents();
+                const mapped = data.map((e) => ({
+                    ...e,
+                    status: getStatus(e.soldOut),
+                    sold: Math.floor(Math.random() * 100), // reemplaza con dato real si tienes
+                }));
+                setEvents(mapped);
+            } catch (e) {
+                if (e instanceof Error) setError(e.message);
+                else setError("Error desconocido");
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchEvents();
+    }, []);
+
+    // Filtrado
+    const filteredEvents = events.filter((event) => {
+        const matchesStatus = filterStatus === "all" || event.status === filterStatus;
+        const matchesSearch =
+            event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            event.date.includes(searchTerm);
+        return matchesStatus && matchesSearch;
+    });
+
+    // Delete handler
+    const handleDelete = async (id?: string) => {
+        if (!id) {
+            alert("ID del evento no válido");
+            return;
+        }
+        const confirmed = window.confirm("¿Estás seguro que deseas eliminar este evento?");
+        if (!confirmed) return;
+
+        try {
+            await deleteEvent(id);
+            setEvents((prev) => prev.filter((e) => e.id !== id));
+        } catch (error) {
+            alert(error instanceof Error ? error.message : "Error desconocido al eliminar");
+        }
+    };
+
+    // Abrir formulario para crear nuevo evento
+    const handleNewEvent = () => {
+        setActiveTab('add-event');
+    };
+
+    // Abrir formulario para editar
+    const handleEditEvent = (event: EventData) => {
+        setEditingEvent(event);
+        setShowForm(true);
+    };
+
+    // Callback cuando se crea o actualiza un evento desde el formulario
+    const handleFormSubmit = async (eventData: EventData, isEdit: boolean) => {
+        setShowForm(false);
+        if (isEdit) {
+            setEvents((prev) =>
+                prev.map((e) => (e.id === eventData.id ? { ...eventData, status: getStatus(eventData.soldOut), sold: e.sold } : e))
+            );
+        } else {
+            setEvents((prev) => [
+                ...prev,
+                { ...eventData, status: getStatus(eventData.soldOut), sold: 0 },
+            ]);
+        }
+    };
 
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold text-gray-800">Gestión de Eventos</h2>
-                <button className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2">
+                <button
+                    className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
+                    onClick={handleNewEvent}
+                >
                     <Plus className="w-4 h-4" />
                     Nuevo Evento
                 </button>
             </div>
 
-            {/* Filtros y búsqueda */}
+            {/* Mostrar formulario solo si showForm es true */}
+            {showForm && (
+                <AddEventForm
+                    initialData={editingEvent || undefined}
+                    onClose={() => setShowForm(false)}
+                    onSubmit={handleFormSubmit}
+                />
+            )}
+
             <div className="bg-white rounded-lg shadow-lg p-6">
                 <div className="flex gap-4 mb-4">
                     <div className="flex-1">
@@ -46,7 +138,9 @@ const Events: React.FC = () => {
                     </div>
                     <select
                         value={filterStatus}
-                        onChange={(e) => setFilterStatus(e.target.value)}
+                        onChange={(e) =>
+                            setFilterStatus(e.target.value as "all" | "active" | "soldout")
+                        }
                         className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                     >
                         <option value="all">Todos los estados</option>
@@ -55,35 +149,56 @@ const Events: React.FC = () => {
                     </select>
                 </div>
 
-                {/* Lista de eventos */}
-                <div className="space-y-3">
-                    {events.map((event) => (
-                        <div key={event.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
-                            <div className="flex-1">
-                                <h3 className="font-semibold text-gray-800">{event.title}</h3>
-                                <p className="text-sm text-gray-600">Fecha: {event.date}</p>
-                                <p className="text-sm text-gray-600">Entradas vendidas: {event.sold}</p>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <span className={`px-3 py-1 rounded-full text-sm ${event.status === 'active'
-                                    ? 'bg-green-100 text-green-800'
-                                    : 'bg-red-100 text-red-800'
-                                    }`}>
-                                    {event.status === 'active' ? 'Activo' : 'Agotado'}
-                                </span>
-                                <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg">
-                                    <Eye className="w-4 h-4" />
-                                </button>
-                                <button className="p-2 text-green-600 hover:bg-green-50 rounded-lg">
-                                    <Edit className="w-4 h-4" />
-                                </button>
-                                <button className="p-2 text-red-600 hover:bg-red-50 rounded-lg">
-                                    <Trash2 className="w-4 h-4" />
-                                </button>
-                            </div>
-                        </div>
-                    ))}
-                </div>
+                {loading && <p className="text-center text-gray-600">Cargando eventos...</p>}
+                {error && <p className="text-center text-red-600">{error}</p>}
+
+                {!loading && !error && (
+                    <div className="space-y-3">
+                        {filteredEvents.length === 0 ? (
+                            <p className="text-center text-gray-600">No hay eventos para mostrar.</p>
+                        ) : (
+                            filteredEvents.map((event) => (
+                                <div
+                                    key={event.id}
+                                    className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50"
+                                >
+                                    <div className="flex-1">
+                                        <h3 className="font-semibold text-gray-800">{event.title}</h3>
+                                        <p className="text-sm text-gray-600">
+                                            Fecha: {new Date(event.date).toLocaleDateString()}
+                                        </p>
+                                        <p className="text-sm text-gray-600">Entradas vendidas: {event.sold}</p>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <span
+                                            className={`px-3 py-1 rounded-full text-sm ${event.status === "active"
+                                                    ? "bg-green-100 text-green-800"
+                                                    : "bg-red-100 text-red-800"
+                                                }`}
+                                        >
+                                            {event.status === "active" ? "Activo" : "Agotado"}
+                                        </span>
+                                        <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg">
+                                            <Eye className="w-4 h-4" />
+                                        </button>
+                                        <button
+                                            className="p-2 text-green-600 hover:bg-green-50 rounded-lg"
+                                            onClick={() => handleEditEvent(event)}
+                                        >
+                                            <Edit className="w-4 h-4" />
+                                        </button>
+                                        <button
+                                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+                                            onClick={() => handleDelete(event.id!)}
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                </div>
+                            ))
+                        )}
+                    </div>
+                )}
             </div>
         </div>
     );
