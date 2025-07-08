@@ -26,6 +26,13 @@ import searchUsers from "./paths/admin/searchUsersAdmin.js";
 import createTicket from "./paths/ticket/createTicket.js";
 import createPreference from "./paths/payment/createPreference.js";
 
+// Eventos
+import getAllEvents from "./paths/event/getAllEvents.js";
+import createEvent from "./paths/event/createEvent.js";
+import getEventById from "./paths/event/getEventById.js";
+import updateEvent from "./paths/event/updateEvent.js";
+import deleteEvent from "./paths/event/deleteEvent.js";
+
 const swaggerSpec = {
   openapi: "3.0.0",
   info,
@@ -50,6 +57,12 @@ const swaggerSpec = {
     "/tickets": createTicket,
     // Pagos
     "/create-preference": createPreference,
+    // Eventos
+    "/events": getAllEvents,
+    "/event": createEvent,
+    "/events/{id}": getEventById, // GET
+    "/events/{id}": updateEvent,  // PUT
+    "/events/{id}": deleteEvent,  // DELETE
   },
   components: {
     schemas: {
