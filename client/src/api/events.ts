@@ -7,9 +7,12 @@ export interface EventData {
   id?: string;
   title: string;
   description?: string;
+  time?: string;
   location?: string;
   date: string; // ISO string
   price: number;
+  promo?: boolean;
+  soldOut?: boolean;
   imageUrl?: string;
   createdAt?: string;
   updatedAt?: string;
