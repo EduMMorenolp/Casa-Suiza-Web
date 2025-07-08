@@ -1,23 +1,25 @@
 const info = {
-  title: "CRUD de Usuarios API",
-  version: "1.0.0",
-  description: `API diseñada para gestionar usuarios, proporcionando funcionalidad de registro, autenticación, actualización y eliminación de datos de usuarios.
+  title: "Casa Suiza API - Venta de Entradas",
+  description: `
+API RESTful para la gestión de entradas para eventos organizados por **Casa Suiza**.  
+Permite registrar usuarios, administrar roles, crear tickets personalizados y procesar pagos a través de MercadoPago.
 
-### Funcionalidades
-- **Registro de Usuarios**: Crear nuevos usuarios con validaciones.
-- **Inicio de Sesión**: Autenticación mediante JWT.
-- **Gestión de Usuarios**: Actualización de datos y eliminación de cuentas.
-- **Validaciones**: Uso de Express Validator para garantizar la calidad de los datos.
+---
 
-### Casos de Uso
-1. **Administradores**: Gestión eficiente de la información de los usuarios.
-2. **Proyectos educativos**: Ejemplo práctico de cómo implementar un sistema CRUD con Node.js y Express.
-3. **Desarrolladores**: Base inicial para personalizar sistemas de usuario en aplicaciones.
+### Funcionalidades principales:
 
-### Documentación Adicional
-- **Autenticación**: Se requiere un token JWT para acceder a los endpoints protegidos.
-- **Swagger UI**: Incluye documentación interactiva para probar los endpoints fácilmente.
+- Gestión de usuarios (registro, login, actualización, soft delete)
+- Roles administrativos con permisos especiales
+- Creación y almacenamiento de tickets
+- Integración con MercadoPago para el procesamiento de pagos
+- Documentación completa con Swagger UI
+- Soporte para CORS y validación de datos
+
+---
+
+> Proyecto desarrollado en **Node.js**, **Express**, **TypeScript** y **Prisma**.
 `,
+  version: "1.0.0",
   contact: {
     name: "Eduardo M Moreno",
     url: "https://edummorenolp.github.io/LandingPageSimple/",
