@@ -22,6 +22,10 @@ import deleteUserAdmin from "./paths/admin/deleteUserAdmin.js";
 import restoreUserAdmin from "./paths/admin/restoreUserAdmin.js";
 import searchUsers from "./paths/admin/searchUsersAdmin.js";
 
+// Ticket y Pagos
+import createTicket from "./paths/ticket/createTicket.js";
+import createPreference from "./paths/payment/createPreference.js";
+
 const swaggerSpec = {
   openapi: "3.0.0",
   info,
@@ -42,6 +46,10 @@ const swaggerSpec = {
     "/user": getUserById,
     "/user/update": updateUser,
     "/user/delete": deleteUser,
+    // Ticket
+    "/tickets": createTicket,
+    // Pagos
+    "/create-preference": createPreference,
   },
   components: {
     schemas: {

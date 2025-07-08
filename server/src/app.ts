@@ -11,6 +11,8 @@ import { errorHandler } from "./middleware/errorHandler";
 import adminRoutes from "./routes/adminRoutes";
 import userRoutes from "./routes/userRoutes";
 import authRoutes from "./routes/authRoutes";
+import ticketRoutes from "./routes/ticketRoutes";
+import paymentRoutes from "./routes/paymentRoutes";
 
 // Configuracion
 dotenv.config();
@@ -38,6 +40,8 @@ const VERSIONS_API = process.env.VERSIONS_API || "";
 app.use(`/${BASE_PATH}/${VERSIONS_API}`, authRoutes);
 app.use(`/${BASE_PATH}/${VERSIONS_API}`, userRoutes);
 app.use(`/${BASE_PATH}/${VERSIONS_API}`, adminRoutes);
+app.use(`/${BASE_PATH}/${VERSIONS_API}`, ticketRoutes);
+app.use(`/${BASE_PATH}/${VERSIONS_API}`, paymentRoutes);
 
 // Middleware para manejar errores
 app.use(errorHandler);
