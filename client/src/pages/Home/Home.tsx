@@ -51,7 +51,7 @@ export default function Home() {
           <div>
             <p className="text-center mb-4">No hay eventos disponibles.</p>
             <p className="text-center text-sm text-gray-500 mb-4">
-              Este es un evento de ejemplo. Iniciá sesión como administrador para crear uno real.
+              Este es un evento de ejemplo. El administrador esta por crear uno real.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <EventCard key={dummyEvent.id} event={dummyEvent} />
