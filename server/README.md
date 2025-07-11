@@ -19,25 +19,58 @@ Este es el backend de **Casa Suiza**, una plataforma para la gestión y venta de
 - Middleware de autorización para proteger rutas privadas
 
 ## 📂 Estructura del proyecto
+
 ```bash
 server/
 ├── src/
 │   ├── config/
-│   │   └── prisma.ts
+│   │   ├── mercadoPago.ts
+│   │   └── prismaClient.ts
 │   ├── controllers/
-│   │   └── auth.controller.ts
+│   │   ├── adminController.ts
+│   │   ├── authController.ts
+│   │   ├── eventController.ts
+│   │   ├── paymentController.ts
+│   │   ├── ticketController.ts
+│   │   └── userController.ts
 │   ├── middlewares/
-│   │   └── auth.middleware.ts
+│   │   ├── authTokenMiddleware.ts
+│   │   ├── checkUserActiveMiddleware.ts
+│   │   ├── corsMiddleware.ts
+│   │   ├── errorHandler.ts
+│   │   └── verifyAdmin.ts
+│   ├── repositories/
+│   │   ├── authRepository.ts
+│   │   └── userRepository.ts
 │   ├── routes/
-│   │   └── auth.routes.ts
+│   │   ├── adminRoutes.ts
+│   │   ├── authRoutes.ts
+│   │   ├── eventRoutes.ts
+│   │   ├── paymentRoutes.ts
+│   │   ├── ticketRoutes.ts
+│   │   └── userRoutes.ts
 │   ├── services/
-│   │   └── auth.service.ts
+│   │   ├── adminService.ts
+│   │   ├── authService.ts
+│   │   ├── eventService.ts
+│   │   ├── paymentService.ts
+│   │   ├── ticketService.ts
+│   │   └── userService.ts
 │   ├── utils/
+│   │   ├── bcrypt.ts
+│   │   ├── CustomError.ts
 │   │   └── jwt.ts
+│   ├── validation/
+│   │   ├── authValidate.ts
+│   │   └── userValidate.ts
 │   ├── app.ts
 │   └── server.ts
 ├── prisma/
 │   └── schema.prisma
+├── swagger/
+│   ├── components/
+│   ├── paths/
+│   └── README.md
 ├── .env
 ├── tsconfig.json
 └── package.json
@@ -45,24 +78,23 @@ server/
 
 ## 🧪 Endpoints principales
 
-| Método | Ruta            | Descripción                         |
-|--------|------------------|-------------------------------------|
-| POST   | `/auth/register` | Registro de nuevo admin             |
-| POST   | `/auth/login`    | Login y obtención de token JWT      |
-| GET    | `/events`        | Listado de eventos públicos         |
-| POST   | `/events`        | Crear evento (requiere auth)        |
-| PUT    | `/events/:id`    | Editar evento (requiere auth)       |
-| DELETE | `/events/:id`    | Eliminar evento (requiere auth)     |
-| POST   | `/checkout`      | Generar preferencia de pago MP      |
+| Método | Ruta             | Descripción                     |
+| ------ | ---------------- | ------------------------------- |
+| POST   | `/auth/register` | Registro de nuevo admin         |
+| POST   | `/auth/login`    | Login y obtención de token JWT  |
+| GET    | `/events`        | Listado de eventos públicos     |
+| POST   | `/events`        | Crear evento (requiere auth)    |
+| PUT    | `/events/:id`    | Editar evento (requiere auth)   |
+| DELETE | `/events/:id`    | Eliminar evento (requiere auth) |
+| POST   | `/checkout`      | Generar preferencia de pago MP  |
 
 ## 💳 Integración con MercadoPago
 
 La API incluye endpoints para:
 
-- Crear preferencia de pago  
-- Webhook de notificaciones  
-- Confirmación de compra  
-- Generación de entradas digitales (opcional)  
+- Crear preferencia de pago
+- Webhook de notificaciones
+- Confirmación de compra
+- Generación de entradas digitales (opcional)
 
 > ⚠️ Requiere configurar las credenciales en el archivo `.env`
-
