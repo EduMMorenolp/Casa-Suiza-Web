@@ -6,6 +6,7 @@ interface TicketData {
   buyerLastName: string;
   buyerEmail: string;
   buyerPhone?: string;
+  buyerDni: string;
 }
 
 export async function createTicket(data: TicketData) {
@@ -30,7 +31,7 @@ export async function createTicket(data: TicketData) {
   return ticket;
 }
 
-export async function updateTicketStatus(ticketId: string, status: string) {
+export async function updateTicketStatus(ticketId: number, status: string) {
   return prisma.ticket.update({
     where: { id: ticketId },
     data: { status },

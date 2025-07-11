@@ -6,6 +6,9 @@ export interface TicketData {
   buyerName: string;
   buyerLastName: string;
   buyerEmail: string;
+  buyerDni: string;
+  quantity: number;
+  price: number;
   buyerPhone?: string;
   purchaseAt?: string;
   status?: "pending" | "paid" | "cancelled";
