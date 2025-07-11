@@ -1,4 +1,5 @@
 import prisma from "../config/prismaClient";
+import { TicketStatus } from "@prisma/client";
 
 interface TicketData {
   eventId: string;
@@ -24,14 +25,17 @@ export async function createTicket(data: TicketData) {
       buyerLastName: data.buyerLastName,
       buyerEmail: data.buyerEmail,
       buyerPhone: data.buyerPhone,
-      status: "pending",
+      status: TicketStatus.PENDING,
     },
   });
 
   return ticket;
 }
 
-export async function updateTicketStatus(ticketId: number, status: string) {
+export async function updateTicketStatus(
+  ticketId: number,
+  status: TicketStatus
+) {
   return prisma.ticket.update({
     where: { id: ticketId },
     data: { status },
