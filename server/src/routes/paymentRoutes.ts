@@ -3,6 +3,6 @@ import { createPaymentPreferenceHandler } from "../controllers/paymentController
 
 const router = Router();
 
-router.post("/create-preference", createPaymentPreferenceHandler);
+router.post("/payment/preference", createPaymentPreferenceHandler);
 
 export default router;

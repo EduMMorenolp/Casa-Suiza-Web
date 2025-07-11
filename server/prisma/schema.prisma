@@ -36,12 +36,13 @@ model Event {
 }
 
 model Ticket {
-  id          String   @id @default(uuid())
+  id          Int   @id @default(autoincrement())
   eventId     String
   buyerName   String   @map("buyer_name")
   buyerLastName String @map("buyer_last_name")
   buyerEmail  String   @map("buyer_email")
   buyerPhone  String?  @map("buyer_phone")
+  buyerDni  Int?  @map("buyer_dni")
   purchaseAt  DateTime @default(now()) @map("purchase_at")
   status      String   @default("pending") // pending, paid, cancelled
 
