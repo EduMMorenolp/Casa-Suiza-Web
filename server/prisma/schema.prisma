@@ -25,6 +25,8 @@ model Event {
   description String?
   location    String?
   date        DateTime
+  promo       Boolean?
+  soldOut     Boolean?
   price       Float    // Precio por entrada
   imageUrl    String?  @map("image_url")
   createdAt   DateTime @default(now()) @map("created_at")

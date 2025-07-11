@@ -6,6 +6,8 @@ interface CreateEventInput {
   location?: string;
   date: Date;
   price: number;
+  soldOut?: Boolean;
+  promo?: Boolean;
   imageUrl?: string;
 }
 

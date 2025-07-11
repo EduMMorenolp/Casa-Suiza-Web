@@ -53,7 +53,10 @@ export async function updateEvent(
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(event),
   });
-  if (!res.ok) throw new Error("Error al actualizar evento");
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text || "Error al actualizar evento");
+  }
   return res.json();
 }
 
