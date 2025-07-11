@@ -11,7 +11,7 @@ interface Event extends EventData {
 
 interface EventsProps {
     setActiveTab: React.Dispatch<React.SetStateAction<string>>;
-  }
+}
 
 function getStatus(soldOut?: boolean): "active" | "soldout" {
     return soldOut ? "soldout" : "active";
@@ -35,12 +35,60 @@ const Events: React.FC<EventsProps> = ({ setActiveTab }) => {
                 const mapped = data.map((e) => ({
                     ...e,
                     status: getStatus(e.soldOut),
-                    sold: Math.floor(Math.random() * 100), // reemplaza con dato real si tienes
+                    sold: Math.floor(Math.random() * 100), 
                 }));
                 setEvents(mapped);
             } catch (e) {
                 if (e instanceof Error) setError(e.message);
                 else setError("Error desconocido");
+
+                // Eventos dummy para fallback
+                const dummyEvents: Event[] = [
+                    {
+                        id: "dummy-1",
+                        title: "Concierto Test 1",
+                        description: "Evento de prueba 1",
+                        location: "Lugar Test 1",
+                        date: new Date().toISOString(),
+                        time: "20:00",
+                        price: 1000,
+                        imageUrl: "",
+                        promo: false,
+                        soldOut: false,
+                        status: "active",
+                        sold: 20,
+                    },
+                    {
+                        id: "dummy-2",
+                        title: "Concierto Test 2",
+                        description: "Evento de prueba 2",
+                        location: "Lugar Test 2",
+                        date: new Date().toISOString(),
+                        time: "21:00",
+                        price: 1500,
+                        imageUrl: "",
+                        promo: true,
+                        soldOut: false,
+                        status: "active",
+                        sold: 50,
+                    },
+                    {
+                        id: "dummy-3",
+                        title: "Concierto Test 3",
+                        description: "Evento de prueba 3",
+                        location: "Lugar Test 3",
+                        date: new Date().toISOString(),
+                        time: "22:00",
+                        price: 2000,
+                        imageUrl: "",
+                        promo: false,
+                        soldOut: true,
+                        status: "soldout",
+                        sold: 100,
+                    },
+                ];
+
+                setEvents(dummyEvents);
             } finally {
                 setLoading(false);
             }
@@ -152,7 +200,7 @@ const Events: React.FC<EventsProps> = ({ setActiveTab }) => {
                 {loading && <p className="text-center text-gray-600">Cargando eventos...</p>}
                 {error && <p className="text-center text-red-600">{error}</p>}
 
-                {!loading && !error && (
+                {!loading && (
                     <div className="space-y-3">
                         {filteredEvents.length === 0 ? (
                             <p className="text-center text-gray-600">No hay eventos para mostrar.</p>
@@ -172,8 +220,8 @@ const Events: React.FC<EventsProps> = ({ setActiveTab }) => {
                                     <div className="flex items-center gap-2">
                                         <span
                                             className={`px-3 py-1 rounded-full text-sm ${event.status === "active"
-                                                    ? "bg-green-100 text-green-800"
-                                                    : "bg-red-100 text-red-800"
+                                                ? "bg-green-100 text-green-800"
+                                                : "bg-red-100 text-red-800"
                                                 }`}
                                         >
                                             {event.status === "active" ? "Activo" : "Agotado"}
