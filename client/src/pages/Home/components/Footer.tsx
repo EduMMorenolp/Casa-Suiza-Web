@@ -1,5 +1,6 @@
 import { MapPin, Mail, Facebook, Instagram, Twitter, PhoneForwarded } from 'lucide-react';
-import fotoCasaSuiza from '../../../assets/logoCasaSuiza.png'
+import fotoCasaSuiza from '../../../assets/logoCasaSuiza.png';
+import Subscriber from './Subscriber';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -57,36 +58,17 @@ export default function Footer() {
                   <p className="text-sm text-white/90">La Plata, Buenos Aires</p>
                 </div>
               </div>
-                <iframe
+              <iframe
                 className="rounded-lg border-4 border-gray-900 hover:border-yellow-500 transition-colors duration-300"
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d204.49980255571754!2d-57.949954569339724!3d-34.90652878896529!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95a2e6462c654913%3A0x198205b6aa07b9f5!2sHelvecia%20Sociedad%20Suiza%20de%20S.M.%20La%20Plata!5e0!3m2!1ses!2sar!4v1751594996917!5m2!1ses!2sar"
-                ></iframe>
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d204.49980255571754!2d-57.949954569339724!3d-34.90652878896529!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95a2e6462c654913%3A0x198205b6aa07b9f5!2sHelvecia%20Sociedad%20Suiza%20de%20S.M.%20La%20Plata!5e0!3m2!1ses!2sar!4v1751594996917!5m2!1ses!2sar"
+              ></iframe>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Newsletter Section */}
-      <div className="bg-red-700 border-t border-red-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="text-center">
-            <h3 className="text-lg font-semibold mb-2">¡Mantente Informado!</h3>
-            <p className="text-white/90 text-sm mb-4">
-              Suscríbete a nuestro boletín para recibir noticias sobre eventos especiales y ofertas.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-2 max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="Tu email"
-                className="flex-1 px-4 py-2 rounded-lg bg-white placeholder-red-300 focus:outline-none focus:ring-2 focus:ring-white"
-              />
-              <button className="bg-white text-red-600 px-6 py-2 rounded-lg font-medium hover:bg-gray-100 transition-colors duration-200">
-                Suscribirse
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Newsletter Section - Ahora renderiza el componente Subscriber */}
+      <Subscriber />
 
       {/* Bottom Bar */}
       <div className="bg-red-800 border-t border-red-900">
