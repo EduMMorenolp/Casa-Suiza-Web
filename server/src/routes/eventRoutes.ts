@@ -11,18 +11,18 @@ import { verifyAdmin } from "../middleware/verifyAdmin"; // Asegúrate de import
 
 const router = Router();
 
+// Rutas públicas (obtener por ID, listar)
+router.get("/events", listEventsHandler); // Listar eventos con filtros opcionales
+router.get("/events/:id", getEventByIdHandler);
+
 // Rutas protegidas para administradores (crear, actualizar, eliminar)
-router.post("/event", authenticateToken, verifyAdmin, createEventHandler);
-router.put("/events/:id", authenticateToken, verifyAdmin, updateEventHandler);
+router.post("/event", verifyAdmin, createEventHandler);
+router.put("/events/:id", verifyAdmin, updateEventHandler);
 router.delete(
   "/events/:id",
   authenticateToken,
   verifyAdmin,
   deleteEventHandler
 );
-
-// Rutas públicas (obtener por ID, listar)
-router.get("/events/:id", getEventByIdHandler);
-router.get("/events", listEventsHandler); // Listar eventos con filtros opcionales
 
 export default router;

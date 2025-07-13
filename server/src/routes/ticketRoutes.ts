@@ -13,18 +13,23 @@ import { verifyAdmin } from "../middleware/verifyAdmin";
 const router = Router();
 
 // Rutas públicas (ejemplo: crear ticket si no requiere autenticación previa)
-router.post("/", createTicketHandler); // Puede que esta ruta necesite autenticación de usuario, dependiendo de tu flujo.
+router.post("/ticket", createTicketHandler); // Puede que esta ruta necesite autenticación de usuario, dependiendo de tu flujo.
 
 // Rutas protegidas (ejemplo: obtener, actualizar, eliminar solo para admins)
-router.get("/", authenticateToken, verifyAdmin, getAllTickets);
-router.get("/:id", authenticateToken, verifyAdmin, getTicketById);
+router.get("/ticket", authenticateToken, verifyAdmin, getAllTickets);
+router.get("/ticket/:id", authenticateToken, verifyAdmin, getTicketById);
 router.put(
-  "/:id",
+  "/ticket/:id",
   authenticateToken,
   verifyAdmin,
   // ticketValidationRules.update, // Aplica las reglas de validación si las defines
   updateTicketController
 );
-router.delete("/:id", authenticateToken, verifyAdmin, deleteTicketController);
+router.delete(
+  "/ticket/:id",
+  authenticateToken,
+  verifyAdmin,
+  deleteTicketController
+);
 
 export default router;

@@ -14,21 +14,21 @@ const router = Router();
 
 // Rutas protegidas (ejemplo: todas las operaciones de cupones para admins)
 router.post(
-  "/",
+  "/cuopon",
   authenticateToken,
   verifyAdmin,
   // couponValidationRules.create, // Aplica las reglas de validación si las defines
   createCoupon
 );
-router.get("/", authenticateToken, verifyAdmin, getAllCoupons);
-router.get("/:id", authenticateToken, verifyAdmin, getCouponById);
+router.get("/cuopon/", authenticateToken, verifyAdmin, getAllCoupons);
+router.get("/cuopon/:id", authenticateToken, verifyAdmin, getCouponById);
 router.put(
-  "/:id",
+  "/cuopon/:id",
   authenticateToken,
   verifyAdmin,
   // couponValidationRules.update, // Aplica las reglas de validación si las defines
   updateCoupon
 );
-router.delete("/:id", authenticateToken, verifyAdmin, deleteCoupon);
+router.delete("/cuopon/:id", authenticateToken, verifyAdmin, deleteCoupon);
 
 export default router;
