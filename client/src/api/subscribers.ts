@@ -9,7 +9,6 @@ interface SubscriberResponse {
   id: number;
   subMail: string;
   subPhone: string | null;
-  // Puedes añadir otros campos que devuelva tu API al crear un suscriptor
 }
 
 /**

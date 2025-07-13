@@ -135,8 +135,8 @@ model Payment {
 
 model Subscriber {
   id       Int     @id @default(autoincrement())
-  subMail  String  @map("sub_email")
-  subPhone String? @map("sub_phone")
+  subMail  String  @unique @map("sub_email")
+  subPhone String? @unique @map("sub_phone")
 }
 
 model Notification {

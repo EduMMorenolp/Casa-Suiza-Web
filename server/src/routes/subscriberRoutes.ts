@@ -13,18 +13,28 @@ import { subscriberValidationRules } from "../validation/subscriberValidate";
 const router = Router();
 
 // Ruta pública para que cualquier usuario pueda suscribirse
-router.post("/", subscriberValidationRules.create, createSubscriber);
+router.post("/subscribers", createSubscriber);
 
 // Rutas protegidas para administradores (obtener, actualizar, eliminar suscriptores)
-router.get("/", authenticateToken, verifyAdmin, getAllSubscribers);
-router.get("/:id", authenticateToken, verifyAdmin, getSubscriberById);
+router.get("/subscribers", authenticateToken, verifyAdmin, getAllSubscribers);
+router.get(
+  "/subscribers/:id",
+  authenticateToken,
+  verifyAdmin,
+  getSubscriberById
+);
 router.put(
-  "/:id",
+  "/subscribers/:id",
   authenticateToken,
   verifyAdmin,
   subscriberValidationRules.update,
   updateSubscriber
 );
-router.delete("/:id", authenticateToken, verifyAdmin, deleteSubscriber);
+router.delete(
+  "/subscribers/:id",
+  authenticateToken,
+  verifyAdmin,
+  deleteSubscriber
+);
 
 export default router;

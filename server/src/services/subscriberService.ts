@@ -7,6 +7,19 @@ export const createSubscriber = async (
   subPhone?: string | null
 ) => {
   try {
+    const existingSubscriber = await prisma.subscriber.findFirst({
+      where: {
+        OR: [subMail ? { subMail } : {}, subPhone ? { subPhone } : {}],
+      },
+    });
+
+    if (existingSubscriber) {
+      throw new CustomError(
+        "Ya existe un suscriptor con ese email o teléfono",
+        400
+      );
+    }
+    
     return prisma.subscriber.create({
       data: {
         subMail,
