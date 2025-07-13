@@ -15,6 +15,8 @@ import ticketRoutes from "./routes/ticketRoutes";
 import paymentRoutes from "./routes/paymentRoutes";
 import eventRoutes from "./routes/eventRoutes";
 import subscriberRoutes from "./routes/subscriberRoutes";
+import couponRoutes from './routes/couponRoutes';
+import orderRoutes from './routes/orderRoutes';
 
 // Configuracion
 dotenv.config();
@@ -46,6 +48,8 @@ app.use(`/${BASE_PATH}/${VERSIONS_API}`, ticketRoutes);
 app.use(`/${BASE_PATH}/${VERSIONS_API}`, paymentRoutes);
 app.use(`/${BASE_PATH}/${VERSIONS_API}`, eventRoutes);
 app.use(`/${BASE_PATH}/${VERSIONS_API}`, subscriberRoutes);
+app.use(`/${BASE_PATH}/${VERSIONS_API}`, couponRoutes);
+app.use(`/${BASE_PATH}/${VERSIONS_API}`, orderRoutes);
 
 // Middleware para manejar errores
 app.use(errorHandler);
