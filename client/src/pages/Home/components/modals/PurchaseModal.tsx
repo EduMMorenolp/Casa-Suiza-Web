@@ -5,15 +5,16 @@ import { createTicket } from "../../../../api/ticket";
 import { createOrder } from "../../../../api/order";
 import type { OrderData } from "../../../../api/order";
 import { createPaymentPreference } from "../../../../api/payments";
+
 import { AxiosError } from "axios";
 
 interface PurchaseModalProps {
     isOpen: boolean;
     eventId: string;
     eventTitle: string;
-    ticketPrice: number; // Precio unitario del ticket
+    ticketPrice: number; 
     onClose: () => void;
-    userId?: string; // Mantener como opcional si lo pasas desde el contexto de autenticación
+    userId?: string; 
 }
 
 export default function PurchaseModal({
@@ -22,7 +23,7 @@ export default function PurchaseModal({
     eventTitle,
     ticketPrice,
     onClose,
-    userId, // Recibimos el userId como prop (puede ser undefined)
+    userId,
 }: PurchaseModalProps) {
     // Estados del formulario
     const [buyerName, setBuyerName] = useState("");
