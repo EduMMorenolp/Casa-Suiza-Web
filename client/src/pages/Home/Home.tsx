@@ -63,7 +63,7 @@ export default function Home() {
     description: "Este es un evento de ejemplo porque aún no hay eventos.",
     location: "Casa Suiza, Buenos Aires",
     date: new Date(new Date().setDate(new Date().getDate() + 7)).toISOString(),
-    capacity: 120,
+    capacity: 0,
     promo: true,
     soldOut: false,
     price: 0,
