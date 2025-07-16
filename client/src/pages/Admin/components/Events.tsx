@@ -189,7 +189,7 @@ const ConfirmationModal: React.FC<{
 };
 
 // Componente Principal
-const Events: React.FC<EventsProps> = () => {
+const Events: React.FC<EventsProps> = ({ setActiveTab }) => {
     const [searchTerm, setSearchTerm] = useState("");
     const [filterStatus, setFilterStatus] = useState<"all" | "active" | "soldout">("all");
     const [events, setEvents] = useState<Event[]>([]);
@@ -311,12 +311,19 @@ const Events: React.FC<EventsProps> = () => {
 
     const handleNewEvent = () => {
         setEditingEvent(null);
-        setShowForm(true);
+        setShowForm(false);
+        setActiveTab('add-event');
     };
 
     const handleEditEvent = (event: EventData) => {
         setEditingEvent(event);
         setShowForm(true);
+        setTimeout(() => {
+            const formElement = document.getElementById('editEvent');
+            if (formElement) {
+                formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 100);
     };
 
     const handleFormSubmit = (eventData: EventData, isEdit: boolean) => {
@@ -368,28 +375,15 @@ const Events: React.FC<EventsProps> = () => {
                 </div>
                 {/* Formulario de evento */}
                 {showForm && (
-                    <div className="mb-6">
-                        {/* Aquí deberías incluir tu componente AddEventForm */}
-                        <div className="bg-white rounded-lg shadow-md p-6">
-                            <h3 className="text-xl font-semibold mb-4">
-                                {editingEvent ? 'Editar Evento' : 'Nuevo Evento'}
-                            </h3>
-                            <code className="bg-gray-100 p-2 rounded text-sm">
-                                <AddEventForm
-                                    initialData={editingEvent || undefined}
-                                    onClose={() => setShowForm(false)}
-                                    onSubmit={handleFormSubmit}
-                                />
-                            </code>
-                            <div className="mt-4 flex gap-2">
-                                <button
-                                    onClick={() => setShowForm(false)}
-                                    className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-                                >
-                                    Cerrar
-                                </button>
-                            </div>
-                        </div>
+                    <div id="editEvent" className="mb-6">
+                        <h3 className="text-xl font-semibold mb-4">
+                            {editingEvent ? 'Editar Evento' : 'Nuevo Evento'}
+                        </h3>
+                        <AddEventForm
+                            initialData={editingEvent || undefined}
+                            onClose={() => setShowForm(false)}
+                            onSubmit={handleFormSubmit}
+                        />
                     </div>
                 )}
                 {/* Filtros */}
