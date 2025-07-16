@@ -190,7 +190,7 @@ export default function Subscriber() {
                         )}
 
                         <p className="text-white/70 text-xs mt-3">
-                            * Puedes suscribirte con email, teléfono o ambos.
+                            * Puedes suscribirte con email y teléfono o solo email.
                         </p>
                     </div>
                 </div>

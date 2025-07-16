@@ -6,11 +6,11 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   const socialLinks = [
-    { icon: Facebook, href: 'https://facebook.com/casasuizalp', label: 'Facebook' },
+    { icon: Facebook, href: 'https://instagram.com/casasuizalp', label: 'Facebook' },
     { icon: Instagram, href: 'https://instagram.com/casasuizalp', label: 'Instagram' },
-    { icon: Twitter, href: 'https://twitter.com/casasuizalp', label: 'Twitter' },
-    { icon: PhoneForwarded, href: 'https://wa.me/5492214362666?text=Hola%20Casa%20Suiza!', label: 'Whatsapp' },
-    { icon: Mail, href: 'mailto:contacto@casasuiza.com.ar', label: 'Mail' }
+    { icon: Twitter, href: 'https://instagram.com/casasuizalp', label: 'Twitter' },
+    { icon: PhoneForwarded, href: '', label: 'Whatsapp' },
+    { icon: Mail, href: '', label: 'Mail' }
   ];
 
   return (
