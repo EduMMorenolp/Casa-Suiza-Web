@@ -11,9 +11,9 @@ interface PurchaseModalProps {
     isOpen: boolean;
     eventId: string;
     eventTitle: string;
-    ticketPrice: number;
+    ticketPrice: number; // Precio unitario del ticket
     onClose: () => void;
-    userId?: string;
+    userId?: string; // Mantener como opcional si lo pasas desde el contexto de autenticación
 }
 
 export default function PurchaseModal({
@@ -22,7 +22,7 @@ export default function PurchaseModal({
     eventTitle,
     ticketPrice,
     onClose,
-    userId,
+    userId, // Recibimos el userId como prop (puede ser undefined)
 }: PurchaseModalProps) {
     // Estados del formulario
     const [buyerName, setBuyerName] = useState("");
@@ -40,7 +40,7 @@ export default function PurchaseModal({
     const [orderData, setOrderData] = useState<OrderData | null>(null);
     const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
 
-    // Validación en tiempo real 
+    // Validación en tiempo real
     const validateField = (field: string, value: string) => {
         const errors = { ...fieldErrors };
 
@@ -88,7 +88,6 @@ export default function PurchaseModal({
         validateField(field, value);
     };
 
-    // Memoizar resetForm para que sea una función estable
     const resetForm = useCallback(() => {
         setBuyerName("");
         setBuyerLastName("");
@@ -103,7 +102,6 @@ export default function PurchaseModal({
         setOrderData(null);
     }, []);
 
-    // Memoizar handleClose para que sea una función estable
     const handleClose = useCallback(() => {
         resetForm();
         onClose();
@@ -111,14 +109,12 @@ export default function PurchaseModal({
 
 
     const handleSubmit = async () => {
-        // Validar todos los campos
         validateField('buyerName', buyerName);
         validateField('buyerLastName', buyerLastName);
         validateField('buyerEmail', buyerEmail);
         validateField('buyerDni', buyerDni);
         if (buyerPhone) validateField('buyerPhone', buyerPhone);
 
-        // Verificar si hay errores después de la validación
         const currentFieldErrors = { ...fieldErrors };
         const hasErrors = Object.keys(currentFieldErrors).some(key => currentFieldErrors[key]);
 
@@ -132,14 +128,11 @@ export default function PurchaseModal({
             return;
         }
 
-        const currentUserId = userId || 'anonymous-user-id';
-
         setError(null);
         setLoading(true);
 
         try {
             const ticketIds: number[] = [];
-            // Paso 1: Crear múltiples tickets (uno por cada cantidad)
             for (let i = 0; i < quantity; i++) {
                 const newTicket = await createTicket({
                     eventId,
@@ -152,14 +145,12 @@ export default function PurchaseModal({
                 ticketIds.push(newTicket.id);
             }
 
-            // Paso 2: Crear una orden con los IDs de los tickets
             const order = await createOrder({
-                userId: currentUserId,
+                userId: userId || null,
                 ticketIds: ticketIds,
             });
             setOrderData(order);
 
-            // Paso 3: Crear la preferencia de pago usando el ID de la orden
             const { initPoint } = await createPaymentPreference({
                 orderId: order.id,
             });
@@ -179,7 +170,6 @@ export default function PurchaseModal({
         }
     };
 
-    // Efecto para manejar el escape y el scroll del body
     useEffect(() => {
         const handleEscape = (e: KeyboardEvent) => {
             if (e.key === 'Escape') handleClose();
@@ -194,7 +184,7 @@ export default function PurchaseModal({
             document.removeEventListener('keydown', handleEscape);
             document.body.style.overflow = 'unset';
         };
-    }, [isOpen, handleClose]); // handleClose ahora es una dependencia estable
+    }, [isOpen, handleClose]);
 
     if (!isOpen) return null;
 
@@ -446,7 +436,7 @@ export default function PurchaseModal({
                             )}
 
                             <div className="text-center mb-6">
-                                <h3 className="text-lg font-semibold mb-2">Completa tu pago</h3>
+                                <h3 className="lg:text-lg font-semibold mb-2">Completa tu pago</h3>
                                 <p className="text-gray-600 text-sm">
                                     Serás redirigido a la plataforma de pagos para completar tu compra de forma segura.
                                 </p>

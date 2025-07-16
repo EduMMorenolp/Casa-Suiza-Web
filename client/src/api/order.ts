@@ -32,7 +32,7 @@ export interface OrderData {
 
 // Interfaz para el payload al crear una orden
 export interface CreateOrderPayload {
-  userId: string;
+  userId?: string | null;
   ticketIds: number[];
 }
 
