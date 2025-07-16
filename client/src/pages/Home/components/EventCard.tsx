@@ -99,11 +99,13 @@ export default function EventCard({ event, onBuyClick }: EventCardProps) {
         </div>
 
         <div className="p-5">
-          <div className="flex items-center mb-3">
+          <div className="flex justify-between items-center mb-3">
             <div className="flex items-center bg-red-50 px-3 py-1 rounded-full">
               <Calendar className="w-4 h-4 mr-2 text-red-600" />
               <span className="text-sm font-medium text-red-600">{formatDate(event.date)}</span>
-              <Clock className="h-4 text-red-600 ml-2" />
+            </div>
+            <div className="flex items-center bg-red-50 px-3 py-1 rounded-full">
+              <Clock className="h-4 text-red-600 mr-2" />
               <span className="text-sm font-medium text-red-600">{formatTime(event.date)}</span>
             </div>
           </div>
