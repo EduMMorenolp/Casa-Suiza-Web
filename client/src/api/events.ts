@@ -6,6 +6,7 @@ export interface EventData {
   description: string | null;
   location: string | null;
   date: string; // ISO string
+  time: string;
   capacity: number | null;
   promo: boolean | null;
   soldOut: boolean | null;

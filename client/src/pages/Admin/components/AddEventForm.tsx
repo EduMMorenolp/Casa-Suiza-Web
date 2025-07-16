@@ -215,6 +215,22 @@ const AddEventForm: React.FC<AddEventFormProps> = ({
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                             />
                         </div>
+                        <div>
+                            <label htmlFor="event-time" className="block text-sm font-medium text-gray-700 mb-2">
+                                Hora
+                            </label>
+                            <input
+                                type="time"
+                                id="event-time"
+                                value={formData.date ? formData.date.split('T')[1]?.substring(0, 5) : ""}
+                                onChange={(e) => {
+                                    const newTimePart = e.target.value;
+                                    const currentDatePart = formData.date ? formData.date.split('T')[0] : '';
+                                    setFormData({ ...formData, date: `${currentDatePart}T${newTimePart}:00.000Z` });
+                                }}
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                            />
+                        </div>
                     </div>
 
                     {/* Precio y Capacidad */}

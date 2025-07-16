@@ -33,6 +33,7 @@ model Event {
   description String?
   location    String?
   date        DateTime
+  time        String?
   capacity    Int?
   promo       Boolean?
   soldOut     Boolean?
@@ -108,7 +109,7 @@ enum OrderStatus {
 
 model Order {
   id         String      @id @default(uuid())
-  user       User?        @relation(fields: [userId], references: [id])
+  user       User?       @relation(fields: [userId], references: [id])
   userId     String?
   totalPrice Float
   status     OrderStatus @default(PENDING)

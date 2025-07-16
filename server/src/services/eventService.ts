@@ -7,6 +7,7 @@ interface CreateEventInput {
   description?: string | null; // Puede ser nulo
   location?: string | null; // Puede ser nulo
   date: Date;
+  time?: string | null; // Puede ser nulo
   capacity?: number | null; // Puede ser nulo
   promo?: boolean | null; // Puede ser nulo
   soldOut?: boolean | null; // Puede ser nulo

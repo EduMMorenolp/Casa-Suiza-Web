@@ -106,7 +106,7 @@ export default function EventCard({ event, onBuyClick }: EventCardProps) {
             </div>
             <div className="flex items-center bg-red-50 px-3 py-1 rounded-full">
               <Clock className="h-4 text-red-600 mr-2" />
-              <span className="text-sm font-medium text-red-600">{formatTime(event.date)}</span>
+              <span className="text-sm font-medium text-red-600">{formatTime(event.time)}</span>
             </div>
           </div>
 
