@@ -26,7 +26,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     const login = async (username: string, password: string): Promise<boolean> => {
         // Aquí puedes reemplazar por llamada a backend
-        if (username === 'casasuiza' && password === '123456') {
+        if (username === 'casasuiza' && password === 'c123456') {
             setIsAuthenticated(true);
             return true;
         }
