@@ -13,7 +13,7 @@ const CategoryManagement: React.FC<CategoryManagementProps> = () => {
     const [error, setError] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [editingCategory, setEditingCategory] = useState<CategoryData | null>(null);
-    const [showForm, setShowForm] = useState(false); // Para mostrar el formulario de AddCategoryForm
+    const [showForm, setShowForm] = useState(false);
     const [uiMessage, setUiMessage] = useState<string | null>(null);
     const [uiMessageType, setUiMessageType] = useState<'success' | 'error' | ''>('');
 
@@ -57,7 +57,6 @@ const CategoryManagement: React.FC<CategoryManagementProps> = () => {
     );
 
     const handleDelete = async (id: string) => {
-        // Considera usar un modal de confirmación real en lugar de window.confirm
         if (!window.confirm('¿Estás seguro que deseas eliminar esta categoría? Esta acción es irreversible.')) return;
 
         setLoading(true);
@@ -75,33 +74,32 @@ const CategoryManagement: React.FC<CategoryManagementProps> = () => {
 
     const handleEdit = (category: CategoryData) => {
         setEditingCategory(category);
-        setShowForm(true); // Abre el formulario en modo edición
+        setShowForm(true); 
     };
 
-    // Este callback se llama desde AddCategoryForm cuando una categoría se crea o actualiza
     const handleFormSubmit = (updatedCategory: CategoryData, isEdit: boolean) => {
-        if (isEdit) { // Si estamos editando
+        if (isEdit) { 
             setCategories(prev => prev.map(cat =>
                 cat.id === updatedCategory.id ? updatedCategory : cat
             ));
             showUiMessage('Categoría actualizada exitosamente.', 'success');
-        } else { // Si estamos creando
+        } else { 
             setCategories(prev => [...prev, updatedCategory]);
             showUiMessage('Categoría creada exitosamente.', 'success');
         }
-        setEditingCategory(null); // Limpia el estado de edición
-        setShowForm(false); // Cierra el formulario
+        setEditingCategory(null); 
+        setShowForm(false); 
     };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 p-6">
             <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold text-gray-800">Gestión de Categorías</h2>
                 <button
                     className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
                     onClick={() => {
-                        setEditingCategory(null); // Asegura que es para crear una nueva
-                        setShowForm(true); // Abre el formulario
+                        setEditingCategory(null); 
+                        setShowForm(true); 
                     }}
                 >
                     <Plus className="w-4 h-4" />
@@ -117,10 +115,10 @@ const CategoryManagement: React.FC<CategoryManagementProps> = () => {
 
             {showForm && (
                 <AddCategoryForm
-                    initialData={editingCategory || undefined} // Pasa los datos si es edición
+                    initialData={editingCategory || undefined} 
                     onClose={() => {
                         setShowForm(false);
-                        setEditingCategory(null); // Limpia el estado de edición al cerrar
+                        setEditingCategory(null); 
                     }}
                     onSubmit={handleFormSubmit}
                 />
