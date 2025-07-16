@@ -40,6 +40,6 @@ export interface PaymentPreferenceResponse {
 export async function createPaymentPreference(
   data: PreferenceData
 ): Promise<PaymentPreferenceResponse> {
-  const res = await api.post("/payments/preference", data); // Asegúrate que la ruta sea '/payments/preference'
+  const res = await api.post("/payments/preference", data); 
   return res.data;
 }

@@ -16,12 +16,11 @@ export async function createPaymentPreferenceHandler(
   try {
     const {
       orderId,
-      ticketId, // Usado si no hay orderId y se paga un solo ticket
+      ticketId,
       buyerName,
       buyerLastName,
       buyerEmail,
       buyerPhone,
-      // eventTitle y price de req.body ya no son la fuente principal si hay orderId o ticketId
     } = req.body;
 
     // Validar que orderId o al menos ticketId y buyerEmail estén presentes
@@ -56,16 +55,16 @@ export async function createPaymentPreferenceHandler(
           );
         }
         return {
-          id: ticket.id.toString(), // ID del ticket
-          title: ticket.event.title, // Usar el título del evento del ticket
+          id: ticket.id.toString(),
+          title: ticket.event.title,
           quantity: 1,
-          unit_price: ticket.event.price, // Usar el precio del evento del ticket
+          unit_price: ticket.event.price,
         };
       });
       totalAmount = order.totalPrice;
       externalReference = order.id;
     } else if (ticketId) {
-      // Si no hay orderId, pero hay ticketId, asumimos que es una preferencia para un solo ticket
+      // Si recibimos un ticketId, buscamos el ticket y su evento para construir la preferencia
       const ticket = await ticketService.findTicketById(Number(ticketId));
       if (!ticket || !ticket.event) {
         throw new CustomError(
@@ -83,9 +82,8 @@ export async function createPaymentPreferenceHandler(
         },
       ];
       totalAmount = ticket.event.price;
-      externalReference = ticket.id.toString(); // Usar el ID del ticket como referencia externa
+      externalReference = ticket.id.toString();
     } else {
-      // En caso de que no se proporcione ni orderId ni ticketId, pero se llegue aquí
       throw new CustomError(
         "Se requiere un ID de orden o un ID de ticket para crear la preferencia de pago.",
         400
@@ -112,7 +110,7 @@ export async function createPaymentPreferenceHandler(
       },
       auto_return: "approved" as "approved" | "all" | "none",
       notification_url: `${process.env.BASE_URL}/payment/webhook`,
-      external_reference: externalReference, // Vinculamos con el ID de la orden o ticket
+      external_reference: externalReference,
     };
 
     const preference = await createPreference(preferenceData, "approved"); // 'approved' es para el mock
