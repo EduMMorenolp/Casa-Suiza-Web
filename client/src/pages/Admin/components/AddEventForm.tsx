@@ -150,7 +150,7 @@ const AddEventForm: React.FC<AddEventFormProps> = ({
     };
 
     return (
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-2xl mx-auto pt-2">
             <div className="bg-white rounded-lg shadow-lg p-6">
                 <div className="space-y-6">
                     {/* Título */}
