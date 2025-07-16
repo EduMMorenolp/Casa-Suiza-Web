@@ -67,7 +67,7 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Newsletter Section - Ahora renderiza el componente Subscriber */}
+      {/* Subscriber Section */}
       <Subscriber />
 
       {/* Bottom Bar */}
