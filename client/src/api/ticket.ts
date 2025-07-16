@@ -1,32 +1,30 @@
 import { api } from "./apiClient";
 
-// Interfaz que representa la estructura de un Ticket tal como la devuelve tu API
+// Estructura de un Ticket
 export interface TicketData {
-  id: number; // CAMBIO: De 'string' a 'number' para coincidir con Prisma Int @id
+  id: number;
   eventId: string;
   buyerName: string;
   buyerLastName: string;
   buyerEmail: string;
-  buyerPhone: string | null; // CAMBIO: Ahora puede ser 'string' o 'null'
+  buyerPhone: string | null;
   buyerDni: string;
-  status: string; // 'PENDING', 'PAID', 'CANCELLED'
+  status: string;
   checkedIn: boolean;
-  purchaseAt: string; // Date como ISO string
-  // Si tu backend devuelve más campos (ej. createdAt, updatedAt, price), añádelos aquí
-  price: number; // Asumo que el ticket creado en el backend tiene un precio
+  purchaseAt: string;
+  price: number;
   couponId: string | null;
   orderId: string | null;
 }
 
-// Interfaz para el payload al crear un ticket (lo que se envía al backend)
+// Interfaz para el payload al crear un ticket
 export interface CreateTicketPayload {
   eventId: string;
   buyerName: string;
   buyerLastName: string;
   buyerEmail: string;
-  buyerPhone?: string | null; // Puede ser opcional y nulo al enviar
+  buyerPhone?: string | null;
   buyerDni: string;
-  // El precio y la cantidad no se envían aquí, se manejan en el backend
 }
 
 /**
@@ -37,7 +35,7 @@ export interface CreateTicketPayload {
 export async function createTicket(
   payload: CreateTicketPayload
 ): Promise<TicketData> {
-  const res = await api.post("/tickets", payload); // Asegúrate que la ruta sea '/tickets'
+  const res = await api.post("/ticket", payload); // Asegúrate que la ruta sea '/tickets'
   return res.data;
 }
 
@@ -47,24 +45,24 @@ export async function createTicket(
  * @returns Una promesa que resuelve con los datos del ticket.
  */
 export async function getTicketById(id: number): Promise<TicketData> {
-  const res = await api.get(`/tickets/${id}`);
+  const res = await api.get(`/ticket/${id}`);
   return res.data;
 }
 
 // Puedes añadir más funciones si las necesitas (ej. getTickets, updateTicket, deleteTicket)
 /*
 export async function getTickets(): Promise<TicketData[]> {
-  const res = await api.get("/tickets");
+  const res = await api.get("/ticket");
   return res.data;
 }
 
 export async function updateTicket(id: number, data: Partial<CreateTicketPayload>): Promise<TicketData> {
-  const res = await api.put(`/tickets/${id}`, data);
+  const res = await api.put(`/ticket/${id}`, data);
   return res.data;
 }
 
 export async function deleteTicket(id: number): Promise<{ message: string }> {
-  const res = await api.delete(`/tickets/${id}`);
+  const res = await api.delete(`/ticket/${id}`);
   return res.data;
 }
 */

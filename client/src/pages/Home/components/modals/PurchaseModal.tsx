@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { X, User, Mail, Phone, CreditCard, ShoppingCart, AlertCircle, CheckCircle, Loader2 } from "lucide-react";
 
-import { createTicket } from "../../../../api/tickets";
-import { createOrder } from "../../../../api/orders";
-import type { OrderData } from "../../../../api/orders";
+import { createTicket } from "../../../../api/ticket";
+import { createOrder } from "../../../../api/order";
+import type { OrderData } from "../../../../api/order";
 import { createPaymentPreference } from "../../../../api/payments";
 import { AxiosError } from "axios";
 

@@ -11,15 +11,9 @@ export async function createOrder(
 ) {
   try {
     const { userId, ticketIds } = req.body;
-
-    if (
-      !userId ||
-      !ticketIds ||
-      !Array.isArray(ticketIds) ||
-      ticketIds.length === 0
-    ) {
+    if (!ticketIds || !Array.isArray(ticketIds) || ticketIds.length === 0) {
       throw new CustomError(
-        "Faltan datos requeridos para crear la orden (userId y ticketIds).",
+        "Faltan datos requeridos para crear la orden (ticketIds).",
         400
       );
     }
@@ -71,7 +65,7 @@ export async function updateOrder(
 ) {
   try {
     const { id } = req.params;
-    const { userId, totalPrice, status } = req.body; // No permitimos actualizar ticketIds directamente
+    const { userId, totalPrice, status } = req.body;
 
     if (!userId && totalPrice === undefined && status === undefined) {
       throw new CustomError(
@@ -112,7 +106,7 @@ export async function deleteOrder(
   try {
     const { id } = req.params;
     await orderService.deleteOrder(id);
-    res.status(204).send(); // No Content
+    res.status(204).send(); 
   } catch (error) {
     next(error);
   }

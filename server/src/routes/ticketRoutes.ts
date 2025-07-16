@@ -12,8 +12,8 @@ import { verifyAdmin } from "../middleware/verifyAdmin";
 
 const router = Router();
 
-// Rutas públicas (ejemplo: crear ticket si no requiere autenticación previa)
-router.post("/ticket", createTicketHandler); // Puede que esta ruta necesite autenticación de usuario, dependiendo de tu flujo.
+// Rutas públicas
+router.post("/ticket", createTicketHandler);
 
 // Rutas protegidas (ejemplo: obtener, actualizar, eliminar solo para admins)
 router.get("/ticket", authenticateToken, verifyAdmin, getAllTickets);

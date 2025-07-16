@@ -3,7 +3,7 @@ import { OrderStatus, TicketStatus } from "@prisma/client";
 import { CustomError } from "../utils/CustomError";
 
 interface CreateOrderData {
-  userId: string;
+  userId?: string | null; // CAMBIO: Hacer userId opcional y permitir null
   ticketIds: number[]; // IDs de tickets existentes que se asociarán a esta orden
 }
 
@@ -12,23 +12,16 @@ interface CreateOrderData {
  * Calcula el precio total de la orden basado en los tickets asociados y el precio de sus eventos.
  * @param data Los datos para crear la orden y los IDs de los tickets.
  * @returns La orden creada.
- * @throws CustomError si el usuario no es encontrado o algún ticket no es encontrado/ya está asociado.
+ * @throws CustomError si algún ticket no es encontrado/ya está asociado.
  */
 export async function createOrder(data: CreateOrderData) {
   try {
-    // Verificar que el usuario exista
-    const user = await prisma.user.findUnique({ where: { id: data.userId } });
-    if (!user) {
-      throw new CustomError("Usuario no encontrado para crear la orden.", 404);
-    }
-
-    // Obtener los tickets y verificar su existencia y estado, incluyendo la información del evento
     const tickets = await prisma.ticket.findMany({
       where: {
         id: { in: data.ticketIds },
       },
       include: {
-        event: true, // Incluimos el evento asociado a cada ticket para obtener el precio
+        event: true,
       },
     });
 
@@ -70,26 +63,23 @@ export async function createOrder(data: CreateOrderData) {
     // Crear la orden
     const order = await prisma.order.create({
       data: {
-        userId: data.userId,
+        userId: data.userId || null,
         totalPrice: totalPrice,
         status: OrderStatus.PENDING,
         tickets: {
-          connect: data.ticketIds.map((id) => ({ id })), // Asociar los tickets
+          connect: data.ticketIds.map((id) => ({ id })),
         },
       },
       include: {
-        tickets: true, // Incluir los tickets en la respuesta
+        tickets: true, 
       },
     });
 
     return order;
   } catch (error: unknown) {
-    // Tipado de error a unknown
-    // Re-lanzar CustomError directamente
     if (error instanceof CustomError) {
       throw error;
     }
-    // Manejo de otros errores desconocidos o de Prisma
     console.error("Error inesperado al crear la orden:", error);
     throw new CustomError("Error interno al crear la orden.", 500);
   }
@@ -105,7 +95,7 @@ export async function findAllOrders() {
       user: true,
       tickets: {
         include: {
-          event: true, // Incluimos el evento para mostrar el precio si es necesario
+          event: true,
         },
       },
       Payment: true,
@@ -125,7 +115,7 @@ export async function findOrderById(id: string) {
       user: true,
       tickets: {
         include: {
-          event: true, // Incluimos el evento para mostrar el precio si es necesario
+          event: true,
         },
       },
       Payment: true,
@@ -183,8 +173,6 @@ export async function updateOrder(
       where: { id },
       data: {
         ...data,
-        // No se permite actualizar tickets directamente desde aquí.
-        // Si se necesita re-asociar tickets, se debe hacer con un método específico.
       },
     });
   } catch (error: unknown) {
@@ -207,9 +195,6 @@ export async function updateOrder(
  */
 export async function deleteOrder(id: string) {
   try {
-    // Antes de eliminar la orden, podrías querer desvincular los tickets
-    // o manejar su estado si la orden es eliminada.
-    // Por simplicidad, aquí solo se elimina la orden.
     await prisma.order.delete({
       where: { id },
     });
