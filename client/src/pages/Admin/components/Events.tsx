@@ -342,7 +342,7 @@ const Events: React.FC<EventsProps> = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 p-6">
+        <div className="min-h-screen bg-gray-50 p-4">
             {/* Mensajes de UI */}
             {uiMessage && (
                 <div className="mb-6">

@@ -92,7 +92,7 @@ const CategoryManagement: React.FC<CategoryManagementProps> = () => {
     };
 
     return (
-        <div className="space-y-6 p-6">
+        <div className="space-y-6 p-4">
             <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold text-gray-800">Gestión de Categorías</h2>
                 <button

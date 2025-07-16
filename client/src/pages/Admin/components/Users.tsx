@@ -219,7 +219,7 @@ export default function Users() {
     };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 p-4">
             <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold text-gray-800">Gestión de Usuarios</h2>
                 <button
