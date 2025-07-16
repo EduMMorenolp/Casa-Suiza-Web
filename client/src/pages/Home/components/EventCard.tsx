@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Clock, Calendar, MapPin, DollarSign, Users, Heart } from 'lucide-react';
 import foto from '../../../assets/foto.png';
 import type { EventData } from '../../../api/events';
@@ -8,18 +8,54 @@ interface EventCardProps {
   onBuyClick?: () => void;
 }
 
+// Función auxiliar para manejar localStorage
+const LOCAL_STORAGE_KEY = 'favoriteEvents';
+
+const getFavoriteEvents = (): string[] => {
+  try {
+    const storedFavorites = localStorage.getItem(LOCAL_STORAGE_KEY);
+    return storedFavorites ? JSON.parse(storedFavorites) : [];
+  } catch (error) {
+    console.error("Error al leer favoritos de localStorage:", error);
+    return [];
+  }
+};
+
+const saveFavoriteEvents = (favoriteIds: string[]) => {
+  try {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(favoriteIds));
+  } catch (error) {
+    console.error("Error al guardar favoritos en localStorage:", error);
+  }
+};
+
 export default function EventCard({ event, onBuyClick }: EventCardProps) {
-  const [isFavorite, setIsFavorite] = useState(false);
+
+  const [isFavorite, setIsFavorite] = useState(() => {
+    const favorites = getFavoriteEvents();
+    return favorites.includes(event.id);
+  });
+
+  // Efecto para actualizar localStorage cuando isFavorite cambia
+  useEffect(() => {
+    const favorites = getFavoriteEvents();
+    if (isFavorite) {
+      if (!favorites.includes(event.id)) {
+        saveFavoriteEvents([...favorites, event.id]);
+      }
+    } else {
+      saveFavoriteEvents(favorites.filter(id => id !== event.id));
+    }
+  }, [isFavorite, event.id]);
+
   const displayImageUrl = event.imageUrl || foto;
   const displayLocation = event.location || 'Casa Suiza, La Plata';
   const displayDescription = event.description || 'Sin descripción disponible.';
 
   const formatDate = (dateString: string) => {
     if (!dateString) return 'Fecha no disponible';
-
     const date = new Date(dateString);
     if (isNaN(date.getTime())) return 'Fecha inválida';
-
     const options: Intl.DateTimeFormatOptions = {
       day: '2-digit',
       month: 'short',
