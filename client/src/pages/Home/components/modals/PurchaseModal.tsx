@@ -1,9 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { X, User, Mail, Phone, CreditCard, ShoppingCart, AlertCircle, CheckCircle, Loader2 } from "lucide-react";
 
 import { createTicket } from "../../../../api/tickets";
-import type { TicketData } from "../../../../api/tickets";
+import { createOrder } from "../../../../api/orders";
+import type { OrderData } from "../../../../api/orders";
 import { createPaymentPreference } from "../../../../api/payments";
+import { AxiosError } from "axios";
 
 interface PurchaseModalProps {
     isOpen: boolean;
@@ -11,6 +13,7 @@ interface PurchaseModalProps {
     eventTitle: string;
     ticketPrice: number;
     onClose: () => void;
+    userId?: string;
 }
 
 export default function PurchaseModal({
@@ -19,6 +22,7 @@ export default function PurchaseModal({
     eventTitle,
     ticketPrice,
     onClose,
+    userId,
 }: PurchaseModalProps) {
     // Estados del formulario
     const [buyerName, setBuyerName] = useState("");
@@ -33,10 +37,10 @@ export default function PurchaseModal({
     const [loading, setLoading] = useState(false);
     const [paymentUrl, setPaymentUrl] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
-    const [ticketData, setTicketData] = useState<TicketData | null>(null);
+    const [orderData, setOrderData] = useState<OrderData | null>(null);
     const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
 
-    // Validación en tiempo real
+    // Validación en tiempo real 
     const validateField = (field: string, value: string) => {
         const errors = { ...fieldErrors };
 
@@ -65,7 +69,7 @@ export default function PurchaseModal({
                 break;
             case 'buyerPhone':
                 if (value && !/^\d{8,15}$/.test(value.replace(/\s+/g, ''))) {
-                    errors.buyerPhone = 'Ingresa un teléfono válido';
+                    errors.buyerPhone = 'Ingresa un teléfono válido (8 a 15 dígitos)';
                 } else delete errors.buyerPhone;
                 break;
         }
@@ -84,63 +88,8 @@ export default function PurchaseModal({
         validateField(field, value);
     };
 
-    const handleSubmit = async () => {
-        // Validar todos los campos
-        validateField('buyerName', buyerName);
-        validateField('buyerLastName', buyerLastName);
-        validateField('buyerEmail', buyerEmail);
-        validateField('buyerDni', buyerDni);
-        if (buyerPhone) validateField('buyerPhone', buyerPhone);
-
-        const hasErrors = Object.keys(fieldErrors).length > 0 || !buyerName || !buyerLastName || !buyerEmail || !buyerDni;
-
-        if (hasErrors) {
-            setError("Por favor corrige los errores antes de continuar.");
-            return;
-        }
-
-        if (quantity < 1) {
-            setError("La cantidad debe ser al menos 1.");
-            return;
-        }
-
-        setError(null);
-        setLoading(true);
-
-        try {
-            const ticket = await createTicket({
-                eventId,
-                buyerName,
-                buyerLastName,
-                buyerEmail,
-                buyerPhone,
-                buyerDni,
-                quantity,
-                price: ticketPrice * quantity,
-            });
-            setTicketData(ticket);
-
-            const { initPoint } = await createPaymentPreference({
-                ticketId: ticket.id!,
-                buyerName,
-                buyerLastName,
-                buyerEmail,
-                buyerPhone,
-                eventTitle,
-                price: ticketPrice * quantity,
-            });
-
-            setPaymentUrl(initPoint);
-            setStep('payment');
-        } catch (e) {
-            console.error(e);
-            setError("Error al procesar la compra. Intenta nuevamente.");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const resetForm = () => {
+    // Memoizar resetForm para que sea una función estable
+    const resetForm = useCallback(() => {
         setBuyerName("");
         setBuyerLastName("");
         setBuyerEmail("");
@@ -151,21 +100,87 @@ export default function PurchaseModal({
         setError(null);
         setFieldErrors({});
         setPaymentUrl(null);
-        setTicketData(null);
-    };
+        setOrderData(null);
+    }, []);
 
-    const handleClose = () => {
+    // Memoizar handleClose para que sea una función estable
+    const handleClose = useCallback(() => {
         resetForm();
         onClose();
+    }, [resetForm, onClose]);
+
+
+    const handleSubmit = async () => {
+        // Validar todos los campos
+        validateField('buyerName', buyerName);
+        validateField('buyerLastName', buyerLastName);
+        validateField('buyerEmail', buyerEmail);
+        validateField('buyerDni', buyerDni);
+        if (buyerPhone) validateField('buyerPhone', buyerPhone);
+
+        // Verificar si hay errores después de la validación
+        const currentFieldErrors = { ...fieldErrors };
+        const hasErrors = Object.keys(currentFieldErrors).some(key => currentFieldErrors[key]);
+
+        if (hasErrors || !buyerName || !buyerLastName || !buyerEmail || !buyerDni) {
+            setError("Por favor corrige los errores antes de continuar.");
+            return;
+        }
+
+        if (quantity < 1) {
+            setError("La cantidad de entradas debe ser al menos 1.");
+            return;
+        }
+
+        const currentUserId = userId || 'anonymous-user-id';
+
+        setError(null);
+        setLoading(true);
+
+        try {
+            const ticketIds: number[] = [];
+            // Paso 1: Crear múltiples tickets (uno por cada cantidad)
+            for (let i = 0; i < quantity; i++) {
+                const newTicket = await createTicket({
+                    eventId,
+                    buyerName,
+                    buyerLastName,
+                    buyerEmail,
+                    buyerPhone: buyerPhone || null,
+                    buyerDni,
+                });
+                ticketIds.push(newTicket.id);
+            }
+
+            // Paso 2: Crear una orden con los IDs de los tickets
+            const order = await createOrder({
+                userId: currentUserId,
+                ticketIds: ticketIds,
+            });
+            setOrderData(order);
+
+            // Paso 3: Crear la preferencia de pago usando el ID de la orden
+            const { initPoint } = await createPaymentPreference({
+                orderId: order.id,
+            });
+
+            setPaymentUrl(initPoint);
+            setStep('payment');
+        } catch (e: unknown) {
+            console.error("Error en el proceso de compra:", e);
+            if (e instanceof AxiosError) {
+                const backendMessage = e.response?.data?.message;
+                setError(backendMessage || "Error al procesar la compra. Intenta nuevamente.");
+            } else {
+                setError("Ocurrió un error inesperado. Intenta nuevamente.");
+            }
+        } finally {
+            setLoading(false);
+        }
     };
 
-    // Efecto para manejar el escape
+    // Efecto para manejar el escape y el scroll del body
     useEffect(() => {
-        const handleClose = () => {
-            resetForm();
-            onClose();
-        };
-
         const handleEscape = (e: KeyboardEvent) => {
             if (e.key === 'Escape') handleClose();
         };
@@ -179,7 +194,7 @@ export default function PurchaseModal({
             document.removeEventListener('keydown', handleEscape);
             document.body.style.overflow = 'unset';
         };
-    }, [isOpen, onClose]);
+    }, [isOpen, handleClose]); // handleClose ahora es una dependencia estable
 
     if (!isOpen) return null;
 
@@ -393,30 +408,30 @@ export default function PurchaseModal({
                     {step === 'payment' && (
                         <>
                             {/* Resumen de compra */}
-                            {ticketData && (
+                            {orderData && (
                                 <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
                                     <div className="flex items-center mb-3">
                                         <CheckCircle size={20} className="text-green-600 mr-2" />
-                                        <h3 className="font-semibold text-green-800">Ticket creado exitosamente</h3>
+                                        <h3 className="font-semibold text-green-800">Orden creada exitosamente</h3>
                                     </div>
                                     <div className="space-y-2 text-sm">
                                         <div className="flex justify-between">
                                             <span className="text-gray-600">Comprador:</span>
-                                            <span className="font-medium">{ticketData.buyerName} {ticketData.buyerLastName}</span>
+                                            <span className="font-medium">{buyerName} {buyerLastName}</span>
                                         </div>
                                         <div className="flex justify-between">
                                             <span className="text-gray-600">Email:</span>
-                                            <span className="font-medium">{ticketData.buyerEmail}</span>
+                                            <span className="font-medium">{buyerEmail}</span>
                                         </div>
-                                        {ticketData.buyerPhone && (
+                                        {buyerPhone && (
                                             <div className="flex justify-between">
                                                 <span className="text-gray-600">Teléfono:</span>
-                                                <span className="font-medium">{ticketData.buyerPhone}</span>
+                                                <span className="font-medium">{buyerPhone}</span>
                                             </div>
                                         )}
                                         <div className="flex justify-between">
                                             <span className="text-gray-600">DNI:</span>
-                                            <span className="font-medium">{ticketData.buyerDni}</span>
+                                            <span className="font-medium">{buyerDni}</span>
                                         </div>
                                         <div className="flex justify-between">
                                             <span className="text-gray-600">Cantidad:</span>
@@ -424,7 +439,7 @@ export default function PurchaseModal({
                                         </div>
                                         <div className="flex justify-between pt-2 border-t border-green-200">
                                             <span className="text-gray-600">Total:</span>
-                                            <span className="font-bold text-lg">${total.toLocaleString()}</span>
+                                            <span className="font-bold text-lg">${orderData.totalPrice.toLocaleString()}</span>
                                         </div>
                                     </div>
                                 </div>
