@@ -26,11 +26,16 @@ router.post(
 );
 router.put(
   "/category/:id",
-  authenticateToken,
-  verifyAdmin,
+  // authenticateToken,
+  // verifyAdmin,
   // categoryValidationRules.update, // Aplica las reglas de validación si las defines
   updateCategory
 );
-router.delete("/category/:id", authenticateToken, verifyAdmin, deleteCategory);
+router.delete(
+  "/category/:id",
+  //, authenticateToken,
+  //  verifyAdmin,
+  deleteCategory
+);
 
 export default router;

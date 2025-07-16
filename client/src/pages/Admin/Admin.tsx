@@ -7,6 +7,7 @@ import AddEventForm from './components/AddEventForm';
 import Users from './components/Users';
 import Settings from './components/Settings';
 import Reports from './components/Reports';
+import CategoryManagement from './components/CategoryManagement';
 
 const Admin: React.FC = () => {
     const [activeTab, setActiveTab] = useState('dashboard');
@@ -34,6 +35,8 @@ const Admin: React.FC = () => {
                     onClose={() => setActiveTab('events')}
                     onRedirectToEvents={() => setActiveTab('events')}
                 />
+            case 'categories':
+                return <CategoryManagement setActiveTab={setActiveTab} />;
             case 'users':
                 return <Users />;
             case 'settings':
