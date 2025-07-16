@@ -3,6 +3,7 @@ import EventCard from "./components/EventCard";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import PurchaseModal from "./components/modals/PurchaseModal";
+import foto from "../../assets/foto.png";
 
 import { getEvents } from "../../api/events";
 import type { EventData } from "../../api/events";
@@ -22,13 +23,13 @@ export default function Home() {
 
         // Filtrar eventos: solo mostrar aquellos cuya fecha es hoy o en el futuro
         const today = new Date();
-        today.setHours(0, 0, 0, 0); 
+        today.setHours(0, 0, 0, 0);
 
         const filteredAndSortedEvents = data
           .filter(event => {
             const eventDate = new Date(event.date);
-            eventDate.setHours(0, 0, 0, 0); 
-            return eventDate >= today; 
+            eventDate.setHours(0, 0, 0, 0);
+            return eventDate >= today;
           })
           .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
@@ -62,11 +63,11 @@ export default function Home() {
     description: "Este es un evento de ejemplo porque aún no hay eventos.",
     location: "Casa Suiza, Buenos Aires",
     date: new Date(new Date().setDate(new Date().getDate() + 7)).toISOString(),
-    capacity: 100,
+    capacity: 120,
     promo: true,
     soldOut: false,
-    price: 8500,
-    imageUrl: "https://via.placeholder.com/400x300.png?text=Evento+de+Ejemplo",
+    price: 0,
+    imageUrl: foto,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     categoryId: "dummy-cat",
