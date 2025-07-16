@@ -1,18 +1,20 @@
 import { api } from "./apiClient";
 
 export interface EventData {
-  id?: string;
+  id: string;
   title: string;
-  description?: string;
-  time?: string;
-  location?: string;
+  description: string | null;
+  location: string | null;
   date: string; // ISO string
+  capacity: number | null;
+  promo: boolean | null;
+  soldOut: boolean | null;
   price: number;
-  promo?: boolean;
-  soldOut?: boolean;
-  imageUrl?: string;
-  createdAt?: string;
-  updatedAt?: string;
+  imageUrl: string | null;
+  createdAt: string;
+  updatedAt: string;
+  categoryId: string | null;
+  organizerId: string | null;
 }
 
 // Obtener todos los eventos

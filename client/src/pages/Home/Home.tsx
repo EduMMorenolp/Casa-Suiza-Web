@@ -19,7 +19,20 @@ export default function Home() {
     async function fetchEvents() {
       try {
         const data = await getEvents();
-        setEvents(data);
+
+        // Filtrar eventos: solo mostrar aquellos cuya fecha es hoy o en el futuro
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); 
+
+        const filteredAndSortedEvents = data
+          .filter(event => {
+            const eventDate = new Date(event.date);
+            eventDate.setHours(0, 0, 0, 0); 
+            return eventDate >= today; 
+          })
+          .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+        setEvents(filteredAndSortedEvents);
       } catch (err) {
         if (err instanceof Error) {
           setError(err.message);
@@ -48,12 +61,16 @@ export default function Home() {
     title: "Concierto de prueba",
     description: "Este es un evento de ejemplo porque aún no hay eventos.",
     location: "Casa Suiza, Buenos Aires",
-    date: new Date().toISOString(),
-    time: "20:00",
-    price: 0,
-    imageUrl: "https://via.placeholder.com/400x300.png?text=Evento+de+Ejemplo",
+    date: new Date(new Date().setDate(new Date().getDate() + 7)).toISOString(),
+    capacity: 100,
     promo: true,
     soldOut: false,
+    price: 8500,
+    imageUrl: "https://via.placeholder.com/400x300.png?text=Evento+de+Ejemplo",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    categoryId: "dummy-cat",
+    organizerId: "dummy-org",
   };
 
   return (
@@ -62,7 +79,7 @@ export default function Home() {
       <main className="container mx-auto p-6">
         {events.length === 0 ? (
           <div>
-            <p className="text-center mb-4">No hay eventos disponibles.</p>
+            <p className="text-center mb-4">No hay eventos disponibles para mostrar.</p>
             <p className="text-center text-sm text-gray-500 mb-4">
               Este es un evento de ejemplo. El administrador está por crear uno real.
             </p>
@@ -73,7 +90,7 @@ export default function Home() {
                 onBuyClick={() => handleBuyClick(dummyEvent)}
               />
             </div>
-            <p className="text-center mt-8 text-red-600">{error}</p>
+            {error && <p className="text-center mt-8 text-red-600">{error}</p>}
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
