@@ -25,6 +25,8 @@ export async function createTicketHandler(
       );
     }
 
+    console.log(eventId, buyerName, buyerLastName, buyerEmail, buyerPhone, buyerDni);
+
     const ticket = await ticketService.createTicket({
       eventId,
       buyerName,
@@ -36,7 +38,7 @@ export async function createTicketHandler(
 
     res.status(201).json(ticket);
   } catch (error) {
-    next(error); // Pasa el error al middleware de manejo de errores
+    next(error);
   }
 }
 

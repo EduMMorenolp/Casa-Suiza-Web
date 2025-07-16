@@ -16,12 +16,10 @@ router.get("/events", listEventsHandler); // Listar eventos con filtros opcional
 router.get("/events/:id", getEventByIdHandler);
 
 // Rutas protegidas para administradores (crear, actualizar, eliminar)
-router.post("/event", verifyAdmin, createEventHandler);
-router.put("/events/:id", verifyAdmin, updateEventHandler);
+router.post("/event", createEventHandler);
+router.put("/events/:id", updateEventHandler);
 router.delete(
   "/events/:id",
-  authenticateToken,
-  verifyAdmin,
   deleteEventHandler
 );
 

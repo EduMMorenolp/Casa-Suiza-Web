@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { createEvent, updateEvent } from "../../../api/events";
+import { createCategory, getCategories } from "../../../api/category";
 import type { EventData } from "../../../api/events";
+
+// Tipos para categorías
+interface Category {
+    id: string;
+    name: string;
+}
 
 interface AddEventFormProps {
     initialData?: EventData;
@@ -16,20 +23,44 @@ const AddEventForm: React.FC<AddEventFormProps> = ({
     onRedirectToEvents
 }) => {
     const [formData, setFormData] = useState<EventData>({
+        id: "",
         title: "",
         description: "",
-        location: "",
+        location: "Casa Suiza, La Plata",
         date: "",
-        time: "",
         price: 0,
+        capacity: 120,
         imageUrl: "",
         promo: false,
         soldOut: false,
+        categoryId: "",
+        organizerId: "",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
     });
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+    // Estados para categorías
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [showNewCategoryForm, setShowNewCategoryForm] = useState(false);
+    const [newCategoryName, setNewCategoryName] = useState("");
+    const [loadingCategories, setLoadingCategories] = useState(false);
+
+    // Cargar categorías al montar el componente
+    useEffect(() => {
+        const loadCategories = async () => {
+            try {
+                const fetchedCategories = await getCategories();
+                setCategories(fetchedCategories);
+            } catch (err) {
+                console.error('Error al cargar categorías:', err);
+            }
+        };
+        loadCategories();
+    }, []);
 
     // Cuando cambian los datos iniciales (edición), los cargamos al form
     useEffect(() => {
@@ -46,8 +77,8 @@ const AddEventForm: React.FC<AddEventFormProps> = ({
         setSuccessMessage(null);
 
         try {
-            if (!formData.title || !formData.date || !formData.price) {
-                setError("Completa título, fecha y precio");
+            if (!formData.title || !formData.date || !formData.price || !formData.capacity || !formData.categoryId) {
+                setError("Completa título, fecha, precio, capacidad y categoría");
                 setLoading(false);
                 return;
             }
@@ -68,15 +99,20 @@ const AddEventForm: React.FC<AddEventFormProps> = ({
             // Si es creación, reseteamos el form
             if (!isEdit) {
                 setFormData({
+                    id: "",
                     title: "",
                     description: "",
                     location: "",
                     date: "",
-                    time: "",
                     price: 0,
+                    capacity: 0,
                     imageUrl: "",
                     promo: false,
                     soldOut: false,
+                    categoryId: "",
+                    organizerId: "",
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
                 });
             }
         } catch (err) {
@@ -87,6 +123,29 @@ const AddEventForm: React.FC<AddEventFormProps> = ({
             }
         } finally {
             setLoading(false);
+        }
+    };
+
+    // Función para crear nueva categoría
+    const handleCreateCategory = async () => {
+        if (!newCategoryName.trim()) {
+            setError("El nombre de la categoría es obligatorio");
+            return;
+        }
+
+        setLoadingCategories(true);
+        try {
+            const newCategory = await createCategory({ name: newCategoryName.trim() });
+            setCategories(prev => [...prev, newCategory]);
+            setFormData(prev => ({ ...prev, categoryId: newCategory.id }));
+            setNewCategoryName("");
+            setShowNewCategoryForm(false);
+            setError(null);
+        } catch (err) {
+            console.error('Error al crear categoría:', err);
+            setError("Error al crear la categoría");
+        } finally {
+            setLoadingCategories(false);
         }
     };
 
@@ -156,39 +215,125 @@ const AddEventForm: React.FC<AddEventFormProps> = ({
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                             />
                         </div>
+                    </div>
+
+                    {/* Precio y Capacidad */}
+                    <div className="grid grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Hora
+                                Precio
                             </label>
                             <input
-                                type="time"
-                                value={formData.time || ""}
+                                type="number"
+                                value={formData.price ?? ""}
                                 onChange={(e) =>
-                                    setFormData({ ...formData, time: e.target.value })
+                                    setFormData({
+                                        ...formData,
+                                        price: e.target.value === "" ? 0 : Number(e.target.value),
+                                    })
                                 }
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                placeholder="8500"
+                                min={0}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Capacidad
+                            </label>
+                            <input
+                                type="number"
+                                value={formData.capacity ?? ""}
+                                onChange={(e) =>
+                                    setFormData({
+                                        ...formData,
+                                        capacity: e.target.value === "" ? 0 : Number(e.target.value),
+                                    })
+                                }
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                placeholder="100"
+                                min={0}
                             />
                         </div>
                     </div>
 
-                    {/* Precio */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Precio
-                        </label>
-                        <input
-                            type="number"
-                            value={formData.price ?? ""}
-                            onChange={(e) =>
-                                setFormData({
-                                    ...formData,
-                                    price: e.target.value === "" ? 0 : Number(e.target.value),
-                                })
-                            }
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                            placeholder="8500"
-                            min={0}
-                        />
+                    {/* Category ID y Organizer ID */}
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Categoría
+                            </label>
+                            <div className="space-y-2">
+                                <select
+                                    value={formData.categoryId || ""}
+                                    onChange={(e) =>
+                                        setFormData({ ...formData, categoryId: e.target.value })
+                                    }
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                >
+                                    <option value="">Selecciona una categoría</option>
+                                    {categories.map((category) => (
+                                        <option key={category.id} value={category.id}>
+                                            {category.name}
+                                        </option>
+                                    ))}
+                                </select>
+
+                                {!showNewCategoryForm ? (
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowNewCategoryForm(true)}
+                                        className="text-sm text-red-600 hover:text-red-700 font-medium"
+                                    >
+                                        + Agregar nueva categoría
+                                    </button>
+                                ) : (
+                                    <div className="space-y-2">
+                                        <input
+                                            type="text"
+                                            value={newCategoryName}
+                                            onChange={(e) => setNewCategoryName(e.target.value)}
+                                            placeholder="Nombre de la categoría"
+                                            className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                        />
+                                        <div className="flex gap-2">
+                                            <button
+                                                type="button"
+                                                onClick={handleCreateCategory}
+                                                disabled={loadingCategories}
+                                                className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 disabled:bg-gray-400"
+                                            >
+                                                {loadingCategories ? "Creando..." : "Crear"}
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setShowNewCategoryForm(false);
+                                                    setNewCategoryName("");
+                                                }}
+                                                className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100"
+                                            >
+                                                Cancelar
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                ID de Organizador
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.organizerId || ""}
+                                onChange={(e) =>
+                                    setFormData({ ...formData, organizerId: e.target.value })
+                                }
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                placeholder="organizer-id"
+                            />
+                        </div>
                     </div>
 
                     {/* URL de Imagen */}
@@ -245,9 +390,9 @@ const AddEventForm: React.FC<AddEventFormProps> = ({
                                 onClick={() => onRedirectToEvents && onRedirectToEvents()}
                                 className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
                             >
-                               Ir a Eventos
+                                Ir a Eventos
                             </button>
-                      </div>
+                        </div>
                     )}
 
                     {/* Botones */}

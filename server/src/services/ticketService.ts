@@ -24,7 +24,6 @@ export interface TicketData {
  * @throws CustomError si el evento no es encontrado.
  */
 export async function createTicket(data: TicketData) {
-  // ... (código existente, no hay cambios aquí)
   const event = await prisma.event.findUnique({ where: { id: data.eventId } });
   if (!event) {
     throw new CustomError("Evento no encontrado.", 404);

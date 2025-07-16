@@ -19,8 +19,8 @@ router.get("/category/:id", getCategoryById);
 // Rutas protegidas (ejemplo: crear, actualizar, eliminar solo para admins)
 router.post(
   "/category/",
-  authenticateToken,
-  verifyAdmin,
+  // authenticateToken,
+  // verifyAdmin,
   // categoryValidationRules.create, // Aplica las reglas de validación si las defines
   createCategory
 );
