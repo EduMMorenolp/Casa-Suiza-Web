@@ -77,7 +77,7 @@ export default function Home() {
   return (
     <>
       <Header />
-      <main className="container mx-auto p-6">
+      <main id="inicio" className="container mx-auto p-6">
         {events.length === 0 ? (
           <div>
             <p className="text-center mb-4">No hay eventos disponibles para mostrar.</p>
