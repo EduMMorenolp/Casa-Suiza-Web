@@ -19,6 +19,10 @@ const Header: React.FC<HeaderProps> = ({ activeTab, onMenuClick }) => {
                 return 'Usuarios';
             case 'settings':
                 return 'Configuración';
+            case 'reports':
+                return 'Reportes';
+            case 'categories':
+                return 'Categorías';
             default:
                 return 'Dashboard';
         }
