@@ -1,5 +1,5 @@
-import { createContext, useContext, useState } 
-from 'react';
+import { createContext, useContext, useState }
+    from 'react';
 import type { ReactNode } from 'react';
 
 interface AuthContextType {
@@ -26,7 +26,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     const login = async (username: string, password: string): Promise<boolean> => {
         // Aquí puedes reemplazar por llamada a backend
-        if (username === 'admin' && password === '1234') {
+        if (username === 'casasuiza' && password === '123456') {
             setIsAuthenticated(true);
             return true;
         }

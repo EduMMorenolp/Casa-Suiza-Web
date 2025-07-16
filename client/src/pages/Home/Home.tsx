@@ -22,15 +22,15 @@ export default function Home() {
 
         // Filtrar eventos: solo mostrar aquellos cuya fecha es hoy o en el futuro
         const today = new Date();
-        today.setHours(0, 0, 0, 0); // Establecer la hora a 00:00:00 para comparar solo la fecha
+        today.setHours(0, 0, 0, 0); 
 
         const filteredAndSortedEvents = data
           .filter(event => {
             const eventDate = new Date(event.date);
-            eventDate.setHours(0, 0, 0, 0); // Establecer la hora del evento a 00:00:00 para comparar solo la fecha
-            return eventDate >= today; // Compara si la fecha del evento es hoy o en el futuro
+            eventDate.setHours(0, 0, 0, 0); 
+            return eventDate >= today; 
           })
-          .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()); // Opcional: ordenar por fecha ascendente
+          .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
         setEvents(filteredAndSortedEvents);
       } catch (err) {
