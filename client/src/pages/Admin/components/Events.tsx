@@ -7,7 +7,6 @@ import AddEventForm from "./AddEventForm";
 
 interface Event extends EventData {
     status: "active" | "soldout";
-    sold: number;
 }
 
 interface EventsProps {
