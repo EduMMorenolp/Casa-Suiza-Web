@@ -74,7 +74,7 @@ export async function createEventHandler(
       title,
       description,
       location,
-      date: new Date(date),
+      date,
       capacity,
       promo,
       soldOut,
@@ -86,7 +86,7 @@ export async function createEventHandler(
 
     res.status(201).json(newEvent);
   } catch (error) {
-    next(error); // Pasa el error al middleware de manejo de errores
+    next(error);
   }
 }
 

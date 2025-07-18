@@ -29,20 +29,25 @@ const EventCard: React.FC<{
     onEdit: (event: EventData) => void;
     onDelete: (id: string) => void;
 }> = ({ event, onEdit, onDelete }) => {
-    const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString('es-ES', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric'
-        });
+    const formatDate = (isoString?: string | null) => {
+        if (!isoString) return "";
+        try {
+            return isoString.split('T')[0];
+        } catch (e) {
+            console.error("Error formatting date for input:", isoString, e);
+            return "";
+        }
     };
 
-    const formatTime = (dateString: string) => {
-        return new Date(dateString).toLocaleTimeString('es-ES', {
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-    }
+    const formatTime = (isoString?: string | null) => {
+        if (!isoString) return "";
+        try {
+            return isoString.split('T')[1]?.substring(0, 5) || "";
+        } catch (e) {
+            console.error("Error formatting time for input:", isoString, e);
+            return "";
+        }
+    };
 
     const getProgressPercentage = () => {
         if (!event.capacity || event.capacity === 0) return 0;
