@@ -39,7 +39,7 @@ const EventCard: React.FC<{
     };
 
     const getProgressPercentage = () => {
-        if (!event.capacity) return 0;
+        if (!event.capacity || event.capacity === 0) return 0;
         return Math.min((event.sold / event.capacity) * 100, 100);
     };
 
@@ -116,6 +116,7 @@ const EventCard: React.FC<{
                                 <Users className="w-4 h-4" />
                                 Vendidas: {event.sold}
                             </span>
+
                             <span className="text-sm text-gray-600">
                                 Capacidad: {event.capacity}
                             </span>
@@ -246,7 +247,7 @@ const Events: React.FC<EventsProps> = ({ setActiveTab }) => {
                 const mapped = data.map((e) => ({
                     ...e,
                     status: getStatus(e.soldOut),
-                    sold: Math.floor(Math.random() * (e.capacity || 100)),
+                    sold: e.sold,
                 }));
                 setEvents(mapped);
 

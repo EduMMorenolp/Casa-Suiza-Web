@@ -38,6 +38,7 @@ export interface ListEventsFilters {
   organizerId?: string;
   promo?: boolean;
   soldOut?: boolean;
+  includeInactive?: boolean;
 }
 
 /**
@@ -84,7 +85,7 @@ export async function createEvent(data: CreateEventInput) {
  */
 export async function getEventById(id: string) {
   return await prisma.event.findUnique({
-    where: { id },
+    where: { id, isActive: true },
     include: {
       category: true,
       organizer: true,
@@ -148,7 +149,10 @@ export async function updateEvent(id: string, data: UpdateEventInput) {
  */
 export async function deleteEvent(id: string) {
   try {
-    return await prisma.event.delete({ where: { id } });
+    return await prisma.event.update({
+      where: { id },
+      data: { isActive: false },
+    });
   } catch (error: unknown) {
     if (
       typeof error === "object" &&
@@ -169,7 +173,7 @@ export async function deleteEvent(id: string) {
  * @returns Una lista de eventos que coinciden con los filtros.
  */
 export async function listEvents(filters: ListEventsFilters) {
-  const whereClause: Prisma.EventWhereInput = {}; // Usamos el tipo de Prisma para mayor seguridad
+  const whereClause: Prisma.EventWhereInput = {};
 
   if (filters.title) {
     whereClause.title = {
@@ -203,5 +207,32 @@ export async function listEvents(filters: ListEventsFilters) {
     whereClause.soldOut = filters.soldOut;
   }
 
-  return await prisma.event.findMany({ where: whereClause });
+  if (
+    filters.includeInactive === undefined ||
+    filters.includeInactive === false
+  ) {
+    whereClause.isActive = true;
+  } else if (filters.includeInactive === true) {
+    whereClause.isActive;
+  }
+
+  // Realizamos la consulta a la base de datos, incluyendo el conteo de tickets
+  const eventsWithTicketCount = await prisma.event.findMany({
+    where: whereClause,
+    include: {
+      _count: {
+        select: { tickets: true },
+      },
+    },
+  });
+
+  const events = eventsWithTicketCount.map((event) => {
+    const { _count, ...rest } = event;
+    return {
+      ...rest,
+      sold: _count.tickets,
+      isActive: rest.isActive !== undefined ? rest.isActive : true,
+    };
+  });
+  return events;
 }
