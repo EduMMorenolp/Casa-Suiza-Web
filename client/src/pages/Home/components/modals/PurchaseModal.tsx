@@ -12,9 +12,9 @@ interface PurchaseModalProps {
     isOpen: boolean;
     eventId: string;
     eventTitle: string;
-    ticketPrice: number; 
+    ticketPrice: number;
     onClose: () => void;
-    userId?: string; 
+    userId?: string;
 }
 
 export default function PurchaseModal({
@@ -199,7 +199,7 @@ export default function PurchaseModal({
                     <div className="flex justify-between items-center">
                         <div>
                             <h2 className="text-2xl font-bold text-gray-800">Compra de Entradas</h2>
-                            <p className="text-gray-600 text-sm mt-1">{eventTitle}</p>
+                            <p className="text-gray-600 text-sm mt-1">de {eventTitle}</p>
                         </div>
                         <button
                             onClick={handleClose}
@@ -353,11 +353,15 @@ export default function PurchaseModal({
                                 </div>
                                 <div className="flex justify-between text-sm text-gray-600">
                                     <span>Precio por entrada:</span>
-                                    <span>${ticketPrice.toLocaleString()}</span>
+                                    <span>${total}</span>
+                                </div>
+                                <div className="flex justify-between text-sm text-gray-600">
+                                    <span>Costo de Servicio:</span>
+                                    <span>${total * 0.1}</span>
                                 </div>
                                 <div className="flex justify-between text-lg font-bold text-gray-800 mt-2 pt-2 border-t">
                                     <span>Total:</span>
-                                    <span>${total.toLocaleString()}</span>
+                                    <span>${(total + total * 0.1).toLocaleString()}</span>
                                 </div>
                             </div>
 
