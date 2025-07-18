@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Plus, Edit, Trash2, Eye, Search, MapPin, Calendar, Users, DollarSign, Star } from "lucide-react";
+import { Plus, Edit, Trash2, Eye, Search, MapPin, Calendar, Users, DollarSign, Star, Clock } from "lucide-react";
 
 import type { EventData } from "../../../api/events";
 import { getEvents, deleteEvent } from "../../../api/events";
@@ -37,6 +37,13 @@ const EventCard: React.FC<{
             year: 'numeric'
         });
     };
+
+    const formatTime = (dateString: string) => {
+        return new Date(dateString).toLocaleTimeString('es-ES', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
 
     const getProgressPercentage = () => {
         if (!event.capacity || event.capacity === 0) return 0;
@@ -93,6 +100,10 @@ const EventCard: React.FC<{
                     <div className="flex items-center gap-2 text-sm text-gray-600">
                         <Calendar className="w-4 h-4 text-red-500" />
                         <span>{formatDate(event.date)}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <Clock className="w-4 h-4 text-red-500" />
+                        <span>{formatTime(event.date)}</span>
                     </div>
 
                     {event.location && (
