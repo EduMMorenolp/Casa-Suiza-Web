@@ -2,11 +2,11 @@ import mercadopago from "../config/mercadoPago";
 import prisma from "../config/prismaClient";
 import { PaymentStatus, OrderStatus, TicketStatus } from "@prisma/client";
 import { CustomError } from "../utils/CustomError";
-import * as orderService from "./orderService"; // Importamos el servicio de órdenes
-import * as ticketService from "./ticketService"; // Importamos el servicio de tickets
+import * as orderService from "./orderService"; 
+import * as ticketService from "./ticketService";
 
 interface PaymentPreferenceItem {
-  id: string; // Este ID debería ser el ID del Ticket o un identificador único
+  id: string;
   title: string;
   quantity: number;
   unit_price: number;
@@ -30,7 +30,7 @@ interface PaymentPreferenceData {
   };
   auto_return: "approved" | "all" | "none";
   notification_url: string;
-  external_reference?: string; // Para vincular con la orden
+  external_reference?: string;
 }
 
 interface MockPreferenceResponse {
@@ -148,7 +148,7 @@ export async function handleMercadoPagoWebhook(
         case "pending":
           newPaymentStatus = PaymentStatus.PENDING;
           newOrderStatus = OrderStatus.PENDING;
-          newTicketStatus = TicketStatus.PENDING; // Los tickets ya deberían estar en pending
+          newTicketStatus = TicketStatus.PENDING;
           break;
         default:
           console.warn(
