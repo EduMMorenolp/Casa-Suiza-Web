@@ -199,7 +199,7 @@ export default function PurchaseModal({
                                     Cancelar
                                 </button>
                                 <button
-                                    onClick={handleFormSubmit} // Cambiado a handleFormSubmit
+                                    onClick={handleFormSubmit} 
                                     disabled={loading}
                                     className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg transition-colors flex items-center justify-center gap-2"
                                 >
