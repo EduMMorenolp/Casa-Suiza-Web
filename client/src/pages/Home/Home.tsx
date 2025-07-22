@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import EventCard from "./components/EventCard";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import PurchaseModal from "./components/modals/PurchaseModal";
+import PurchaseModal from "./components/Purchase/PurchaseModal";
 import foto from "../../assets/foto.png";
 
 import { getEvents } from "../../api/events";
