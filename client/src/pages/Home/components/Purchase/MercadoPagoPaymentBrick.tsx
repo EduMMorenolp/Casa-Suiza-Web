@@ -26,7 +26,6 @@ export function MercadoPagoPaymentBrick({
         }
         try {
             initMercadoPago(publicKey, { locale: 'es-AR' });
-            console.log("Mercado Pago SDK inicializado por @mercadopago/sdk-react.");
         } catch (error) {
             console.error("Error al inicializar Mercado Pago SDK (initMercadoPago):", error);
             onError(error);

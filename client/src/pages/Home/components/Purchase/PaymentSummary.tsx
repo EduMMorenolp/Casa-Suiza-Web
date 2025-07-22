@@ -9,7 +9,6 @@ interface PaymentSummaryProps {
     buyerPhone: string;
     buyerDni: string;
     quantity: number;
-    paymentUrl: string | null;
     onClose: () => void;
 }
 
@@ -21,14 +20,12 @@ export function PaymentSummary({
     buyerPhone,
     buyerDni,
     quantity,
-    paymentUrl,
-    onClose,
 }: PaymentSummaryProps) {
     if (!orderData) return null;
 
     return (
         <>
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-2">
                 <div className="flex items-center mb-3">
                     <CheckCircle size={20} className="text-green-600 mr-2" />
                     <h3 className="font-semibold text-green-800">Orden creada exitosamente</h3>
@@ -61,30 +58,6 @@ export function PaymentSummary({
                         <span className="font-bold text-lg">${orderData.totalPrice.toLocaleString()}</span>
                     </div>
                 </div>
-            </div>
-
-            <div className="text-center mb-6">
-                <h3 className="lg:text-lg font-semibold mb-2">Completa tu pago</h3>
-                <p className="text-gray-600 text-sm">
-                    Serás redirigido a la plataforma de pagos para completar tu compra de forma segura.
-                </p>
-            </div>
-
-            <div className="space-y-3">
-                <a
-                    href={paymentUrl!}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block w-full bg-green-600 hover:bg-green-700 text-white text-center py-3 rounded-lg transition-colors font-medium"
-                >
-                    Pagar Ahora
-                </a>
-                <button
-                    onClick={onClose}
-                    className="w-full bg-gray-200 hover:bg-gray-300 py-2 rounded-lg transition-colors"
-                >
-                    Cerrar
-                </button>
             </div>
         </>
     );

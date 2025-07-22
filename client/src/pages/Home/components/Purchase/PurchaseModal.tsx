@@ -219,7 +219,7 @@ export default function PurchaseModal({
                     {step === 'payment' && (
                         <>
                             {orderData && (
-                                <PaymentSummary // Puedes reutilizar este componente o crear uno más simple para el resumen
+                                <PaymentSummary
                                     orderData={orderData}
                                     buyerName={buyerName}
                                     buyerLastName={buyerLastName}
@@ -227,18 +227,17 @@ export default function PurchaseModal({
                                     buyerPhone={buyerPhone}
                                     buyerDni={buyerDni}
                                     quantity={quantity}
-                                    paymentUrl={null} // Ya no usamos URL de pago aquí
-                                    onClose={() => setStep('form')} // Opción para volver al formulario
+                                    onClose={() => setStep('form')}
                                 />
                             )}
-                            <div className="text-center mb-6">
+                            <div className="text-center">
                                 <h3 className="lg:text-lg font-semibold mb-2">Completa tu pago</h3>
                                 <p className="text-gray-600 text-sm">
                                     Ingresa los datos de tu tarjeta o elige otro medio de pago.
                                 </p>
                             </div>
 
-                            {error && ( // Mostrar errores específicos del Brick aquí
+                            {error && (
                                 <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
                                     <p className="text-red-600 text-sm flex items-center">
                                         <AlertCircle size={16} className="mr-2" />
@@ -257,7 +256,7 @@ export default function PurchaseModal({
                                     amount={totalAmount}
                                 />
                             )}
-                            <div className="flex gap-3 mt-4">
+                            <div className="flex gap-3">
                                 <button
                                     onClick={handleClose}
                                     className="flex-1 px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors"
