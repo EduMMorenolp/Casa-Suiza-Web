@@ -115,7 +115,7 @@ model Order {
   status     OrderStatus @default(PENDING)
   createdAt  DateTime    @default(now())
   tickets    Ticket[]
-  Payment    Payment[]
+  payment    Payment?
 }
 
 enum PaymentStatus {
@@ -125,13 +125,14 @@ enum PaymentStatus {
 }
 
 model Payment {
-  id        String        @id @default(uuid())
-  order     Order         @relation(fields: [orderId], references: [id])
-  orderId   String
-  amount    Float
-  method    String
-  status    PaymentStatus
-  createdAt DateTime      @default(now())
+  id          String        @id @default(uuid())
+  orderId     String        @unique
+  order       Order         @relation(fields: [orderId], references: [id])
+  amount      Float
+  method      String
+  status      PaymentStatus
+  createdAt   DateTime      @default(now())
+  mpPaymentId String?       @unique
 }
 
 model Subscriber {

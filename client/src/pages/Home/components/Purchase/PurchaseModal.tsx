@@ -22,7 +22,7 @@ interface PurchaseModalProps {
 }
 
 // **IMPORTANTE:** Public Key de Mercado Pago
-const MERCADO_PAGO_PUBLIC_KEY = "TU_PUBLIC_KEY_DE_MERCADO_PAGO";
+const MERCADO_PAGO_PUBLIC_KEY = "TEST-fa40a928-2f57-48c0-b4d4-d0c062a3e729";
 
 export default function PurchaseModal({
     isOpen,
@@ -87,7 +87,7 @@ export default function PurchaseModal({
             });
 
             setPreferenceId(newPreferenceId);
-            setStep('payment'); // Pasar al paso de pago donde se renderizará el Brick
+            setStep('payment');
         } catch (e: unknown) {
             console.error("Error en el proceso de compra (creación de tickets/orden/preferencia):", e);
             if (e instanceof AxiosError) {
@@ -101,12 +101,10 @@ export default function PurchaseModal({
         }
     };
 
-    // Callback del Payment Brick cuando está listo
     const handleBrickReady = () => {
         console.log("Payment Brick listo para interactuar.");
     };
 
-    // Callback del Payment Brick cuando el usuario envía el formulario de pago
     const handleBrickSubmit = async (formData: unknown) => {
         setLoading(true);
         setError(null);
@@ -127,7 +125,6 @@ export default function PurchaseModal({
         }
     };
 
-    // Callback del Payment Brick si ocurre un error
     const handleBrickError = (error: unknown) => {
         console.error("Error en el Payment Brick:", error);
         setError("Hubo un error con el formulario de pago. Por favor, inténtalo de nuevo.");
