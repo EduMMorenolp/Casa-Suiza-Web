@@ -83,7 +83,12 @@ export default function PurchaseModal({
 
             const { preferenceId: newPreferenceId } = await createPaymentPreference({
                 orderId: order.id,
-                amount: (ticketPrice * quantity) + (ticketPrice * quantity * 0.1)
+                amount: (ticketPrice * quantity) + (ticketPrice * quantity * 0.1),
+                buyerName: buyerName,
+                buyerLastName: buyerLastName,
+                buyerEmail: buyerEmail,
+                buyerPhone: buyerPhone || undefined,
+                buyerDni: buyerDni,
             });
 
             setPreferenceId(newPreferenceId);

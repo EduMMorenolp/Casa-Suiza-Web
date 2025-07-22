@@ -74,8 +74,14 @@ export async function createPreferenceForBricks(
       external_reference: data.orderId,
     };
 
-    const response = await mpPreferences.create(preferenceData);
-    return { preferenceId: response.body.id };
+    const response = await mpPreferences.create({ body: preferenceData });
+    if (!response.id) {
+      throw new CustomError(
+        "La respuesta de MercadoPago no contiene un ID de preferencia.",
+        500
+      );
+    }
+    return { preferenceId: response.id };
   } catch (error: unknown) {
     console.error(
       "Error creando preferencia de pago para Bricks en MercadoPago:",
@@ -98,7 +104,7 @@ export async function processPaymentFromBrick(
       description: data.description,
       installments: data.installments,
       payment_method_id: data.paymentMethodId,
-      issuer_id: data.issuerId,
+      issuer_id: data.issuerId ? Number(data.issuerId) : undefined,
       payer: {
         email: data.payer.email,
         identification: {
@@ -109,21 +115,27 @@ export async function processPaymentFromBrick(
       external_reference: data.orderId,
     };
 
-    const response = await mpPayment.create(paymentData);
-    const paymentResult = response.body;
+    const paymentResult = await mpPayment.create({ body: paymentData });
+
+    if (!paymentResult.id) {
+      throw new CustomError(
+        "La respuesta de MercadoPago no contiene un ID de pago.",
+        500
+      );
+    }
 
     await handlePaymentResult(
-      paymentResult.id,
-      paymentResult.status,
-      paymentResult.external_reference,
-      paymentResult.transaction_amount
+      String(paymentResult.id),
+      String(paymentResult.status),
+      paymentResult.external_reference ?? "",
+      paymentResult.transaction_amount ?? 0
     );
 
     return {
-      id: paymentResult.id,
-      status: paymentResult.status,
-      statusDetail: paymentResult.status_detail,
-      orderId: paymentResult.external_reference,
+      id: String(paymentResult.id),
+      status: String(paymentResult.status),
+      statusDetail: paymentResult.status_detail ?? "",
+      orderId: paymentResult.external_reference ?? "",
     };
   } catch (error: any) {
     console.error(
@@ -233,10 +245,10 @@ export async function handleMercadoPagoWebhook(
 ) {
   if (topic === "payment") {
     try {
-      const payment = await mpPayment.findById(Number(paymentId));
-      const paymentStatus = payment.body.status;
-      const externalReference = payment.body.external_reference;
-      const transactionAmount = payment.body.transaction_amount;
+      const payment = await mpPayment.get({ id: Number(paymentId) });
+      const paymentStatus = payment.status ?? "";
+      const externalReference = payment.external_reference ?? "";
+      const transactionAmount = payment.transaction_amount ?? 0;
 
       await handlePaymentResult(
         paymentId,

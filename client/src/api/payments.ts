@@ -9,6 +9,7 @@ export interface PreferenceData {
   buyerEmail?: string;
   buyerPhone?: string;
   eventTitle?: string;
+  buyerDni?: string;
   price?: number;
   amount?: number;
 }

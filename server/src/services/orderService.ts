@@ -102,7 +102,7 @@ export async function findAllOrders() {
           event: true,
         },
       },
-      Payment: true,
+      payment: true,
     },
   });
 }
@@ -122,7 +122,7 @@ export async function findOrderById(id: string) {
           event: true,
         },
       },
-      Payment: true,
+      payment: true,
     },
   });
 }
