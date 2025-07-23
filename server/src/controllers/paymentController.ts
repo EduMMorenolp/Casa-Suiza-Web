@@ -1,7 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import * as paymentService from "../services/paymentService";
 import { CustomError } from "../utils/CustomError";
-import { handleMercadoPagoWebhook } from "../services/paymentService";
+import {
+  handleMercadoPagoWebhook,
+  processPaymentFromBrick,
+} from "../services/paymentService";
 
 export async function createPaymentPreferenceHandler(
   req: Request,
@@ -56,6 +59,22 @@ export async function createPaymentPreferenceHandler(
     res.status(201).json({ preferenceId });
   } catch (error) {
     next(error);
+  }
+}
+
+export async function processPaymentControllerexport(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const result = await processPaymentFromBrick(req.body);
+    res.status(200).json(result);
+  } catch (error: any) {
+    console.error("Error en el controlador de pago:", error.message);
+    res.status(error.status || 500).json({
+      error: error.message || "Error interno al procesar el pago.",
+    });
   }
 }
 

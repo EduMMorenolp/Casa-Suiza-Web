@@ -117,6 +117,8 @@ export async function processPaymentFromBrick(
 
     const paymentResult = await mpPayment.create({ body: paymentData });
 
+    console.log("STATUS:", paymentResult.status);
+
     if (!paymentResult.id) {
       throw new CustomError(
         "La respuesta de MercadoPago no contiene un ID de pago.",
