@@ -298,6 +298,8 @@ export default function PurchaseModal({
                                     onSubmit={handleBrickSubmit}
                                     onError={handleBrickError}
                                     amount={totalAmount}
+                                    email={buyerEmail}
+                                    dni={buyerDni}
                                 />
                             )}
                             <div className="flex gap-3">

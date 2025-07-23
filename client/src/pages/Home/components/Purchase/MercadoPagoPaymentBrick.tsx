@@ -8,6 +8,8 @@ interface MercadoPagoPaymentBrickProps {
     onSubmit: (formData: unknown) => Promise<void>;
     onError: (error: unknown) => void;
     amount: number;
+    email: string;
+    dni: string;
 }
 
 export function MercadoPagoPaymentBrick({
@@ -17,6 +19,8 @@ export function MercadoPagoPaymentBrick({
     onSubmit,
     onError,
     amount,
+    email,
+    dni,
 }: MercadoPagoPaymentBrickProps) {
 
     useEffect(() => {
@@ -36,6 +40,13 @@ export function MercadoPagoPaymentBrick({
     const initialization = {
         amount: amount,
         preferenceId: preferenceId,
+        payer: {
+            email: email,
+            identification: {
+                type: 'DNI',
+                number: dni,
+            },
+        },
     };
 
     const customization = {
