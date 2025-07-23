@@ -122,13 +122,6 @@ export async function processPaymentHandler(
     });
 
     const now = new Date().toLocaleString();
-    console.log("===============================================");
-    console.log(`🕒 [${now}] Pago procesado por Brick:`);
-    console.log(`📦 ID Pago MP: ${paymentResult.id}`);
-    console.log(`📊 Estado: ${paymentResult.status}`);
-    console.log(`📊 Detalle de Estado: ${paymentResult.statusDetail}`);
-    console.log(`🛒 Orden ID: ${paymentResult.orderId}`);
-    console.log("===============================================\n");
 
     res.status(200).json(paymentResult);
   } catch (error) {
