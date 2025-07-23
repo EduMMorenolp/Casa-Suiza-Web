@@ -5,7 +5,7 @@ import { AxiosError } from "axios";
 import { createTicket } from "../../../../api/ticket";
 import { createOrder } from "../../../../api/order";
 import type { OrderData } from "../../../../api/order";
-import { createPaymentPreference } from "../../../../api/payments";
+import { createPaymentPreference, processBrickPayment } from "../../../../api/payments";
 
 import { usePurchaseForm } from "./usePurchaseForm";
 import { PurchaseForm } from "./PurchaseForm";
@@ -110,21 +110,65 @@ export default function PurchaseModal({
         console.log("Payment Brick listo para interactuar.");
     };
 
+    interface BrickFormData {
+        paymentType: string;
+        selectedPaymentMethod: string;
+        formData: {
+            token: string;
+            payment_method_id: string;
+            issuer_id: string;
+            installments: number;
+            transaction_amount: number;
+            payer: {
+                email: string;
+                identification: {
+                    type: string;
+                    number: string;
+                };
+            };
+        }
+    }
+
     const handleBrickSubmit = async (formData: unknown) => {
         setLoading(true);
         setError(null);
-        console.log("Datos de pago recibidos del Brick:", formData);
 
         try {
-            setStep('success');
-        } catch (e: unknown) {
-            console.error("Error al procesar el pago con el Brick:", e);
-            if (e instanceof AxiosError) {
-                const backendMessage = e.response?.data?.message;
-                setError(backendMessage || "Error al procesar el pago. Intenta nuevamente.");
+            if (!orderData) throw new Error("No hay una orden generada.");
+
+            // Type guard or cast to BrickFormData
+            const data = formData as BrickFormData;
+
+            const result = await processBrickPayment({
+                orderId: orderData.id,
+                token: data.formData.token,
+                paymentMethodId: data.formData.payment_method_id,
+                issuerId: data.formData.issuer_id,
+                installments: data.formData.installments,
+                transactionAmount: totalAmount,
+                description: `Compra de entradas para ${eventTitle}`,
+                payer: {
+                    email: data.formData.payer.email,
+                    identification: data.formData.payer.identification
+                        ? {
+                            type: data.formData.payer.identification.type,
+                            number: data.formData.payer.identification.number,
+                        }
+                        : {
+                            type: "DNI",
+                            number: "00000000",
+                        },
+                },
+            });
+
+            if (result.status === "approved" || result.status === "pending") {
+                setStep("success");
             } else {
-                setError("Ocurrió un error inesperado al procesar el pago. Intenta nuevamente.");
+                setError("El pago fue rechazado o falló. Intenta nuevamente.");
             }
+        } catch (e) {
+            console.error("Error al procesar pago desde el Brick:", e);
+            setError("Error al procesar el pago. Intenta nuevamente.");
         } finally {
             setLoading(false);
         }
@@ -199,7 +243,7 @@ export default function PurchaseModal({
                                     Cancelar
                                 </button>
                                 <button
-                                    onClick={handleFormSubmit} 
+                                    onClick={handleFormSubmit}
                                     disabled={loading}
                                     className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg transition-colors flex items-center justify-center gap-2"
                                 >

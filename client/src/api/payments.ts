@@ -19,6 +19,30 @@ export interface PaymentPreferenceResponse {
   initPoint: string;
 }
 
+export interface BrickPaymentData {
+  orderId: string;
+  token: string;
+  paymentMethodId: string;
+  issuerId: string;
+  installments: number;
+  transactionAmount: number;
+  description: string;
+  payer: {
+    email: string;
+    identification: {
+      type: string;
+      number: string;
+    };
+  };
+}
+
+export interface BrickPaymentResponse {
+  id: string;
+  status: string;
+  statusDetail: string;
+  orderId: string;
+}
+
 /**
  * Crea una preferencia de pago en el backend.
  * Puedes enviar un `orderId` para que el backend construya la preferencia
@@ -30,5 +54,16 @@ export async function createPaymentPreference(
   data: PreferenceData
 ): Promise<PaymentPreferenceResponse> {
   const res = await api.post("/payments/preference", data);
+  return res.data;
+}
+
+/**
+ * Procesa el pago desde el frontend usando los datos del Payment Brick.
+ * @param data Información del formulario de pago
+ */
+export async function processBrickPayment(
+  data: BrickPaymentData
+): Promise<BrickPaymentResponse> {
+  const res = await api.post("/payments/process-payment", data);
   return res.data;
 }
