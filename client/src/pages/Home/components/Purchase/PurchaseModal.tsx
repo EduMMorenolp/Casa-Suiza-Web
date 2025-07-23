@@ -161,7 +161,7 @@ export default function PurchaseModal({
                 },
             });
 
-            if (result.status === "approved" || result.status === "pending") {
+            if (result.status === "approved") {
                 setStep("success");
             } else {
                 setError("El pago fue rechazado o falló. Intenta nuevamente.");
