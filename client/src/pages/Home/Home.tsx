@@ -25,15 +25,16 @@ export default function Home() {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
-        const filteredAndSortedEvents = data
-          .filter(event => {
-            const eventDate = new Date(event.date);
-            eventDate.setHours(0, 0, 0, 0);
-            return eventDate >= today;
-          })
-          .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        // Si quieres ordenar por fecha, puedes hacerlo aquí
+        // const filteredAndSortedEvents = data
+        //   .filter(event => {
+        //     const eventDate = new Date(event.date);
+        //     eventDate.setHours(0, 0, 0, 0);
+        //     return eventDate >= today;
+        //   })
+        //   .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-        setEvents(filteredAndSortedEvents);
+        setEvents(data);
       } catch (err) {
         if (err instanceof Error) {
           setError(err.message);

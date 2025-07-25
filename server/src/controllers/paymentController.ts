@@ -50,12 +50,6 @@ export async function createPaymentPreferenceHandler(
       preferenceData
     );
 
-    const now = new Date().toLocaleString();
-    console.log("===============================================");
-    console.log(`🕒 [${now}] Preferencia de pago creada para Brick:`);
-    console.log(`🪪 ID Preferencia: ${preferenceId}`);
-    console.log("===============================================\n");
-
     res.status(201).json({ preferenceId });
   } catch (error) {
     next(error);
