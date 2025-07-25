@@ -4,6 +4,12 @@ import { PaymentStatus, OrderStatus, TicketStatus } from "@prisma/client";
 import { CustomError } from "../utils/CustomError";
 import * as orderService from "./orderService";
 import * as ticketService from "./ticketService";
+import dotenv from "dotenv";
+// Load environment variables from .env file
+dotenv.config();
+const BASE_PATH = process.env.BASE_PATH || "";
+const VERSIONS_API = process.env.VERSIONS_API || "";
+const BASE_URL = process.env.BASE_URL || "http://localhost:3000";
 
 interface CreatePreferenceRequest {
   orderId: string;
@@ -72,6 +78,11 @@ export async function createPreferenceForBricks(
         },
       },
       external_reference: data.orderId,
+      back_urls: {
+        success: `${BASE_URL}/payment/success`,
+        failure: `${BASE_URL}/payment/failure`,
+        pending: `${BASE_URL}/payment/pending`,
+      },
     };
 
     const response = await mpPreferences.create({ body: preferenceData });

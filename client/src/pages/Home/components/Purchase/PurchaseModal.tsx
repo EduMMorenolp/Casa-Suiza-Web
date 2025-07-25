@@ -5,12 +5,13 @@ import { AxiosError } from "axios";
 import { createTicket } from "../../../../api/ticket";
 import { createOrder } from "../../../../api/order";
 import type { OrderData } from "../../../../api/order";
-import { createPaymentPreference, processBrickPayment } from "../../../../api/payments";
+import { createPaymentPreference } from "../../../../api/payments";
 
 import { usePurchaseForm } from "./usePurchaseForm";
 import { PurchaseForm } from "./PurchaseForm";
 import { PaymentSummary } from "./PaymentSummary";
-import { MercadoPagoPaymentBrick } from "./MercadoPagoPaymentBrick";
+// import { MercadoPagoPaymentBrick } from "./MercadoPagoPaymentBrick";
+import { MercadoPagoPaymentPro } from "./MercadoPagoPaymentPro";
 
 interface PurchaseModalProps {
     isOpen: boolean;
@@ -21,8 +22,8 @@ interface PurchaseModalProps {
     userId?: string;
 }
 
-// **IMPORTANTE:** Public Key de Mercado Pago
-const MERCADO_PAGO_PUBLIC_KEY = "TEST-fa40a928-2f57-48c0-b4d4-d0c062a3e729";
+// // **IMPORTANTE:** Public Key de Mercado Pago
+// const MERCADO_PAGO_PUBLIC_KEY = "APP_USR-cdf226a3-483a-47b7-862b-09ea60054895";
 
 export default function PurchaseModal({
     isOpen,
@@ -81,9 +82,11 @@ export default function PurchaseModal({
             });
             setOrderData(order);
 
+            const totalAmount = (ticketPrice * quantity) + (ticketPrice * quantity * 0.1);
+
             const { preferenceId: newPreferenceId } = await createPaymentPreference({
                 orderId: order.id,
-                amount: (ticketPrice * quantity) + (ticketPrice * quantity * 0.1),
+                amount: totalAmount,
                 buyerName: buyerName,
                 buyerLastName: buyerLastName,
                 buyerEmail: buyerEmail,
@@ -106,78 +109,78 @@ export default function PurchaseModal({
         }
     };
 
-    const handleBrickReady = () => {
-        console.log("Payment Brick listo para interactuar.");
-    };
+    // const handleBrickReady = () => {
+    //     console.log("Payment Brick listo para interactuar.");
+    // };
 
-    interface BrickFormData {
-        paymentType: string;
-        selectedPaymentMethod: string;
-        formData: {
-            token: string;
-            payment_method_id: string;
-            issuer_id: string;
-            installments: number;
-            transaction_amount: number;
-            payer: {
-                email: string;
-                identification: {
-                    type: string;
-                    number: string;
-                };
-            };
-        }
-    }
+    // interface BrickFormData {
+    //     paymentType: string;
+    //     selectedPaymentMethod: string;
+    //     formData: {
+    //         token: string;
+    //         payment_method_id: string;
+    //         issuer_id: string;
+    //         installments: number;
+    //         transaction_amount: number;
+    //         payer: {
+    //             email: string;
+    //             identification: {
+    //                 type: string;
+    //                 number: string;
+    //             };
+    //         };
+    //     }
+    // }
 
-    const handleBrickSubmit = async (formData: unknown) => {
-        setLoading(true);
-        setError(null);
+    // const handleBrickSubmit = async (formData: unknown) => {
+    //     setLoading(true);
+    //     setError(null);
 
-        try {
-            if (!orderData) throw new Error("No hay una orden generada.");
+    //     try {
+    //         if (!orderData) throw new Error("No hay una orden generada.");
 
-            // Type guard or cast to BrickFormData
-            const data = formData as BrickFormData;
+    //         // Type guard or cast to BrickFormData
+    //         const data = formData as BrickFormData;
 
-            const result = await processBrickPayment({
-                orderId: orderData.id,
-                token: data.formData.token,
-                paymentMethodId: data.formData.payment_method_id,
-                issuerId: data.formData.issuer_id,
-                installments: data.formData.installments,
-                transactionAmount: totalAmount,
-                description: `Compra de entradas para ${eventTitle}`,
-                payer: {
-                    email: data.formData.payer.email,
-                    identification: data.formData.payer.identification
-                        ? {
-                            type: data.formData.payer.identification.type,
-                            number: data.formData.payer.identification.number,
-                        }
-                        : {
-                            type: "DNI",
-                            number: "00000000",
-                        },
-                },
-            });
+    //         const result = await processBrickPayment({
+    //             orderId: orderData.id,
+    //             token: data.formData.token,
+    //             paymentMethodId: data.formData.payment_method_id,
+    //             issuerId: data.formData.issuer_id,
+    //             installments: data.formData.installments,
+    //             transactionAmount: totalAmount,
+    //             description: `Compra de entradas para ${eventTitle}`,
+    //             payer: {
+    //                 email: data.formData.payer.email,
+    //                 identification: data.formData.payer.identification
+    //                     ? {
+    //                         type: data.formData.payer.identification.type,
+    //                         number: data.formData.payer.identification.number,
+    //                     }
+    //                     : {
+    //                         type: "DNI",
+    //                         number: "00000000",
+    //                     },
+    //             },
+    //         });
 
-            if (result.status === "approved") {
-                setStep("success");
-            } else {
-                setError("El pago fue rechazado o falló. Intenta nuevamente.");
-            }
-        } catch (e) {
-            console.error("Error al procesar pago desde el Brick:", e);
-            setError("Error al procesar el pago. Intenta nuevamente.");
-        } finally {
-            setLoading(false);
-        }
-    };
+    //         if (result.status === "approved") {
+    //             setStep("success");
+    //         } else {
+    //             setError("El pago fue rechazado o falló. Intenta nuevamente.");
+    //         }
+    //     } catch (e) {
+    //         console.error("Error al procesar pago desde el Brick:", e);
+    //         setError("Error al procesar el pago. Intenta nuevamente.");
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
 
-    const handleBrickError = (error: unknown) => {
-        console.error("Error en el Payment Brick:", error);
-        setError("Hubo un error con el formulario de pago. Por favor, inténtalo de nuevo.");
-    };
+    // const handleBrickError = (error: unknown) => {
+    //     console.error("Error en el Payment Brick:", error);
+    //     setError("Hubo un error con el formulario de pago. Por favor, inténtalo de nuevo.");
+    // };
 
     useEffect(() => {
         const handleEscape = (e: KeyboardEvent) => {
@@ -197,7 +200,7 @@ export default function PurchaseModal({
 
     if (!isOpen) return null;
 
-    const totalAmount = (ticketPrice * quantity) + (ticketPrice * quantity * 0.1);
+
 
     return (
         <div className="fixed inset-0 flex justify-center items-center bg-black/50 z-50 p-4">
@@ -275,10 +278,7 @@ export default function PurchaseModal({
                                 />
                             )}
                             <div className="text-center">
-                                <h3 className="lg:text-lg font-semibold mb-2">Completa tu pago</h3>
-                                <p className="text-gray-600 text-sm">
-                                    Ingresa los datos de tu tarjeta o elige otro medio de pago.
-                                </p>
+                                <h3 className="lg:text-lg font-semibold">Completa tu pago</h3>
                             </div>
 
                             {error && (
@@ -291,16 +291,9 @@ export default function PurchaseModal({
                             )}
 
                             {preferenceId && (
-                                <MercadoPagoPaymentBrick
-                                    publicKey={MERCADO_PAGO_PUBLIC_KEY}
-                                    preferenceId={preferenceId}
-                                    onReady={handleBrickReady}
-                                    onSubmit={handleBrickSubmit}
-                                    onError={handleBrickError}
-                                    amount={totalAmount}
-                                    email={buyerEmail}
-                                    dni={buyerDni}
-                                />
+                                <>
+                                    <MercadoPagoPaymentPro preferenceId={preferenceId} />
+                                </>
                             )}
                             <div className="flex gap-3">
                                 <button

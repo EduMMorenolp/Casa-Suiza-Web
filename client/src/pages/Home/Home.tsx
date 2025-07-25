@@ -20,20 +20,20 @@ export default function Home() {
     async function fetchEvents() {
       try {
         const data = await getEvents();
-
-        // Filtrar eventos: solo mostrar aquellos cuya fecha es hoy o en el futuro
+        console.log("Eventos obtenidos:", data);
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
-        const filteredAndSortedEvents = data
-          .filter(event => {
-            const eventDate = new Date(event.date);
-            eventDate.setHours(0, 0, 0, 0);
-            return eventDate >= today;
-          })
-          .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        // Filtrar eventos futuros y ordenarlos por fecha
+        // const filteredAndSortedEvents = data
+        //   .filter(event => {
+        //     const eventDate = new Date(event.date);
+        //     eventDate.setHours(0, 0, 0, 0);
+        //     return eventDate >= today;
+        //   })
+        //   .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-        setEvents(filteredAndSortedEvents);
+        setEvents(data);
       } catch (err) {
         if (err instanceof Error) {
           setError(err.message);
