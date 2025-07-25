@@ -1,10 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import * as paymentService from "../services/paymentService";
 import { CustomError } from "../utils/CustomError";
-import {
-  handleMercadoPagoWebhook,
-  processPaymentFromBrick,
-} from "../services/paymentService";
+import { handleMercadoPagoWebhook } from "../services/paymentService";
 
 export async function createPaymentPreferenceHandler(
   req: Request,
@@ -46,9 +43,8 @@ export async function createPaymentPreferenceHandler(
       buyerDni: buyerDni,
     };
 
-    const { preferenceId } = await paymentService.createPreferenceForBricks(
-      preferenceData
-    );
+    const { preferenceId } =
+      await paymentService.createPreferenceForCheckoutPro(preferenceData);
 
     res.status(201).json({ preferenceId });
   } catch (error) {
@@ -62,7 +58,7 @@ export async function processPaymentControllerexport(
   next: NextFunction
 ): Promise<void> {
   try {
-    const result = await processPaymentFromBrick(req.body);
+    const result = await paymentService.processPaymentFromCheckoutPro(req.body);
     res.status(200).json(result);
   } catch (error: any) {
     console.error("Error en el controlador de pago:", error.message);
@@ -104,7 +100,7 @@ export async function processPaymentHandler(
       );
     }
 
-    const paymentResult = await paymentService.processPaymentFromBrick({
+    const paymentResult = await paymentService.processPaymentFromCheckoutPro({
       orderId,
       paymentMethodId,
       token,

@@ -49,7 +49,7 @@ interface ProcessPaymentResponse {
   orderId: string;
 }
 
-export async function createPreferenceForBricks(
+export async function createPreferenceForCheckoutPro(
   data: CreatePreferenceRequest
 ): Promise<CreatePreferenceResponse> {
   try {
@@ -60,6 +60,7 @@ export async function createPreferenceForBricks(
           title: "Compra de Entradas",
           quantity: 1,
           unit_price: data.amount,
+          currency_id: "ARS",
         },
       ],
       payer: {
@@ -79,11 +80,14 @@ export async function createPreferenceForBricks(
       },
       external_reference: data.orderId,
       back_urls: {
-        success: `${BASE_URL}/payment/success`,
-        failure: `${BASE_URL}/payment/failure`,
-        pending: `${BASE_URL}/payment/pending`,
+        success: "http://localhost:3000/api/v1/payment/success",
+        failure: "http://localhost:3000/api/v1/payment/failure",
+        pending: "http://localhost:3000/api/v1/payment/pending",
       },
+qcq
       auto_return: "approved",
+      statement_descriptor: "Casa Suiza Entradas",
+
     };
 
     const response = await mpPreferences.create({ body: preferenceData });
@@ -96,7 +100,7 @@ export async function createPreferenceForBricks(
     return { preferenceId: response.id };
   } catch (error: unknown) {
     console.error(
-      "Error creando preferencia de pago para Bricks en MercadoPago:",
+      "Error creando preferencia de pago para Checkout Pro en MercadoPago:",
       error
     );
     throw new CustomError(
@@ -106,7 +110,7 @@ export async function createPreferenceForBricks(
   }
 }
 
-export async function processPaymentFromBrick(
+export async function processPaymentFromCheckoutPro(
   data: ProcessPaymentRequest
 ): Promise<ProcessPaymentResponse> {
   try {

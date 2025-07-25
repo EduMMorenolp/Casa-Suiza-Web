@@ -5,7 +5,7 @@ interface MercadoPagoPaymentProProps {
 export function MercadoPagoPaymentPro({ preferenceId }: MercadoPagoPaymentProProps) {
     const handleRedirect = () => {
         const url = `https://www.mercadopago.com.ar/checkout/v1/redirect?preference_id=${preferenceId}`;
-        window.location.href = url;
+        window.open(url, "_blank");
     };
 
     return (
