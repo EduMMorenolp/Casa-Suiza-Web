@@ -10,7 +10,6 @@ import { createPaymentPreference } from "../../../../api/payments";
 import { usePurchaseForm } from "./usePurchaseForm";
 import { PurchaseForm } from "./PurchaseForm";
 import { PaymentSummary } from "./PaymentSummary";
-// import { MercadoPagoPaymentBrick } from "./MercadoPagoPaymentBrick";
 import { MercadoPagoPaymentPro } from "./MercadoPagoPaymentPro";
 
 interface PurchaseModalProps {
@@ -21,9 +20,6 @@ interface PurchaseModalProps {
     onClose: () => void;
     userId?: string;
 }
-
-// // **IMPORTANTE:** Public Key de Mercado Pago
-// const MERCADO_PAGO_PUBLIC_KEY = "APP_USR-cdf226a3-483a-47b7-862b-09ea60054895";
 
 export default function PurchaseModal({
     isOpen,
@@ -108,79 +104,6 @@ export default function PurchaseModal({
             setLoading(false);
         }
     };
-
-    // const handleBrickReady = () => {
-    //     console.log("Payment Brick listo para interactuar.");
-    // };
-
-    // interface BrickFormData {
-    //     paymentType: string;
-    //     selectedPaymentMethod: string;
-    //     formData: {
-    //         token: string;
-    //         payment_method_id: string;
-    //         issuer_id: string;
-    //         installments: number;
-    //         transaction_amount: number;
-    //         payer: {
-    //             email: string;
-    //             identification: {
-    //                 type: string;
-    //                 number: string;
-    //             };
-    //         };
-    //     }
-    // }
-
-    // const handleBrickSubmit = async (formData: unknown) => {
-    //     setLoading(true);
-    //     setError(null);
-
-    //     try {
-    //         if (!orderData) throw new Error("No hay una orden generada.");
-
-    //         // Type guard or cast to BrickFormData
-    //         const data = formData as BrickFormData;
-
-    //         const result = await processBrickPayment({
-    //             orderId: orderData.id,
-    //             token: data.formData.token,
-    //             paymentMethodId: data.formData.payment_method_id,
-    //             issuerId: data.formData.issuer_id,
-    //             installments: data.formData.installments,
-    //             transactionAmount: totalAmount,
-    //             description: `Compra de entradas para ${eventTitle}`,
-    //             payer: {
-    //                 email: data.formData.payer.email,
-    //                 identification: data.formData.payer.identification
-    //                     ? {
-    //                         type: data.formData.payer.identification.type,
-    //                         number: data.formData.payer.identification.number,
-    //                     }
-    //                     : {
-    //                         type: "DNI",
-    //                         number: "00000000",
-    //                     },
-    //             },
-    //         });
-
-    //         if (result.status === "approved") {
-    //             setStep("success");
-    //         } else {
-    //             setError("El pago fue rechazado o falló. Intenta nuevamente.");
-    //         }
-    //     } catch (e) {
-    //         console.error("Error al procesar pago desde el Brick:", e);
-    //         setError("Error al procesar el pago. Intenta nuevamente.");
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
-
-    // const handleBrickError = (error: unknown) => {
-    //     console.error("Error en el Payment Brick:", error);
-    //     setError("Hubo un error con el formulario de pago. Por favor, inténtalo de nuevo.");
-    // };
 
     useEffect(() => {
         const handleEscape = (e: KeyboardEvent) => {
@@ -292,7 +215,9 @@ export default function PurchaseModal({
 
                             {preferenceId && (
                                 <>
-                                    <MercadoPagoPaymentPro preferenceId={preferenceId} />
+                                    <div className="walletBrick_container">
+                                        <MercadoPagoPaymentPro preferenceId={preferenceId} />
+                                    </div>
                                 </>
                             )}
                             <div className="flex gap-3">

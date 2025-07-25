@@ -83,6 +83,7 @@ export async function createPreferenceForBricks(
         failure: `${BASE_URL}/payment/failure`,
         pending: `${BASE_URL}/payment/pending`,
       },
+      auto_return: "approved",
     };
 
     const response = await mpPreferences.create({ body: preferenceData });
