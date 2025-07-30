@@ -22,7 +22,7 @@ interface PurchaseModalProps {
 }
 
 // **IMPORTANTE:** Public Key de Mercado Pago
-const MERCADO_PAGO_PUBLIC_KEY = "APP_USR-b7771961-5c71-410f-a42a-d59cacf40bb6";
+const MERCADO_PAGO_PUBLIC_KEY = "APP_USR-829c15f8-182b-45ad-81b2-dde9636544b9";
 
 export default function PurchaseModal({
     isOpen,

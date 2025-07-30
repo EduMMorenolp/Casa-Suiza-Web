@@ -20,6 +20,9 @@ function App() {
             // </ProtectedRoute>
           }
         />
+        <Route path="/payment/success" element={<Home />} />
+        <Route path="/payment/failure" element={<Home />} />
+        <Route path="/payment/pending" element={<Home />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>

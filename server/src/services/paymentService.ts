@@ -72,6 +72,7 @@ export async function createPreferenceForBricks(
         },
       },
       external_reference: data.orderId,
+      entity_type: "individual",
     };
 
     const response = await mpPreferences.create({ body: preferenceData });
