@@ -1,4 +1,5 @@
 import transporter from '../config/email';
+import { generateQRCode } from './qrService';
 
 interface EmailData {
   to: string;
@@ -9,6 +10,8 @@ interface EmailData {
 }
 
 export const sendPurchaseConfirmation = async (data: EmailData) => {
+  const qrCode = await generateQRCode(data.paymentId);
+  
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: data.to,
@@ -22,6 +25,10 @@ export const sendPurchaseConfirmation = async (data: EmailData) => {
         <li>Total: $${data.total}</li>
         <li>ID de pago: ${data.paymentId}</li>
       </ul>
+      <div style="text-align: center; margin: 20px 0;">
+        <p><strong>Tu entrada digital:</strong></p>
+        <img src="${qrCode}" alt="QR Code" style="max-width: 200px;" />
+      </div>
       <p>¡Nos vemos en el evento!</p>
     `
   };
