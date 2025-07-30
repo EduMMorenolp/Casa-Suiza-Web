@@ -304,7 +304,7 @@ export default function PurchaseModal({
             // Limpiar URL
             window.history.replaceState({}, document.title, window.location.pathname);
         }
-    }, [orderData]);
+    }, [orderData, checkPaymentStatusManually]);
 
     if (!isOpen) return null;
 
