@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { createEvent, updateEvent } from "../../../api/events";
 import { createCategory, getCategories } from "../../../api/category";
 import type { EventData } from "../../../api/events";
+import { useAuth } from "../../../pages/Auth/context/AuthContext";
 
 // Tipos para categorías
 interface Category {
@@ -22,6 +23,7 @@ const AddEventForm: React.FC<AddEventFormProps> = ({
     onClose,
     onRedirectToEvents
 }) => {
+    const { user } = useAuth();
     const [formData, setFormData] = useState<EventData>({
         id: "",
         title: "",
@@ -29,12 +31,13 @@ const AddEventForm: React.FC<AddEventFormProps> = ({
         location: "Casa Suiza, La Plata",
         date: "",
         price: 0,
+        sold: 0,
         capacity: 120,
         imageUrl: "",
         promo: false,
         soldOut: false,
         categoryId: "",
-        organizerId: "",
+        organizerId: user?.id || "", // Set organizerId to current user's ID
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
     });
@@ -105,12 +108,13 @@ const AddEventForm: React.FC<AddEventFormProps> = ({
                     location: "",
                     date: "",
                     price: 0,
+                    sold: 0,
                     capacity: 0,
                     imageUrl: "",
                     promo: false,
                     soldOut: false,
                     categoryId: "",
-                    organizerId: "",
+                    organizerId: user?.id || "", // Set organizerId to current user's ID
                     createdAt: new Date().toISOString(),
                     updatedAt: new Date().toISOString(),
                 });
@@ -146,6 +150,26 @@ const AddEventForm: React.FC<AddEventFormProps> = ({
             setError("Error al crear la categoría");
         } finally {
             setLoadingCategories(false);
+        }
+    };
+
+    const formatTimeForInput = (isoString?: string | null) => {
+        if (!isoString) return "";
+        try {
+            return isoString.split('T')[1]?.substring(0, 5) || "";
+        } catch (e) {
+            console.error("Error formatting time for input:", isoString, e);
+            return "";
+        }
+    };
+
+    const formatDateForInput = (isoString?: string | null) => {
+        if (!isoString) return "";
+        try {
+            return isoString.split('T')[0];
+        } catch (e) {
+            console.error("Error formatting date for input:", isoString, e);
+            return "";
         }
     };
 
@@ -201,21 +225,41 @@ const AddEventForm: React.FC<AddEventFormProps> = ({
                     </div>
 
                     {/* Fecha y Hora */}
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label htmlFor="event-date" className="block text-sm font-medium text-gray-700 mb-2">
                                 Fecha
                             </label>
                             <input
                                 type="date"
-                                value={formData.date || ""}
-                                onChange={(e) =>
-                                    setFormData({ ...formData, date: e.target.value })
-                                }
+                                id="event-date"
+                                value={formatDateForInput(formData.date)}
+                                onChange={(e) => {
+                                    const newDatePart = e.target.value;
+                                    const currentTimePart = formData.date ? formData.date.split('T')[1] || '00:00:00.000Z' : '00:00:00.000Z';
+                                    setFormData({ ...formData, date: `${newDatePart}T${currentTimePart}` });
+                                }}
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="event-time" className="block text-sm font-medium text-gray-700 mb-2">
+                                Hora
+                            </label>
+                            <input
+                                type="time"
+                                id="event-time"
+                                value={formatTimeForInput(formData.date)}
+                                onChange={(e) => {
+                                    const newTimePart = e.target.value;
+                                    const currentDatePart = formData.date ? formData.date.split('T')[0] || new Date().toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
+                                    setFormData({ ...formData, date: `${currentDatePart}T${newTimePart}:00.000Z` });
+                                }}
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                             />
                         </div>
                     </div>
+
 
                     {/* Precio y Capacidad */}
                     <div className="grid grid-cols-2 gap-4">
@@ -320,7 +364,7 @@ const AddEventForm: React.FC<AddEventFormProps> = ({
                                 )}
                             </div>
                         </div>
-                        <div>
+                        <div style={{ display: 'none' }}>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                 ID de Organizador
                             </label>

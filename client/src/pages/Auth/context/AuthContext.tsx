@@ -1,9 +1,16 @@
-import { createContext, useContext, useState }
+import { createContext, useContext, useState, useEffect }
     from 'react';
 import type { ReactNode } from 'react';
+import { login as loginApi } from '../../../api/auth';
+
+interface User {
+    id: string;
+    username: string;
+}
 
 interface AuthContextType {
     isAuthenticated: boolean;
+    user: User | null;
     login: (username: string, password: string) => Promise<boolean>;
     logout: () => void;
 }
@@ -23,22 +30,45 @@ interface AuthProviderProps {
 
 export function AuthProvider({ children }: AuthProviderProps) {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [user, setUser] = useState<User | null>(null);
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        const userData = localStorage.getItem('user');
+        if (token && userData) {
+            setIsAuthenticated(true);
+            setUser(JSON.parse(userData));
+        }
+    }, []);
 
     const login = async (username: string, password: string): Promise<boolean> => {
-        // Aquí puedes reemplazar por llamada a backend
-        if (username === 'casasuiza' && password === 'c123456') {
-            setIsAuthenticated(true);
-            return true;
+        try {
+            const response = await loginApi(username, password);
+            
+            if (response.status === 200 && response.data.token) {
+                localStorage.setItem('token', response.data.token);
+                const userData = response.data.user || { id: '1', username };
+                localStorage.setItem('user', JSON.stringify(userData));
+                setUser(userData);
+                setIsAuthenticated(true);
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.error("Error al iniciar sesión:", error);
+            return false;
         }
-        return false;
     };
 
     const logout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setUser(null);
         setIsAuthenticated(false);
     };
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+        <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>
             {children}
         </AuthContext.Provider>
     );

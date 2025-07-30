@@ -10,6 +10,7 @@ export interface EventData {
   promo: boolean | null;
   soldOut: boolean | null;
   price: number;
+  sold: number;
   imageUrl: string | null;
   createdAt: string;
   updatedAt: string;

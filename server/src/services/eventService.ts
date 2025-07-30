@@ -1,19 +1,19 @@
 import prisma from "../config/prismaClient";
 import { CustomError } from "../utils/CustomError";
-import { Prisma } from "@prisma/client"; // Importamos Prisma para tipos de errores
+import { Prisma } from "@prisma/client";
 
 interface CreateEventInput {
   title: string;
-  description?: string | null; // Puede ser nulo
-  location?: string | null; // Puede ser nulo
+  description?: string | null;
+  location?: string | null;
   date: Date;
-  capacity?: number | null; // Puede ser nulo
-  promo?: boolean | null; // Puede ser nulo
-  soldOut?: boolean | null; // Puede ser nulo
+  capacity?: number | null;
+  promo?: boolean | null;
+  soldOut?: boolean | null;
   price: number;
-  imageUrl?: string | null; // Puede ser nulo
-  categoryId?: string | null; // Puede ser nulo
-  organizerId?: string | null; // Puede ser nulo
+  imageUrl?: string | null;
+  categoryId?: string | null;
+  organizerId?: string | null;
 }
 
 export interface UpdateEventInput {
@@ -28,6 +28,7 @@ export interface UpdateEventInput {
   imageUrl?: string | null;
   categoryId?: string | null;
   organizerId?: string | null;
+  isActive?: boolean;
 }
 
 export interface ListEventsFilters {
@@ -38,6 +39,7 @@ export interface ListEventsFilters {
   organizerId?: string;
   promo?: boolean;
   soldOut?: boolean;
+  includeInactive?: boolean;
 }
 
 /**
@@ -48,7 +50,6 @@ export interface ListEventsFilters {
  */
 export async function createEvent(data: CreateEventInput) {
   try {
-    // Opcional: Verificar si categoryId y organizerId existen si se proporcionan
     if (data.categoryId) {
       const category = await prisma.category.findUnique({
         where: { id: data.categoryId },
@@ -66,10 +67,15 @@ export async function createEvent(data: CreateEventInput) {
       }
     }
 
-    return await prisma.event.create({ data });
+    const finalData = { ...data };
+    if (finalData.capacity === 0) {
+      finalData.soldOut = true;
+    }
+
+    return await prisma.event.create({ data: finalData });
   } catch (error: unknown) {
     if (error instanceof CustomError) {
-      throw error; // Re-lanzar CustomError ya definido
+      throw error;
     }
     console.error("Error inesperado al crear evento:", error);
     throw new CustomError("Error interno al crear el evento.", 500);
@@ -78,16 +84,20 @@ export async function createEvent(data: CreateEventInput) {
 
 /**
  * Obtiene un evento por su ID.
- * Incluye relaciones con Category y User (organizer).
+ * Incluye relaciones con Category, User (organizer) y conteo de tickets.
+ * Por defecto, solo retorna eventos activos (isActive: true).
  * @param id El ID del evento.
- * @returns El evento encontrado o null si no existe.
+ * @returns El evento encontrado o null si no existe o está inactivo.
  */
 export async function getEventById(id: string) {
   return await prisma.event.findUnique({
-    where: { id },
+    where: { id, isActive: true },
     include: {
       category: true,
       organizer: true,
+      _count: {
+        select: { tickets: true },
+      },
     },
   });
 }
@@ -101,7 +111,6 @@ export async function getEventById(id: string) {
  */
 export async function updateEvent(id: string, data: UpdateEventInput) {
   try {
-    // Opcional: Verificar si categoryId y organizerId existen si se proporcionan
     if (data.categoryId) {
       const category = await prisma.category.findUnique({
         where: { id: data.categoryId },
@@ -116,6 +125,17 @@ export async function updateEvent(id: string, data: UpdateEventInput) {
       });
       if (!organizer) {
         throw new CustomError("Organizador no encontrado.", 404);
+      }
+    }
+
+    if (data.capacity === 0) {
+      data.soldOut = true;
+    } else if (data.capacity !== undefined && data.capacity !== null) {
+      const currentTicketsCount = await prisma.ticket.count({
+        where: { eventId: id },
+      });
+      if (currentTicketsCount < data.capacity) {
+        data.soldOut = false;
       }
     }
 
@@ -141,14 +161,17 @@ export async function updateEvent(id: string, data: UpdateEventInput) {
 }
 
 /**
- * Elimina un evento por su ID.
- * @param id El ID del evento a eliminar.
- * @returns El evento eliminado.
+ * "Elimina" (soft delete) un evento marcándolo como inactivo.
+ * @param id El ID del evento a "eliminar".
+ * @returns El evento actualizado (marcado como inactivo).
  * @throws CustomError si el evento no es encontrado o error interno.
  */
 export async function deleteEvent(id: string) {
   try {
-    return await prisma.event.delete({ where: { id } });
+    return await prisma.event.update({
+      where: { id },
+      data: { isActive: false },
+    });
   } catch (error: unknown) {
     if (
       typeof error === "object" &&
@@ -164,12 +187,13 @@ export async function deleteEvent(id: string) {
 }
 
 /**
- * Lista eventos con filtros opcionales.
- * @param filters Filtros para la búsqueda de eventos.
- * @returns Una lista de eventos que coinciden con los filtros.
+ * Lista eventos con filtros opcionales y el conteo de tickets vendidos.
+ * Por defecto, solo lista eventos activos (isActive: true).
+ * @param filters Filtros para la búsqueda de eventos. `includeInactive` para ver eventos "eliminados".
+ * @returns Una lista de eventos que coinciden con los filtros, incluyendo `sold` (tickets vendidos).
  */
 export async function listEvents(filters: ListEventsFilters) {
-  const whereClause: Prisma.EventWhereInput = {}; // Usamos el tipo de Prisma para mayor seguridad
+  const whereClause: Prisma.EventWhereInput = {};
 
   if (filters.title) {
     whereClause.title = {
@@ -203,5 +227,33 @@ export async function listEvents(filters: ListEventsFilters) {
     whereClause.soldOut = filters.soldOut;
   }
 
-  return await prisma.event.findMany({ where: whereClause });
+  whereClause.isActive = true;
+
+  if (filters.includeInactive === true) {
+    delete whereClause.isActive;
+  }
+
+  const eventsWithTicketCount = await prisma.event.findMany({
+    where: whereClause,
+    include: {
+      category: true,
+      organizer: true,
+      _count: {
+        select: { tickets: true },
+      },
+    },
+    orderBy: {
+      date: "asc",
+    },
+  });
+
+  const events = eventsWithTicketCount.map((event) => {
+    const { _count, ...rest } = event;
+    return {
+      ...rest,
+      sold: _count.tickets,
+      isActive: event.isActive,
+    };
+  });
+  return events;
 }

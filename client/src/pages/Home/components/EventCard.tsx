@@ -64,11 +64,14 @@ export default function EventCard({ event, onBuyClick }: EventCardProps) {
     return date.toLocaleDateString('es-ES', options);
   };
 
-  const formatTime = (dateString: string) => {
-    if (!dateString) return 'Hora no disponible';
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return 'Hora inválida';
-    return date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+  const formatTime = (isoString?: string | null) => {
+    if (!isoString) return "";
+    try {
+      return isoString.split('T')[1]?.substring(0, 5) || "";
+    } catch (e) {
+      console.error("Error formatting time for input:", isoString, e);
+      return "";
+    }
   };
 
   return (

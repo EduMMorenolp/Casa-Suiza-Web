@@ -60,18 +60,22 @@ export async function createOrder(data: CreateOrderData) {
       0
     );
 
+    const serviceFeePercentage = 0.1;
+    const serviceCost = totalPrice * serviceFeePercentage;
+    const finalTotalPrice = totalPrice + serviceCost;
+
     // Crear la orden
     const order = await prisma.order.create({
       data: {
         userId: data.userId || null,
-        totalPrice: totalPrice,
+        totalPrice: finalTotalPrice,
         status: OrderStatus.PENDING,
         tickets: {
           connect: data.ticketIds.map((id) => ({ id })),
         },
       },
       include: {
-        tickets: true, 
+        tickets: true,
       },
     });
 
@@ -98,7 +102,7 @@ export async function findAllOrders() {
           event: true,
         },
       },
-      Payment: true,
+      payment: true,
     },
   });
 }
@@ -118,7 +122,7 @@ export async function findOrderById(id: string) {
           event: true,
         },
       },
-      Payment: true,
+      payment: true,
     },
   });
 }

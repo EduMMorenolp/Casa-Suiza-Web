@@ -24,9 +24,7 @@ export async function createTicketHandler(
         400
       );
     }
-
-    console.log(eventId, buyerName, buyerLastName, buyerEmail, buyerPhone, buyerDni);
-
+    
     const ticket = await ticketService.createTicket({
       eventId,
       buyerName,

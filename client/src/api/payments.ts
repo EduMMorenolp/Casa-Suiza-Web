@@ -2,32 +2,45 @@ import { api } from "./apiClient";
 
 // Interfaz para los datos que se envían al backend para crear una preferencia de pago
 export interface PreferenceData {
-  // Ahora la preferencia se puede crear directamente con un orderId
-  orderId?: string; // CAMBIO: Añadimos orderId como opcional
-
-  // Si no hay orderId, se pueden proporcionar los detalles del ticket/evento directamente
-  // (Aunque es preferible usar orderId si la compra es de múltiples tickets)
-  ticketId?: string; // Si es para un solo ticket sin orden previa
+  orderId?: string;
+  ticketId?: string;
   buyerName?: string;
   buyerLastName?: string;
   buyerEmail?: string;
   buyerPhone?: string;
   eventTitle?: string;
-  price?: number; // Precio total si no hay orderId
-
-  // Estos campos son para MercadoPago y se pueden manejar en el backend si se pasa orderId
-  // items: PaymentPreferenceItem[]; // Los items se construyen en el backend
-  // payer: { ... }; // El payer se construye en el backend
-  // back_urls: { ... };
-  // auto_return: "approved" | "all" | "none";
-  // notification_url: string;
-  // external_reference?: string;
+  buyerDni?: string;
+  price?: number;
+  amount?: number;
 }
 
-// Interfaz para la respuesta del backend al crear una preferencia de pago
 export interface PaymentPreferenceResponse {
   preferenceId: string;
   initPoint: string;
+}
+
+export interface BrickPaymentData {
+  orderId: string;
+  token: string;
+  paymentMethodId: string;
+  issuerId: string;
+  installments: number;
+  transactionAmount: number;
+  description: string;
+  payer: {
+    email: string;
+    identification: {
+      type: string;
+      number: string;
+    };
+  };
+}
+
+export interface BrickPaymentResponse {
+  id: string;
+  status: string;
+  statusDetail: string;
+  orderId: string;
 }
 
 /**
@@ -40,6 +53,17 @@ export interface PaymentPreferenceResponse {
 export async function createPaymentPreference(
   data: PreferenceData
 ): Promise<PaymentPreferenceResponse> {
-  const res = await api.post("/payments/preference", data); 
+  const res = await api.post("/payments/preference", data);
+  return res.data;
+}
+
+/**
+ * Procesa el pago desde el frontend usando los datos del Payment Brick.
+ * @param data Información del formulario de pago
+ */
+export async function processBrickPayment(
+  data: BrickPaymentData
+): Promise<BrickPaymentResponse> {
+  const res = await api.post("/payments/process-payment", data);
   return res.data;
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Plus, Edit, Trash2, Eye, Search, MapPin, Calendar, Users, DollarSign, Star } from "lucide-react";
+import { Plus, Edit, Trash2, Eye, Search, MapPin, Calendar, Users, DollarSign, Star, Clock } from "lucide-react";
 
 import type { EventData } from "../../../api/events";
 import { getEvents, deleteEvent } from "../../../api/events";
@@ -7,7 +7,6 @@ import AddEventForm from "./AddEventForm";
 
 interface Event extends EventData {
     status: "active" | "soldout";
-    sold: number;
 }
 
 interface EventsProps {
@@ -30,16 +29,28 @@ const EventCard: React.FC<{
     onEdit: (event: EventData) => void;
     onDelete: (id: string) => void;
 }> = ({ event, onEdit, onDelete }) => {
-    const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString('es-ES', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric'
-        });
+    const formatDate = (isoString?: string | null) => {
+        if (!isoString) return "";
+        try {
+            return isoString.split('T')[0];
+        } catch (e) {
+            console.error("Error formatting date for input:", isoString, e);
+            return "";
+        }
+    };
+
+    const formatTime = (isoString?: string | null) => {
+        if (!isoString) return "";
+        try {
+            return isoString.split('T')[1]?.substring(0, 5) || "";
+        } catch (e) {
+            console.error("Error formatting time for input:", isoString, e);
+            return "";
+        }
     };
 
     const getProgressPercentage = () => {
-        if (!event.capacity) return 0;
+        if (!event.capacity || event.capacity === 0) return 0;
         return Math.min((event.sold / event.capacity) * 100, 100);
     };
 
@@ -94,6 +105,10 @@ const EventCard: React.FC<{
                         <Calendar className="w-4 h-4 text-red-500" />
                         <span>{formatDate(event.date)}</span>
                     </div>
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <Clock className="w-4 h-4 text-red-500" />
+                        <span>{formatTime(event.date)}</span>
+                    </div>
 
                     {event.location && (
                         <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -116,6 +131,7 @@ const EventCard: React.FC<{
                                 <Users className="w-4 h-4" />
                                 Vendidas: {event.sold}
                             </span>
+
                             <span className="text-sm text-gray-600">
                                 Capacidad: {event.capacity}
                             </span>
@@ -246,7 +262,7 @@ const Events: React.FC<EventsProps> = ({ setActiveTab }) => {
                 const mapped = data.map((e) => ({
                     ...e,
                     status: getStatus(e.soldOut),
-                    sold: Math.floor(Math.random() * (e.capacity || 100)),
+                    sold: e.sold,
                 }));
                 setEvents(mapped);
 

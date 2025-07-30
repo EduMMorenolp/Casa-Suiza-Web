@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import EventCard from "./components/EventCard";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import PurchaseModal from "./components/modals/PurchaseModal";
+import PurchaseModal from "./components/purchase/PurchaseModal";
 import foto from "../../assets/foto.png";
 
 import { getEvents } from "../../api/events";
@@ -63,7 +63,8 @@ export default function Home() {
     description: "Este es un evento de ejemplo porque aún no hay eventos.",
     location: "Casa Suiza, Buenos Aires",
     date: new Date(new Date().setDate(new Date().getDate() + 7)).toISOString(),
-    capacity: 0,
+    capacity: 3,
+    sold: 3,
     promo: true,
     soldOut: false,
     price: 0,
