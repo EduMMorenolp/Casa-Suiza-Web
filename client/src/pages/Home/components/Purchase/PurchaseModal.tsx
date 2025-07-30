@@ -6,6 +6,7 @@ import { createTicket } from "../../../../api/ticket";
 import { createOrder } from "../../../../api/order";
 import type { OrderData } from "../../../../api/order";
 import { createPaymentPreference, processBrickPayment } from "../../../../api/payments";
+import { getOrderById } from "../../../../api/order";
 
 import { usePurchaseForm } from "./usePurchaseForm";
 import { PurchaseForm } from "./PurchaseForm";
@@ -49,8 +50,7 @@ export default function PurchaseModal({
         
         setCheckingPayment(true);
         try {
-            const orderResponse = await fetch(`http://localhost:3000/api/v1/order/${orderData.id}`);
-            const updatedOrder = await orderResponse.json();
+            const updatedOrder = await getOrderById(orderData.id);
             console.log('Verificación manual - Estado de la orden:', updatedOrder);
 
             if (updatedOrder.status === 'PAID') {
@@ -179,8 +179,7 @@ export default function PurchaseModal({
                 // Función para verificar estado
                 const checkPaymentStatus = async () => {
                     try {
-                        const orderResponse = await fetch(`http://localhost:3000/api/v1/order/${orderData.id}`);
-                        const updatedOrder = await orderResponse.json();
+                        const updatedOrder = await getOrderById(orderData.id);
                         console.log('Estado actual de la orden:', updatedOrder);
 
                         if (updatedOrder.status === 'PAID') {
