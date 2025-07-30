@@ -39,6 +39,7 @@ export function MercadoPagoPaymentBrick({
 
     const initialization = {
         amount: amount,
+        preferenceId: preferenceId,
         payer: {
             email: email,
             identification: {
