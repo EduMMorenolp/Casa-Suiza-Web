@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { createEvent, updateEvent } from "../../../api/events";
 import { createCategory, getCategories } from "../../../api/category";
 import type { EventData } from "../../../api/events";
+import { useAuth } from "../../../pages/Auth/context/AuthContext";
 
 // Tipos para categorías
 interface Category {
@@ -22,6 +23,7 @@ const AddEventForm: React.FC<AddEventFormProps> = ({
     onClose,
     onRedirectToEvents
 }) => {
+    const { user } = useAuth();
     const [formData, setFormData] = useState<EventData>({
         id: "",
         title: "",
@@ -35,7 +37,7 @@ const AddEventForm: React.FC<AddEventFormProps> = ({
         promo: false,
         soldOut: false,
         categoryId: "",
-        organizerId: "",
+        organizerId: user?.id || "", // Set organizerId to current user's ID
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
     });
@@ -112,7 +114,7 @@ const AddEventForm: React.FC<AddEventFormProps> = ({
                     promo: false,
                     soldOut: false,
                     categoryId: "",
-                    organizerId: "",
+                    organizerId: user?.id || "", // Set organizerId to current user's ID
                     createdAt: new Date().toISOString(),
                     updatedAt: new Date().toISOString(),
                 });
@@ -362,7 +364,7 @@ const AddEventForm: React.FC<AddEventFormProps> = ({
                                 )}
                             </div>
                         </div>
-                        <div>
+                        <div style={{ display: 'none' }}>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                 ID de Organizador
                             </label>
