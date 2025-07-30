@@ -5,7 +5,7 @@ import { MercadoPagoConfig, Payment, Preference } from "mercadopago";
 const client = new MercadoPagoConfig({
   accessToken:
     process.env.MP_ACCESS_TOKEN ||
-    "TEST-6516061950356800-072717-dd6c3f83cc861fa233646c5441aac4d9-2583119160",
+    "APP_USR-6516061950356800-072717-dd6c3f83cc861fa233646c5441aac4d9-2583119160",
 });
 
 export const mpPayment = new Payment(client);

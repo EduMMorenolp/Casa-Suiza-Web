@@ -21,8 +21,8 @@ interface PurchaseModalProps {
     userId?: string;
 }
 
-// **IMPORTANTE:** Public Key de Mercado Pago
-const MERCADO_PAGO_PUBLIC_KEY = "APP_USR-829c15f8-182b-45ad-81b2-dde9636544b9";
+// **IMPORTANTE:** Public Key de Mercado Pago (SANDBOX/PRUEBA)
+const MERCADO_PAGO_PUBLIC_KEY = "TEST-c6d5a7b8-3bc2-4b8a-b0e4-4c6d5a7b8c9d";
 
 export default function PurchaseModal({
     isOpen,
@@ -111,22 +111,18 @@ export default function PurchaseModal({
     };
 
     interface BrickFormData {
-        paymentType: string;
-        selectedPaymentMethod: string;
-        formData: {
-            token: string;
-            payment_method_id: string;
-            issuer_id: string;
-            installments: number;
-            transaction_amount: number;
-            payer: {
-                email: string;
-                identification: {
-                    type: string;
-                    number: string;
-                };
+        token: string;
+        payment_method_id: string;
+        issuer_id: string;
+        installments: number;
+        transaction_amount: number;
+        payer: {
+            email: string;
+            identification: {
+                type: string;
+                number: string;
             };
-        }
+        };
     }
 
     const handleBrickSubmit = async (formData: unknown) => {
@@ -141,22 +137,22 @@ export default function PurchaseModal({
 
             const result = await processBrickPayment({
                 orderId: orderData.id,
-                token: data.formData.token,
-                paymentMethodId: data.formData.payment_method_id,
-                issuerId: data.formData.issuer_id,
-                installments: data.formData.installments,
+                token: data.token,
+                paymentMethodId: data.payment_method_id,
+                issuerId: data.issuer_id,
+                installments: data.installments,
                 transactionAmount: totalAmount,
                 description: `Compra de entradas para ${eventTitle}`,
                 payer: {
-                    email: data.formData.payer.email,
-                    identification: data.formData.payer.identification
+                    email: data.payer.email,
+                    identification: data.payer.identification
                         ? {
-                            type: data.formData.payer.identification.type,
-                            number: data.formData.payer.identification.number,
+                            type: data.payer.identification.type,
+                            number: data.payer.identification.number,
                         }
                         : {
                             type: "DNI",
-                            number: "00000000",
+                            number: buyerDni,
                         },
                 },
             });
