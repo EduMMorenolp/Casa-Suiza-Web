@@ -3,7 +3,7 @@ import Home from './pages/Home/Home.tsx';
 import Admin from './pages/Admin/Admin.tsx';
 import Login from './pages/Auth/Login.tsx';
 import NotFound from './pages/NotFound.tsx';
-// import ProtectedRoute from './pages/Auth/components/ProtectedRoute.tsx';
+import ProtectedRoute from './pages/Auth/components/ProtectedRoute.tsx';
 
 function App() {
 
@@ -15,9 +15,9 @@ function App() {
         <Route
           path="/admin"
           element={
-            // <ProtectedRoute>
-            <Admin />
-            // </ProtectedRoute>
+            <ProtectedRoute>
+              <Admin />
+            </ProtectedRoute>
           }
         />
         <Route path="/payment/success" element={<Home />} />

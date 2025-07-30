@@ -1,6 +1,7 @@
 import { createContext, useContext, useState }
     from 'react';
 import type { ReactNode } from 'react';
+import { login as loginApi } from '../../../api/auth';
 
 interface AuthContextType {
     isAuthenticated: boolean;
@@ -25,16 +26,26 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     const login = async (username: string, password: string): Promise<boolean> => {
-        // Aquí puedes reemplazar por llamada a backend
-        if (username === 'casasuiza' && password === 'c123456') {
-            setIsAuthenticated(true);
-            return true;
+        try {
+            const response = await loginApi(username, password);
+
+            if (response.status === 200) {
+                // Guarda el token en localStorage o en una cookie
+                localStorage.setItem('token', response.data.token);
+                setIsAuthenticated(true);
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.error("Error al iniciar sesión:", error);
+            return false;
         }
-        return false;
     };
 
     const logout = () => {
         setIsAuthenticated(false);
+        // Elimina el token de localStorage o de la cookie
+        localStorage.removeItem('token');
     };
 
     return (
