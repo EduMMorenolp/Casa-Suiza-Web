@@ -4,6 +4,7 @@ import { PaymentStatus, OrderStatus, TicketStatus } from "@prisma/client";
 import { CustomError } from "../utils/CustomError";
 import * as orderService from "./orderService";
 import * as ticketService from "./ticketService";
+import { sendPurchaseConfirmation } from "./emailService";
 
 interface CreatePreferenceRequest {
   orderId: string;
@@ -206,6 +207,19 @@ async function handlePaymentResult(
       newPaymentStatus = PaymentStatus.COMPLETED;
       newOrderStatus = OrderStatus.PAID;
       newTicketStatus = TicketStatus.PAID;
+      
+      // Enviar email de confirmación
+      try {
+        await sendPurchaseConfirmation({
+          to: order.buyerEmail,
+          eventTitle: "Evento Casa Suiza",
+          quantity: order.tickets.length,
+          total: transactionAmount,
+          paymentId: mpPaymentId
+        });
+      } catch (emailError) {
+        console.error("Error enviando email de confirmación:", emailError);
+      }
       break;
     case "rejected":
       newPaymentStatus = PaymentStatus.FAILED;
