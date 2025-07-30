@@ -53,9 +53,9 @@ export function MercadoPagoPaymentBrick({
             hideFormTitle: true,
         },
         paymentMethods: {
-            creditCard: 'all',
-            debitCard: 'all',
-            mercadoPago: 'all',
+            creditCard: 'all' as const,
+            debitCard: 'all' as const,
+            mercadoPago: 'all' as const,
         },
     };
 
