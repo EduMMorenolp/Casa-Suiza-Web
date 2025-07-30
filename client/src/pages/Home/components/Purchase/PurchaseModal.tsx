@@ -23,7 +23,7 @@ interface PurchaseModalProps {
 }
 
 // **IMPORTANTE:** Public Key de Mercado Pago (SANDBOX/PRUEBA)
-const MERCADO_PAGO_PUBLIC_KEY = "APP_USR-829c15f8-182b-45ad-81b2-dde9636544b9";
+const MERCADO_PAGO_PUBLIC_KEY = "TEST-093739c7-8e98-41f4-ba7e-ab972b1f88eb";
 
 export default function PurchaseModal({
     isOpen,

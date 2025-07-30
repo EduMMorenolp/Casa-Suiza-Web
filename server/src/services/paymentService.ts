@@ -73,25 +73,25 @@ export async function createPreferenceForBricks(
           number: data.buyerDni,
         },
       },
-      back_urls: {
-        success: "http://localhost:5173/",
-        failure: "http://localhost:5173/",
-        pending: "http://localhost:5173/"
-      },
-      auto_return: "approved",
-      notification_url: "http://localhost:3000/api/v1/payment/webhook",
       external_reference: data.orderId,
+      // back_urls: {
+      //   success: "http://localhost:5173/",
+      //   failure: "http://localhost:5173/",
+      //   pending: "http://localhost:5173/"
+      // },
+      // auto_return: "approved",
+      notification_url: "http://localhost:3000/api/v1/payment/webhook",
       statement_descriptor: "Casa Suiza",
       expires: false,
       binary_mode: false,
       payment_methods: {
         excluded_payment_types: [
           {
-            id: "ticket"
-          }
+            id: "ticket",
+          },
         ],
         installments: 12,
-        default_installments: 1
+        default_installments: 1,
       },
     };
 
