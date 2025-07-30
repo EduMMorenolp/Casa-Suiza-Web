@@ -44,7 +44,7 @@ export default function PurchaseModal({
     const [orderData, setOrderData] = useState<OrderData | null>(null);
     const [checkingPayment, setCheckingPayment] = useState(false);
 
-    const checkPaymentStatusManually = async () => {
+    const checkPaymentStatusManually = useCallback(async () => {
         if (!orderData) return;
         
         setCheckingPayment(true);
@@ -69,7 +69,7 @@ export default function PurchaseModal({
             setCheckingPayment(false);
             setError('Error al verificar el estado. Inténtalo nuevamente.');
         }
-    };
+    }, [orderData, setCheckingPayment, setError, setStep]);
 
     const handleClose = useCallback(() => {
         resetForm();
