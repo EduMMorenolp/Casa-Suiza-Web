@@ -19,6 +19,8 @@ export function MercadoPagoPaymentBrick({
     onSubmit,
     onError,
     amount,
+    email,
+    dni
 }: MercadoPagoPaymentBrickProps) {
 
     useEffect(() => {
@@ -38,18 +40,30 @@ export function MercadoPagoPaymentBrick({
     const initialization = {
         amount: amount,
         preferenceId: preferenceId,
+        redirectMode: 'modal' as const,
+        currencyId: 'ARS',
+        paymentMethodId: 'mercado_pago',
+        payer: {
+            email: email,
+            identification: {
+                type: 'DNI',
+                number: dni,
+            },
+        },
+        paymentMethod: {
+            id: 'mercado_pago',
+        },
+
     };
 
     const customization = {
         visual: {
             hideFormTitle: true,
-            hideResultsTabs: false,
-            showExternalReference: false,
         },
         paymentMethods: {
-            creditCard: ['all'],
-            debitCard: ['all'],
-            mercadoPago: ['all'],
+            creditCard: 'all' as const,
+            debitCard: 'all' as const,
+            mercadoPago: 'all' as const,
         },
     };
 

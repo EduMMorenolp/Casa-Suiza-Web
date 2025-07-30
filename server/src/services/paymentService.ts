@@ -4,6 +4,7 @@ import { PaymentStatus, OrderStatus, TicketStatus } from "@prisma/client";
 import { CustomError } from "../utils/CustomError";
 import * as orderService from "./orderService";
 import * as ticketService from "./ticketService";
+import { sendPurchaseConfirmation } from "./emailService";
 
 interface CreatePreferenceRequest {
   orderId: string;
@@ -52,7 +53,9 @@ export async function createPreferenceForBricks(
         {
           id: data.orderId,
           title: "Compra de Entradas",
+          description: "Entradas para evento en Casa Suiza",
           quantity: 1,
+          currency_id: "ARS",
           unit_price: data.amount,
         },
       ],
@@ -72,7 +75,25 @@ export async function createPreferenceForBricks(
         },
       },
       external_reference: data.orderId,
-      entity_type: "individual",
+      // back_urls: {
+      //   success: "http://localhost:5173/",
+      //   failure: "http://localhost:5173/",
+      //   pending: "http://localhost:5173/"
+      // },
+      // auto_return: "approved",
+      notification_url: "http://localhost:3000/api/v1/payment/webhook",
+      statement_descriptor: "Casa Suiza",
+      expires: false,
+      binary_mode: false,
+      payment_methods: {
+        excluded_payment_types: [
+          {
+            id: "ticket",
+          },
+        ],
+        installments: 12,
+        default_installments: 1,
+      },
     };
 
     const response = await mpPreferences.create({ body: preferenceData });
@@ -186,6 +207,19 @@ async function handlePaymentResult(
       newPaymentStatus = PaymentStatus.COMPLETED;
       newOrderStatus = OrderStatus.PAID;
       newTicketStatus = TicketStatus.PAID;
+      
+      // Enviar email de confirmación
+      try {
+        await sendPurchaseConfirmation({
+          to: order.buyerEmail,
+          eventTitle: "Evento Casa Suiza",
+          quantity: order.tickets.length,
+          total: transactionAmount,
+          paymentId: mpPaymentId
+        });
+      } catch (emailError) {
+        console.error("Error enviando email de confirmación:", emailError);
+      }
       break;
     case "rejected":
       newPaymentStatus = PaymentStatus.FAILED;

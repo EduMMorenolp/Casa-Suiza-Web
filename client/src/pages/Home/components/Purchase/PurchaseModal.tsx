@@ -6,6 +6,7 @@ import { createTicket } from "../../../../api/ticket";
 import { createOrder } from "../../../../api/order";
 import type { OrderData } from "../../../../api/order";
 import { createPaymentPreference, processBrickPayment } from "../../../../api/payments";
+import { getOrderById } from "../../../../api/order";
 
 import { usePurchaseForm } from "./usePurchaseForm";
 import { PurchaseForm } from "./PurchaseForm";
@@ -21,8 +22,8 @@ interface PurchaseModalProps {
     userId?: string;
 }
 
-// **IMPORTANTE:** Public Key de Mercado Pago
-const MERCADO_PAGO_PUBLIC_KEY = "APP_USR-829c15f8-182b-45ad-81b2-dde9636544b9";
+// **IMPORTANTE:** Public Key de Mercado Pago (SANDBOX/PRUEBA)
+const MERCADO_PAGO_PUBLIC_KEY = "TEST-093739c7-8e98-41f4-ba7e-ab972b1f88eb";
 
 export default function PurchaseModal({
     isOpen,
@@ -42,6 +43,33 @@ export default function PurchaseModal({
     const [preferenceId, setPreferenceId] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [orderData, setOrderData] = useState<OrderData | null>(null);
+    const [checkingPayment, setCheckingPayment] = useState(false);
+
+    const checkPaymentStatusManually = useCallback(async () => {
+        if (!orderData) return;
+        
+        setCheckingPayment(true);
+        try {
+            const updatedOrder = await getOrderById(orderData.id);
+            console.log('Verificación manual - Estado de la orden:', updatedOrder);
+
+            if (updatedOrder.status === 'PAID') {
+                setCheckingPayment(false);
+                setError(null);
+                setStep('success');
+            } else if (updatedOrder.status === 'CANCELLED') {
+                setCheckingPayment(false);
+                setError('El pago fue cancelado o rechazado.');
+            } else {
+                setCheckingPayment(false);
+                setError(`Estado actual: ${updatedOrder.status}. Si ya pagaste, espera unos minutos o contacta soporte.`);
+            }
+        } catch (err) {
+            console.error('Error en verificación manual:', err);
+            setCheckingPayment(false);
+            setError('Error al verificar el estado. Inténtalo nuevamente.');
+        }
+    }, [orderData, setCheckingPayment, setError, setStep]);
 
     const handleClose = useCallback(() => {
         resetForm();
@@ -126,7 +154,7 @@ export default function PurchaseModal({
                     number: string;
                 };
             };
-        }
+        } | null;
     }
 
     const handleBrickSubmit = async (formData: unknown) => {
@@ -139,6 +167,65 @@ export default function PurchaseModal({
             // Type guard or cast to BrickFormData
             const data = formData as BrickFormData;
 
+            console.log("Datos del formulario de Brick:", data);
+
+            // Manejar MercadoPago Wallet (formData es null)
+            if (data.paymentType === 'wallet_purchase' && !data.formData) {
+                // Para wallet, usar la preferencia directamente
+                window.open(`https://www.mercadopago.com.ar/checkout/v1/redirect?pref_id=${preferenceId}`, '_blank');
+                setCheckingPayment(true);
+                setError("Completa el pago en la ventana de MercadoPago que se abrió. Verificando estado...");
+
+                // Función para verificar estado
+                const checkPaymentStatus = async () => {
+                    try {
+                        const updatedOrder = await getOrderById(orderData.id);
+                        console.log('Estado actual de la orden:', updatedOrder);
+
+                        if (updatedOrder.status === 'PAID') {
+                            setCheckingPayment(false);
+                            setError(null);
+                            setStep('success');
+                            return true;
+                        } else if (updatedOrder.status === 'CANCELLED') {
+                            setCheckingPayment(false);
+                            setError('El pago fue cancelado o rechazado.');
+                            return true;
+                        }
+                        return false;
+                    } catch (err) {
+                        console.error('Error verificando estado del pago:', err);
+                        return false;
+                    }
+                };
+
+                // Verificar inmediatamente
+                const completed = await checkPaymentStatus();
+                if (completed) return;
+
+                // Verificar cada 5 segundos
+                const checkInterval = setInterval(async () => {
+                    const completed = await checkPaymentStatus();
+                    if (completed) {
+                        clearInterval(checkInterval);
+                    }
+                }, 5000);
+
+                // Limpiar intervalo después de 10 minutos
+                setTimeout(() => {
+                    clearInterval(checkInterval);
+                    setCheckingPayment(false);
+                    setError('Tiempo de verificación agotado. Verifica manualmente el estado del pago.');
+                }, 600000);
+
+                return;
+            }
+
+            // Para tarjetas (formData existe)
+            if (!data.formData) {
+                throw new Error("Datos de pago no disponibles");
+            }
+
             const result = await processBrickPayment({
                 orderId: orderData.id,
                 token: data.formData.token,
@@ -148,15 +235,15 @@ export default function PurchaseModal({
                 transactionAmount: totalAmount,
                 description: `Compra de entradas para ${eventTitle}`,
                 payer: {
-                    email: data.formData.payer.email,
-                    identification: data.formData.payer.identification
+                    email: data.formData.payer?.email || buyerEmail,
+                    identification: data.formData.payer?.identification
                         ? {
                             type: data.formData.payer.identification.type,
                             number: data.formData.payer.identification.number,
                         }
                         : {
                             type: "DNI",
-                            number: "00000000",
+                            number: buyerDni,
                         },
                 },
             });
@@ -194,6 +281,29 @@ export default function PurchaseModal({
             document.body.style.overflow = 'unset';
         };
     }, [isOpen, handleClose]);
+
+    // Detectar retorno de MercadoPago
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const paymentStatus = urlParams.get('collection_status');
+        const externalReference = urlParams.get('external_reference');
+        
+        if (paymentStatus && externalReference && orderData?.id === externalReference) {
+            if (paymentStatus === 'approved') {
+                setStep('success');
+                setCheckingPayment(false);
+                setError(null);
+            } else if (paymentStatus === 'rejected') {
+                setError('El pago fue rechazado.');
+                setCheckingPayment(false);
+            } else {
+                checkPaymentStatusManually();
+            }
+            
+            // Limpiar URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    }, [orderData, checkPaymentStatusManually]);
 
     if (!isOpen) return null;
 
@@ -282,9 +392,17 @@ export default function PurchaseModal({
                             </div>
 
                             {error && (
-                                <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
-                                    <p className="text-red-600 text-sm flex items-center">
-                                        <AlertCircle size={16} className="mr-2" />
+                                <div className={`border rounded-lg p-3 mb-4 ${checkingPayment
+                                        ? 'bg-blue-50 border-blue-200'
+                                        : 'bg-red-50 border-red-200'
+                                    }`}>
+                                    <p className={`text-sm flex items-center ${checkingPayment ? 'text-blue-600' : 'text-red-600'
+                                        }`}>
+                                        {checkingPayment ? (
+                                            <Loader2 size={16} className="mr-2 animate-spin" />
+                                        ) : (
+                                            <AlertCircle size={16} className="mr-2" />
+                                        )}
                                         {error}
                                     </p>
                                 </div>
@@ -309,6 +427,19 @@ export default function PurchaseModal({
                                 >
                                     Cancelar Compra
                                 </button>
+                                {checkingPayment && (
+                                    <button
+                                        onClick={checkPaymentStatusManually}
+                                        disabled={loading}
+                                        className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white rounded-lg transition-colors flex items-center justify-center gap-2"
+                                    >
+                                        {loading ? (
+                                            <Loader2 size={16} className="animate-spin" />
+                                        ) : (
+                                            'Verificar Estado'
+                                        )}
+                                    </button>
+                                )}
                             </div>
                         </>
                     )}

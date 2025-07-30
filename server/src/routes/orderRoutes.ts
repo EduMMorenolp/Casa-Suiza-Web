@@ -18,7 +18,7 @@ router.post(
   createOrder
 );
 router.get("/order", authenticateToken, verifyAdmin, getAllOrders);
-router.get("/order/:id", authenticateToken, getOrderById);
+router.get("/order/:id", getOrderById);
 router.put(
   "/order/:id",
   authenticateToken,
