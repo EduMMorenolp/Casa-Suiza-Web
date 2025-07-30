@@ -40,6 +40,9 @@ export function MercadoPagoPaymentBrick({
     const initialization = {
         amount: amount,
         preferenceId: preferenceId,
+        redirectMode: 'modal' as const,
+        currencyId: 'ARS',
+        paymentMethodId: 'mercado_pago',
         payer: {
             email: email,
             identification: {
@@ -47,6 +50,10 @@ export function MercadoPagoPaymentBrick({
                 number: dni,
             },
         },
+        paymentMethod: {
+            id: 'mercado_pago',
+        },
+
     };
 
     const customization = {
