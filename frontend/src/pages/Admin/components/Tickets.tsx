@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Ticket, Search, Plus, Edit, Trash2, Mail, User, Calendar } from 'lucide-react';
+import { Ticket, Search, Edit, Trash2, Mail, User, Calendar } from 'lucide-react';
 import { getAllTickets } from '../../../api/tickets';
 
 interface TicketData {
