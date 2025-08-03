@@ -1,6 +1,7 @@
 import React from 'react';
 import { Plus, Users, Calendar, BarChart3, Settings, LogOut, X, BookIcon, Tag } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { logout } from '../../../api/auth';
 
 interface SidebarProps {
     activeTab: string;
@@ -28,7 +29,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOpen, onCl
     const navigate = useNavigate();
 
     const handleLogout = async () => {
-        // await logout();
+        await logout();
         navigate('/');
     };
 

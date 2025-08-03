@@ -29,6 +29,29 @@ export async function createTicket(data: TicketData) {
     throw new CustomError("Evento no encontrado.", 404);
   }
 
+  if (event.soldOut) {
+    throw new CustomError("Este evento está agotado.", 400);
+  }
+
+  // Verificar capacidad si está definida
+  if (event.capacity) {
+    const currentTicketsCount = await prisma.ticket.count({
+      where: { 
+        eventId: data.eventId,
+        status: { in: [TicketStatus.PENDING, TicketStatus.PAID] }
+      }
+    });
+    
+    if (currentTicketsCount >= event.capacity) {
+      // Marcar evento como agotado
+      await prisma.event.update({
+        where: { id: data.eventId },
+        data: { soldOut: true }
+      });
+      throw new CustomError("Este evento ha alcanzado su capacidad máxima.", 400);
+    }
+  }
+
   const ticket = await prisma.ticket.create({
     data: {
       eventId: data.eventId,

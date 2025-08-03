@@ -43,6 +43,23 @@ export const getUserByEmail = async (email: string) => {
 };
 
 /**
+ * Obtener usuario por username
+ * @param username
+ * @returns
+ */
+export const getUserByUsername = async (username: string) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { username },
+    });
+    return user;
+  } catch (error: any) {
+    console.error("❌ Error al obtener el usuario por username:", error.message);
+    throw new CustomError("Error al buscar el usuario", 500);
+  }
+};
+
+/**
  * Obtener todos los usuarios
  * @returns
  */

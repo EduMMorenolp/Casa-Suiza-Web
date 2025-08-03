@@ -1,17 +1,20 @@
 import { createContext, useContext, useState, useEffect }
     from 'react';
 import type { ReactNode } from 'react';
-import { login as loginApi } from '../../../api/auth';
+import { login as loginApi, register as registerApi } from '../../../api/auth';
 
 interface User {
     id: string;
     username: string;
+    rol: string;
 }
 
 interface AuthContextType {
     isAuthenticated: boolean;
     user: User | null;
+    isAdmin: boolean;
     login: (username: string, password: string) => Promise<boolean>;
+    register: (username: string, email: string, password: string) => Promise<boolean>;
     logout: () => void;
 }
 
@@ -31,6 +34,7 @@ interface AuthProviderProps {
 export function AuthProvider({ children }: AuthProviderProps) {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [user, setUser] = useState<User | null>(null);
+    const isAdmin = user?.rol?.toLowerCase() === 'admin';
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -44,10 +48,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const login = async (username: string, password: string): Promise<boolean> => {
         try {
             const response = await loginApi(username, password);
-            
             if (response.status === 200 && response.data.token) {
                 localStorage.setItem('token', response.data.token);
-                const userData = response.data.user || { id: '1', username };
+                const userData = response.data.user;
                 localStorage.setItem('user', JSON.stringify(userData));
                 setUser(userData);
                 setIsAuthenticated(true);
@@ -60,6 +63,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
         }
     };
 
+    const register = async (username: string, email: string, password: string): Promise<boolean> => {
+        try {
+            const response = await registerApi(username, email, password);
+            return response.status === 201;
+        } catch (error) {
+            console.error("Error al registrar usuario:", error);
+            return false;
+        }
+    };
+
     const logout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
@@ -68,7 +81,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     };
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>
+        <AuthContext.Provider value={{ isAuthenticated, user, isAdmin, login, register, logout }}>
             {children}
         </AuthContext.Provider>
     );

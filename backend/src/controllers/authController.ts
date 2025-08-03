@@ -37,9 +37,9 @@ export const loginUserController = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const { email, password } = req.body;
+    const { username, password } = req.body;
     // Autenticación del usuario
-    const { token, user } = await loginUserService(email, password);
+    const { token, user } = await loginUserService(username, password);
     if (!user) {
       throw new CustomError(
         "No se pudo iniciar sesión; el usuario no existe o ya estaba activo.",

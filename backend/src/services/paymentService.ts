@@ -278,9 +278,45 @@ async function handlePaymentResult(
     await ticketService.updateTicketStatus(ticket.id, newTicketStatus);
   }
 
+  // Verificar si algún evento alcanzó su capacidad máxima
+  if (newTicketStatus === TicketStatus.PAID) {
+    await checkAndUpdateEventSoldOut(order.tickets);
+  }
+
   console.log(
     `Pago procesado exitosamente para orden ${order.id}. Nuevo estado: ${newOrderStatus}`
   );
+}
+
+/**
+ * Verifica si los eventos de los tickets han alcanzado su capacidad y actualiza el estado soldOut
+ */
+async function checkAndUpdateEventSoldOut(tickets: any[]) {
+  const eventIds = [...new Set(tickets.map(ticket => ticket.eventId))];
+  
+  for (const eventId of eventIds) {
+    const event = await prisma.event.findUnique({
+      where: { id: eventId },
+      select: { capacity: true, soldOut: true }
+    });
+    
+    if (event && event.capacity && !event.soldOut) {
+      const paidTicketsCount = await prisma.ticket.count({
+        where: {
+          eventId: eventId,
+          status: TicketStatus.PAID
+        }
+      });
+      
+      if (paidTicketsCount >= event.capacity) {
+        await prisma.event.update({
+          where: { id: eventId },
+          data: { soldOut: true }
+        });
+        console.log(`Evento ${eventId} marcado como agotado. Tickets vendidos: ${paidTicketsCount}/${event.capacity}`);
+      }
+    }
+  }
 }
 
 export async function handleMercadoPagoWebhook(

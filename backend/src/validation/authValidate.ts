@@ -51,11 +51,13 @@ export const validateUserRegister = [
  * Validaciones para el inicio de sesión de usuarios
  */
 export const validateUserLogin = [
-  body("email")
+  body("username")
     .trim()
-    .normalizeEmail()
-    .isEmail()
-    .withMessage("Debe ser un correo válido"),
+    .escape()
+    .notEmpty()
+    .withMessage("El nombre de usuario es obligatorio")
+    .isLength({ min: 3, max: 30 })
+    .withMessage("El nombre de usuario debe tener entre 3 y 30 caracteres"),
 
   body("password")
     .notEmpty()

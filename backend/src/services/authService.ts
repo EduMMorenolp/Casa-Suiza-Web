@@ -1,6 +1,6 @@
 // ./src/services/authService.js
 
-import { getUserByEmail } from "../repositories/userRepository";
+import { getUserByEmail, getUserByUsername } from "../repositories/userRepository";
 import {
   createUser,
   loginUser,
@@ -35,28 +35,28 @@ export const createUserService = async (
 
 /**
  * Iniciar sesión de un usuario
- * @param email
+ * @param username
  * @param password
  * @returns
  */
-export const loginUserService = async (email: string, password: string) => {
-  const user = await getUserByEmail(email);
+export const loginUserService = async (username: string, password: string) => {
+  const user = await getUserByUsername(username);
   if (!user || user.isDeleted) {
     throw new CustomError(
-      "Por favor, verifica tu dirección de correo electrónico y tu contraseña e intenta nuevamente.",
+      "Por favor, verifica tu nombre de usuario y tu contraseña e intenta nuevamente.",
       401
     );
   }
   const isMatch = await comparePassword(password, user.password);
   if (!isMatch) {
     throw new CustomError(
-      "Por favor, verifica tu dirección de correo electrónico y tu contraseña e intenta nuevamente.",
+      "Por favor, verifica tu nombre de usuario y tu contraseña e intenta nuevamente.",
       401
     );
   }
   // Generación del token JWT
   const token = await generateAuthTokenForUser(user.id, user.role);
-  const userState = await loginUser(email);
+  const userState = await loginUser(user.email);
   return { token, user };
 };
 

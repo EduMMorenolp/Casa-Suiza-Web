@@ -21,12 +21,12 @@ const router = express.Router();
 /**
  * Rutas de autenticación
  */
-// router.post(
-//   "/auth/register",
-//   validateUserRegister,
-//   handleValidationErrors,
-//   registerUser
-// );
+router.post(
+  "/auth/register",
+  validateUserRegister,
+  handleValidationErrors,
+  registerUser
+);
 router.post(
   "/auth/login",
   validateUserLogin,
