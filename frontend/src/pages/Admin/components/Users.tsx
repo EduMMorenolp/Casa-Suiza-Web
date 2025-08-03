@@ -1,22 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Users as UsersIcon, Search, Plus, Edit, Trash2, Mail, Phone, Calendar } from 'lucide-react';
+import { getUsersWithStats } from '../../../api/users';
 
 interface User {
-    id: number;
-    name: string;
+    id: string;
+    username: string;
     email: string;
-    phone: string;
-    registrationDate: string;
-    status: 'active' | 'inactive';
+    isActive: boolean;
+    role: string;
+    createdAt: string;
     ticketsPurchased: number;
     totalSpent: number;
+    orderCount: number;
 }
 
 interface UserCardProps {
     user: User;
-    onEdit: (id: number) => void;
-    onDelete: (id: number) => void;
-    onContact: (id: number) => void;
+    onEdit: (id: string) => void;
+    onDelete: (id: string) => void;
+    onContact: (id: string) => void;
 }
 
 const UserCard: React.FC<UserCardProps> = ({ user, onEdit, onDelete, onContact }) => {
@@ -37,17 +39,17 @@ const UserCard: React.FC<UserCardProps> = ({ user, onEdit, onDelete, onContact }
                             <UsersIcon className="w-5 h-5 text-red-600" />
                         </div>
                         <div>
-                            <h3 className="font-semibold text-gray-800">{user.name}</h3>
+                            <h3 className="font-semibold text-gray-800">{user.username}</h3>
                             <p className="text-sm text-gray-600">{user.email}</p>
                         </div>
                     </div>
 
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm text-gray-600">
                         <div>
-                            <span className="font-medium">Teléfono:</span> {user.phone}
+                            <span className="font-medium">Rol:</span> {user.role}
                         </div>
                         <div>
-                            <span className="font-medium">Registro:</span> {user.registrationDate}
+                            <span className="font-medium">Registro:</span> {new Date(user.createdAt).toLocaleDateString()}
                         </div>
                         <div>
                             <span className="font-medium">Entradas:</span> {user.ticketsPurchased}
@@ -59,8 +61,8 @@ const UserCard: React.FC<UserCardProps> = ({ user, onEdit, onDelete, onContact }
                 </div>
 
                 <div className="flex items-center gap-3">
-                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(user.status)}`}>
-                        {getStatusText(user.status)}
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(user.isActive ? 'active' : 'inactive')}`}>
+                        {getStatusText(user.isActive ? 'active' : 'inactive')}
                     </span>
 
                     <div className="flex gap-1">
@@ -93,9 +95,9 @@ const UserCard: React.FC<UserCardProps> = ({ user, onEdit, onDelete, onContact }
 };
 
 const UserStats: React.FC<{ users: User[] }> = ({ users }) => {
-    const activeUsers = users.filter(user => user.status === 'active').length;
+    const activeUsers = users.filter(user => user.isActive).length;
     const totalRevenue = users.reduce((sum, user) => sum + user.totalSpent, 0);
-    const avgTicketsPerUser = users.reduce((sum, user) => sum + user.ticketsPurchased, 0) / users.length;
+    const avgTicketsPerUser = users.length > 0 ? users.reduce((sum, user) => sum + user.ticketsPurchased, 0) / users.length : 0;
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
@@ -141,8 +143,24 @@ const UserStats: React.FC<{ users: User[] }> = ({ users }) => {
 export default function Users() {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState('all');
+    const [users, setUsers] = useState<User[]>([]);
+    const [loading, setLoading] = useState(true);
 
-    const users: User[] = [
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const response = await getUsersWithStats();
+                setUsers(response.data);
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchUsers();
+    }, []);
+
+    const mockUsers: User[] = [
         {
             id: 1,
             name: 'María González',
@@ -196,21 +214,23 @@ export default function Users() {
     ];
 
     const filteredUsers = users.filter(user => {
-        const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        const matchesSearch = user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
             user.email.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesFilter = filterStatus === 'all' || user.status === filterStatus;
+        const matchesFilter = filterStatus === 'all' || 
+            (filterStatus === 'active' && user.isActive) ||
+            (filterStatus === 'inactive' && !user.isActive);
         return matchesSearch && matchesFilter;
     });
 
-    const handleEdit = (id: number) => {
+    const handleEdit = (id: string) => {
         console.log('Editar usuario:', id);
     };
 
-    const handleDelete = (id: number) => {
+    const handleDelete = (id: string) => {
         console.log('Eliminar usuario:', id);
     };
 
-    const handleContact = (id: number) => {
+    const handleContact = (id: string) => {
         console.log('Contactar usuario:', id);
     };
 
@@ -263,20 +283,28 @@ export default function Users() {
 
                 {/* Lista de usuarios */}
                 <div className="space-y-4">
-                    {filteredUsers.map((user) => (
-                        <UserCard
-                            key={user.id}
-                            user={user}
-                            onEdit={handleEdit}
-                            onDelete={handleDelete}
-                            onContact={handleContact}
-                        />
-                    ))}
-
-                    {filteredUsers.length === 0 && (
+                    {loading ? (
                         <div className="text-center py-8 text-gray-500">
-                            No se encontraron usuarios que coincidan con los filtros.
+                            Cargando usuarios...
                         </div>
+                    ) : (
+                        <>
+                            {filteredUsers.map((user) => (
+                                <UserCard
+                                    key={user.id}
+                                    user={user}
+                                    onEdit={handleEdit}
+                                    onDelete={handleDelete}
+                                    onContact={handleContact}
+                                />
+                            ))}
+
+                            {filteredUsers.length === 0 && !loading && (
+                                <div className="text-center py-8 text-gray-500">
+                                    No se encontraron usuarios que coincidan con los filtros.
+                                </div>
+                            )}
+                        </>
                     )}
                 </div>
             </div>

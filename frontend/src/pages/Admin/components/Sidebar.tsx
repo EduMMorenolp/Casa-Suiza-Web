@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, Users, Calendar, BarChart3, Settings, LogOut, X, BookIcon, Tag } from 'lucide-react';
+import { Plus, Ticket, Users, Calendar, BarChart3, Settings, LogOut, X, BookIcon, Tag } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../../../api/auth';
 
@@ -18,6 +18,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOpen, onCl
         { id: 'categories', label: 'Gestionar Categorías', icon: Tag },
         { id: 'reports', label: 'Reportes', icon: BookIcon },
         { id: 'users', label: 'Usuarios', icon: Users },
+        { id: 'tickets', label: 'Tickets', icon: Ticket },
         { id: 'settings', label: 'Configuración', icon: Settings },
     ];
 

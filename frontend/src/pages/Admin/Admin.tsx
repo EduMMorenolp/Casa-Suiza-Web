@@ -5,6 +5,7 @@ import Dashboard from './components/Dashboard';
 import Events from './components/Events';
 import AddEventForm from './components/AddEventForm';
 import Users from './components/Users';
+import Tickets from './components/Tickets';
 import Settings from './components/Settings';
 import Reports from './components/Reports';
 import CategoryManagement from './components/CategoryManagement';
@@ -39,6 +40,8 @@ const Admin: React.FC = () => {
                 return <CategoryManagement setActiveTab={setActiveTab} />;
             case 'users':
                 return <Users />;
+            case 'tickets':
+                return <Tickets />;
             case 'settings':
                 return <Settings />;
             case `reports`:

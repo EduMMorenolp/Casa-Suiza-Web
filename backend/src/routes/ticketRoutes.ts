@@ -16,7 +16,7 @@ const router = Router();
 router.post("/ticket", createTicketHandler);
 
 // Rutas protegidas (ejemplo: obtener, actualizar, eliminar solo para admins)
-router.get("/ticket", authenticateToken, verifyAdmin, getAllTickets);
+router.get("/tickets", authenticateToken, verifyAdmin, getAllTickets);
 router.get("/ticket/:id", authenticateToken, verifyAdmin, getTicketById);
 router.put(
   "/ticket/:id",

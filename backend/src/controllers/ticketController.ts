@@ -48,7 +48,7 @@ export async function getAllTickets(
   next: NextFunction
 ): Promise<void> {
   try {
-    const tickets = await ticketService.findAllTickets();
+    const tickets = await ticketService.getAllTicketsWithEvents();
     res.status(200).json(tickets);
   } catch (error) {
     next(error);

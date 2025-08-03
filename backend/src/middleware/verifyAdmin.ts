@@ -13,12 +13,13 @@ export const verifyAdmin = (
   next: NextFunction
 ): void => {
   const userRole = req.userRol;
-  if (userRole !== "admin") {
+  if (userRole !== "ADMIN") {
     res.status(403).json({
       status: "error",
       message:
         "Acceso denegado: Solo administradores pueden realizar esta acción",
     });
+    return;
   }
   next();
 };

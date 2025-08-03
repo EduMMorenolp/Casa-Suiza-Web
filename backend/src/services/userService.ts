@@ -4,6 +4,7 @@ import {
   deleteUser,
   getUserById,
   updateUser,
+  getUsersWithTicketStats,
 } from "../repositories/userRepository";
 import { hashPassword } from "../utils/bcrypt";
 import { CustomError } from "../utils/CustomError";
@@ -59,4 +60,12 @@ export const updateUserService = async (
 export const deleteUserService = async (id: string) => {
   await getUserByIdService(id);
   return await deleteUser(id);
+};
+
+/**
+ * Obtener usuarios con estadísticas de tickets
+ * @returns
+ */
+export const getUsersWithTicketStatsService = async () => {
+  return await getUsersWithTicketStats();
 };

@@ -178,3 +178,24 @@ export async function deleteTicket(id: number) {
     throw error;
   }
 }
+
+/**
+ * Obtiene todos los tickets con información del evento.
+ * @returns Una lista de tickets con sus eventos asociados.
+ */
+export async function getAllTicketsWithEvents() {
+  return prisma.ticket.findMany({
+    include: {
+      event: {
+        select: {
+          title: true,
+          date: true,
+          price: true
+        }
+      }
+    },
+    orderBy: {
+      purchaseAt: 'desc'
+    }
+  });
+}

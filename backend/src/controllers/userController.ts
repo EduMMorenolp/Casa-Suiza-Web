@@ -6,6 +6,7 @@ import {
   deleteUserService,
   getUserByIdService,
   updateUserService,
+  getUsersWithTicketStatsService,
 } from "../services/userService";
 // Importar la clase de error personalizado
 import { CustomError } from "../utils/CustomError";
@@ -97,6 +98,22 @@ export const deleteUser = async (
         403
       );
     }
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Obtener usuarios con estadísticas de tickets
+ */
+export const getUsersWithTicketStats = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const usersWithStats = await getUsersWithTicketStatsService();
+    res.status(200).json(usersWithStats);
   } catch (error) {
     next(error);
   }

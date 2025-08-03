@@ -5,6 +5,7 @@ import {
   deleteUser,
   getUserById,
   updateUser,
+  getUsersWithTicketStats,
 } from "../controllers/userController";
 
 // Middlewares
@@ -34,6 +35,13 @@ router.delete(
   authenticateToken,
   checkUserActiveMiddleware,
   deleteUser
+);
+
+router.get(
+  "/users/stats",
+  authenticateToken,
+  checkUserActiveMiddleware,
+  getUsersWithTicketStats
 );
 
 export default router;
