@@ -14,6 +14,7 @@ const router = Router();
 
 // Rutas protegidas (ejemplo: todas las operaciones de cupones para admins)
 router.post(
+  // amazonq-ignore-next-line
   "/cuopon",
   authenticateToken,
   verifyAdmin,

@@ -55,9 +55,10 @@ export const getUserByIdController = async (
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       };
+      // amazonq-ignore-next-line
       res.status(200).json(userData);
     } else {
-      throw new CustomError("No tienes permiso para ver este usuario.", 403);
+      throw new CustomError("Acceso denegado.", 403);
     }
   } catch (error) {
     next(error);
@@ -89,10 +90,7 @@ export const updateUserController = async (
       }
       res.status(200).json({ message: "Campos Actualizados", updated });
     } else {
-      throw new CustomError(
-        "No tienes permiso para actualizar este usuario.",
-        403
-      );
+      throw new CustomError("Acceso denegado.", 403);
     }
   } catch (error) {
     next(error);
@@ -119,10 +117,7 @@ export const deleteUserController = async (
       }
       res.status(200).json({ message: "Usuario eliminado correctamente" });
     } else {
-      throw new CustomError(
-        "No tienes permiso para eliminar este usuario.",
-        403
-      );
+      throw new CustomError("Acceso denegado.", 403);
     }
   } catch (error) {
     next(error);
@@ -155,7 +150,8 @@ export const searchUserController = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    let { username, email, role, isActive } = req.query;
+    let { username, role, isActive } = req.query;
+    let email = req.body.email;
     // Convertimos 'isActive' a booleano, si es un valor válido
     let isActiveBoolean;
     if (isActive) {

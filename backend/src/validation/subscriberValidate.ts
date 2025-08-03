@@ -15,6 +15,8 @@ export const subscriberValidationRules = {
       .optional({ nullable: true, checkFalsy: true })
       .isString()
       .withMessage("El número de teléfono debe ser una cadena de texto.")
+      .matches(/^[+]?[0-9\s\-()]{7,15}$/)
+      .withMessage("Formato de teléfono inválido.")
       .trim(),
   ],
   update: [
@@ -29,6 +31,8 @@ export const subscriberValidationRules = {
       .optional({ nullable: true, checkFalsy: true })
       .isString()
       .withMessage("El número de teléfono debe ser una cadena de texto.")
+      .matches(/^[+]?[0-9\s\-()]{7,15}$/)
+      .withMessage("Formato de teléfono inválido.")
       .trim(),
   ],
 };

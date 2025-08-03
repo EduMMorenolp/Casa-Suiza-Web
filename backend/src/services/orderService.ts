@@ -199,6 +199,9 @@ export async function updateOrder(
  */
 export async function deleteOrder(id: string) {
   try {
+    if (!id || typeof id !== "string") {
+      throw new CustomError("ID de orden inválido.", 400);
+    }
     await prisma.order.delete({
       where: { id },
     });

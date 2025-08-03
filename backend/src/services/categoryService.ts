@@ -36,7 +36,7 @@ export const createCategory = async (name: string) => {
       typeof error === "object" &&
       error !== null &&
       "code" in error &&
-      (error as any).code === "P2002"
+      error.code === "P2002"
     ) {
       throw new CustomError("Ya existe una categoría con este nombre.", 409); // Conflicto
     }
@@ -60,10 +60,10 @@ export const updateCategory = async (id: string, name: string) => {
     });
   } catch (error: unknown) {
     if (typeof error === "object" && error !== null && "code" in error) {
-      if ((error as any).code === "P2002") {
+      if (error.code === "P2002") {
         throw new CustomError("Ya existe una categoría con este nombre.", 409); // Conflicto
       }
-      if ((error as any).code === "P2025") {
+      if (error.code === "P2025") {
         throw new CustomError("Categoría no encontrada para actualizar.", 404); // No encontrado
       }
     }
@@ -79,6 +79,9 @@ export const updateCategory = async (id: string, name: string) => {
  */
 export async function deleteCategory(id: string) {
   try {
+    if (!id || typeof id !== 'string') {
+      throw new CustomError("ID de categoría inválido.", 400);
+    }
     await prisma.category.delete({
       where: { id },
     });
@@ -87,7 +90,7 @@ export async function deleteCategory(id: string) {
       typeof error === "object" &&
       error !== null &&
       "code" in error &&
-      (error as any).code === "P2025"
+      error.code === "P2025"
     ) {
       throw new CustomError("Categoría no encontrada para eliminar.", 404); // No encontrado
     }

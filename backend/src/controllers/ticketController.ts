@@ -24,7 +24,7 @@ export async function createTicketHandler(
         400
       );
     }
-    
+
     const ticket = await ticketService.createTicket({
       eventId,
       buyerName,
@@ -34,8 +34,9 @@ export async function createTicketHandler(
       buyerDni,
     });
 
-    res.status(201).json(ticket);
+    res.status(201).json({ id: ticket.id, status: "created" });
   } catch (error) {
+    console.error("Error creating ticket:", error);
     next(error);
   }
 }
@@ -72,6 +73,26 @@ export async function getTicketById(
   }
 }
 
+function validateUpdateFields(fields: any): void {
+  const hasFields = Object.values(fields).some((field) => field !== undefined);
+  if (!hasFields) {
+    throw new CustomError(
+      "Se requiere al menos un campo para actualizar el ticket.",
+      400
+    );
+  }
+}
+
+function buildUpdateData(
+  fields: any
+): Partial<ticketService.TicketData & { status: TicketStatus }> {
+  const updateData: any = {};
+  Object.entries(fields).forEach(([key, value]) => {
+    if (value !== undefined) updateData[key] = value;
+  });
+  return updateData;
+}
+
 // Actualizar un ticket existente
 export async function updateTicketController(
   req: Request,
@@ -80,43 +101,10 @@ export async function updateTicketController(
 ): Promise<void> {
   try {
     const { id } = req.params;
-    const {
-      eventId,
-      buyerName,
-      buyerLastName,
-      buyerEmail,
-      buyerPhone,
-      buyerDni,
-      status,
-    } = req.body;
+    const fields = req.body;
 
-    // Validar que al menos un campo para actualizar esté presente
-    if (
-      !eventId &&
-      !buyerName &&
-      !buyerLastName &&
-      !buyerEmail &&
-      !buyerPhone &&
-      !buyerDni &&
-      !status
-    ) {
-      throw new CustomError(
-        "Se requiere al menos un campo para actualizar el ticket.",
-        400
-      );
-    }
-
-    // Construir el objeto de datos a actualizar
-    const updateData: Partial<
-      ticketService.TicketData & { status: TicketStatus }
-    > = {};
-    if (eventId) updateData.eventId = eventId;
-    if (buyerName) updateData.buyerName = buyerName;
-    if (buyerLastName) updateData.buyerLastName = buyerLastName;
-    if (buyerEmail) updateData.buyerEmail = buyerEmail;
-    if (buyerPhone !== undefined) updateData.buyerPhone = buyerPhone; // Permite actualizar a null
-    if (buyerDni) updateData.buyerDni = buyerDni;
-    if (status) updateData.status = status; // Si el estado se actualiza directamente
+    validateUpdateFields(fields);
+    const updateData = buildUpdateData(fields);
 
     const updatedTicket = await ticketService.updateTicket(
       Number(id),
@@ -137,7 +125,7 @@ export async function deleteTicketController(
   try {
     const { id } = req.params;
     await ticketService.deleteTicket(Number(id));
-    res.status(204).send(); 
+    res.status(204).send();
   } catch (error) {
     next(error);
   }

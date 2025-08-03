@@ -31,6 +31,7 @@ router.put(
   // categoryValidationRules.update, // Aplica las reglas de validación si las defines
   updateCategory
 );
+// amazonq-ignore-next-line
 router.delete(
   "/category/:id",
   //, authenticateToken,

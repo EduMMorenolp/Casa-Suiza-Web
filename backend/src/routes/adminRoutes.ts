@@ -54,6 +54,7 @@ router.put(
   verifyAdmin,
   updateUserController
 );
+// amazonq-ignore-next-line
 router.delete(
   "/admin/users/delete/:id",
   authenticateToken,

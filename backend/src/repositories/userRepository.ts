@@ -17,7 +17,10 @@ export const checkUserActive = async (userId: string) => {
     });
     return user ? user.isActive : false;
   } catch (error: any) {
-    console.error("❌ Error al verificar usuario activo:", error.message);
+    console.error(
+      "❌ Error al verificar usuario activo:",
+      error?.message || "Error desconocido"
+    );
     throw new CustomError("Error al verificar estado del usuario", 500);
   }
 };
@@ -86,17 +89,23 @@ export const getUserById = async (id: string) => {
 export const searchUsers = async (filters: any) => {
   try {
     const { username, email, role, isActive } = filters;
+    const whereClause: any = {};
+
+    if (username && typeof username === "string") {
+      whereClause.username = { contains: username };
+    }
+    if (email && typeof email === "string") {
+      whereClause.email = { contains: email };
+    }
+    if (role && typeof role === "string") {
+      whereClause.role = role;
+    }
+    if (isActive !== undefined && typeof isActive === "boolean") {
+      whereClause.isActive = isActive;
+    }
+
     const users = await prisma.user.findMany({
-      where: {
-        username: {
-          contains: username,
-        },
-        email: {
-          contains: email,
-        },
-        role: role || undefined,
-        isActive: isActive !== undefined ? isActive : undefined,
-      },
+      where: whereClause,
     });
     return users;
   } catch (error: any) {
@@ -172,6 +181,9 @@ export const deleteUser = async (id: string) => {
  */
 export const restoreUser = async (id: string) => {
   try {
+    if (!id || typeof id !== "string") {
+      throw new CustomError("ID de usuario inválido", 400);
+    }
     const restoredUser = await prisma.user.update({
       where: { id },
       data: { isDeleted: false },

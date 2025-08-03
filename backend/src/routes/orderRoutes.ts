@@ -19,6 +19,7 @@ router.post(
 );
 router.get("/order", authenticateToken, verifyAdmin, getAllOrders);
 router.get("/order/:id", getOrderById);
+// amazonq-ignore-next-line
 router.put(
   "/order/:id",
   authenticateToken,

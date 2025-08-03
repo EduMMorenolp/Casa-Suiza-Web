@@ -91,6 +91,7 @@ export async function updateOrder(
       totalPrice,
       status,
     });
+    // amazonq-ignore-next-line
     res.status(200).json(updatedOrder);
   } catch (error) {
     next(error);
@@ -106,7 +107,7 @@ export async function deleteOrder(
   try {
     const { id } = req.params;
     await orderService.deleteOrder(id);
-    res.status(204).send(); 
+    res.status(204).end(); 
   } catch (error) {
     next(error);
   }

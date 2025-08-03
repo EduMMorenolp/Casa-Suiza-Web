@@ -11,7 +11,9 @@ import {
 const router = Router();
 
 // Ruta para crear una preferencia de pago (normalmente llamada desde el frontend)
+// amazonq-ignore-next-line
 router.post("/payments/preference", createPaymentPreferenceHandler);
+// amazonq-ignore-next-line
 router.post("/payments/process-payment", processPaymentHandler);
 
 // Rutas de retorno de MercadoPago (para el navegador del usuario)

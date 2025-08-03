@@ -41,7 +41,7 @@ export async function createCoupon(data: CouponData) {
       typeof error === "object" &&
       error !== null &&
       "code" in error &&
-      (error as any).code === "P2002"
+      error.code === "P2002"
     ) {
       throw new CustomError("El código de cupón ya existe.", 409); // Conflict
     }
@@ -54,7 +54,11 @@ export async function createCoupon(data: CouponData) {
  * @returns Una lista de cupones.
  */
 export async function findAllCoupons() {
-  return prisma.coupon.findMany();
+  try {
+    return prisma.coupon.findMany();
+  } catch (error: unknown) {
+    throw new CustomError("Error al obtener cupones.", 500);
+  }
 }
 
 /**
@@ -63,9 +67,13 @@ export async function findAllCoupons() {
  * @returns El cupón encontrado o null si no existe.
  */
 export async function findCouponById(id: string) {
-  return prisma.coupon.findUnique({
-    where: { id },
-  });
+  try {
+    return prisma.coupon.findUnique({
+      where: { id },
+    });
+  } catch (error: unknown) {
+    throw new CustomError("Error al obtener cupón.", 500);
+  }
 }
 
 /**
@@ -88,13 +96,21 @@ export async function findCouponByCode(code: string) {
  */
 export async function updateCoupon(id: string, data: Partial<CouponData>) {
   try {
+    if (!id || typeof id !== 'string') {
+      throw new CustomError("ID de cupón inválido.", 400);
+    }
+    
+    const updateData: Partial<CouponData> = {};
+    if (data.code !== undefined) updateData.code = data.code;
+    if (data.discount !== undefined) updateData.discount = data.discount;
+    if (data.isPercentage !== undefined) updateData.isPercentage = data.isPercentage;
+    if (data.expiresAt !== undefined) updateData.expiresAt = data.expiresAt;
+    if (data.maxUses !== undefined) updateData.maxUses = data.maxUses;
+    if (data.eventId !== undefined) updateData.eventId = data.eventId;
+    
     return await prisma.coupon.update({
       where: { id },
-      data: {
-        ...data,
-        // Si se actualiza el eventId, verificar que el nuevo evento exista
-        ...(data.eventId && { eventId: data.eventId }),
-      },
+      data: updateData,
     });
   } catch (error: unknown) {
     if (typeof error === "object" && error !== null && "code" in error) {
@@ -116,6 +132,9 @@ export async function updateCoupon(id: string, data: Partial<CouponData>) {
  */
 export async function deleteCoupon(id: string) {
   try {
+    if (!id || typeof id !== 'string') {
+      throw new CustomError("ID de cupón inválido.", 400);
+    }
     await prisma.coupon.delete({
       where: { id },
     });

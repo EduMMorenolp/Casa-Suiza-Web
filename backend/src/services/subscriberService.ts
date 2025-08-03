@@ -19,7 +19,7 @@ export const createSubscriber = async (
         400
       );
     }
-    
+
     return prisma.subscriber.create({
       data: {
         subMail,
@@ -57,12 +57,18 @@ export const updateSubscriber = async (
   data: { subMail?: string; subPhone?: string | null }
 ) => {
   try {
+    // Validate and sanitize input
+    if (!Number.isInteger(id) || id <= 0) {
+      throw new CustomError("ID de suscriptor inválido.", 400);
+    }
+
+    const updateData: { subMail?: string; subPhone?: string | null } = {};
+    if (data.subMail !== undefined) updateData.subMail = data.subMail;
+    if (data.subPhone !== undefined) updateData.subPhone = data.subPhone;
+
     return prisma.subscriber.update({
       where: { id },
-      data: {
-        subMail: data.subMail,
-        subPhone: data.subPhone,
-      },
+      data: updateData,
     });
   } catch (error: unknown) {
     if (typeof error === "object" && error !== null && "code" in error) {
@@ -86,6 +92,9 @@ export const updateSubscriber = async (
 // Eliminar un suscriptor
 export const deleteSubscriber = async (id: number) => {
   try {
+    if (!Number.isInteger(id) || id <= 0) {
+      throw new CustomError("ID de suscriptor inválido.", 400);
+    }
     await prisma.subscriber.delete({
       where: { id },
     });

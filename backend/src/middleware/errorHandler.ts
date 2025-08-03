@@ -17,7 +17,10 @@ export const errorHandler = (
   res: Response,
   next: NextFunction
 ): void => {
-  console.error("🔥 Error:", err.message);
+  console.error(
+    "🔥 Error:",
+    err.message?.replace(/[\r\n]/g, " ") || "Unknown error"
+  );
   const statusCode = err.statusCode || 500;
   const message = err.statusCode ? err.message : "Internal server error";
   if (res.headersSent) {

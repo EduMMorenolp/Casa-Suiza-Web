@@ -9,21 +9,19 @@ const versionsApi = process.env.VERSIONS_API
   ? process.env.VERSIONS_API.split(",")
   : ["v1"];
 
-const servers = [
-  {
-    url: `${baseUrl}/${basePath}/${versionsApi}`,
-    description: "URL Server",
-    variables: {
-      basePath: {
-        enum: [basePath],
-        default: basePath,
-      },
-      versionApi: {
-        enum: versionsApi,
-        default: versionsApi[0],
-      },
+const servers = versionsApi.map(version => ({
+  url: `${baseUrl}/${basePath}/${version}`,
+  description: `URL Server v${version}`,
+  variables: {
+    basePath: {
+      enum: [basePath],
+      default: basePath,
+    },
+    versionApi: {
+      enum: [version],
+      default: version,
     },
   },
-];
+}));
 
 export default servers;

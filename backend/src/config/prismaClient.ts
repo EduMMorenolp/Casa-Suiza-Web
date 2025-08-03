@@ -5,7 +5,9 @@ const prisma = new PrismaClient();
 export async function checkDatabaseConnection(): Promise<boolean> {
   try {
     await prisma.$queryRaw`SELECT 1`;
-    console.log("✅ La base de datos está online.");
+    if (process.env.NODE_ENV !== "production") {
+      console.log("✅ La base de datos está online.");
+    }
     return true;
   } catch (error: any) {
     console.error("❌ Error al conectar con la base de datos:");
@@ -17,6 +19,8 @@ export async function checkDatabaseConnection(): Promise<boolean> {
       console.error("La base de datos no existe.");
     } else if (error.code === "28P01") {
       console.error("Credenciales incorrectas.");
+    } else {
+      console.error("Error de conexión:", error.message || "Error desconocido");
     }
 
     return false;

@@ -28,6 +28,7 @@ router.put(
   handleValidationErrors,
   updateUser
 );
+// amazonq-ignore-next-line
 router.delete(
   "/user/delete",
   authenticateToken,

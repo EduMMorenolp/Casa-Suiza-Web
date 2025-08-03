@@ -40,18 +40,22 @@ app.use(
 
 const BASE_PATH = process.env.BASE_PATH || "";
 const VERSIONS_API = process.env.VERSIONS_API || "";
+const API_PREFIX = `/${BASE_PATH}/${VERSIONS_API}`;
 
 // Routes
-app.use(`/${BASE_PATH}/${VERSIONS_API}`, authRoutes);
-app.use(`/${BASE_PATH}/${VERSIONS_API}`, userRoutes);
-app.use(`/${BASE_PATH}/${VERSIONS_API}`, adminRoutes);
-app.use(`/${BASE_PATH}/${VERSIONS_API}`, ticketRoutes);
-app.use(`/${BASE_PATH}/${VERSIONS_API}`, paymentRoutes);
-app.use(`/${BASE_PATH}/${VERSIONS_API}`, eventRoutes);
-app.use(`/${BASE_PATH}/${VERSIONS_API}`, subscriberRoutes);
-app.use(`/${BASE_PATH}/${VERSIONS_API}`, couponRoutes);
-app.use(`/${BASE_PATH}/${VERSIONS_API}`, orderRoutes);
-app.use(`/${BASE_PATH}/${VERSIONS_API}`, categoryRoutes);
+app.use(
+  API_PREFIX,
+  authRoutes,
+  userRoutes,
+  adminRoutes,
+  ticketRoutes,
+  paymentRoutes,
+  eventRoutes,
+  subscriberRoutes,
+  couponRoutes,
+  orderRoutes,
+  categoryRoutes
+);
 
 // Middleware para manejar errores
 app.use(errorHandler);
