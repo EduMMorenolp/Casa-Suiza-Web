@@ -271,3 +271,34 @@ export async function listEvents(filters: ListEventsFilters) {
   });
   return events;
 }
+
+export async function getDashboardStats() {
+  try {
+    const activeEvents = await prisma.event.count({
+      where: { isActive: true }
+    });
+
+    const totalTickets = await prisma.ticket.count({
+      where: { status: 'PAID' }
+    });
+
+    const totalUsers = await prisma.user.count({
+      where: { isDeleted: false }
+    });
+
+    const totalRevenue = await prisma.order.aggregate({
+      where: { status: 'PAID' },
+      _sum: { totalPrice: true }
+    });
+
+    return {
+      activeEvents,
+      totalTickets,
+      totalUsers,
+      totalRevenue: totalRevenue._sum.totalPrice || 0
+    };
+  } catch (error) {
+    console.error('Error obteniendo estadísticas:', error);
+    throw new CustomError('Error al obtener estadísticas del dashboard', 500);
+  }
+}

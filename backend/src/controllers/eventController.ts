@@ -247,3 +247,16 @@ export async function listEventsHandler(
     next(error);
   }
 }
+
+export async function getDashboardStatsHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const stats = await eventService.getDashboardStats();
+    res.status(200).json(stats);
+  } catch (error) {
+    next(error);
+  }
+}

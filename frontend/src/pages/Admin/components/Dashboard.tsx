@@ -1,19 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart3, Calendar, Users, DollarSign, TrendingUp, TrendingDown, Eye, Settings, Filter } from 'lucide-react';
+import { getDashboardStats, getRecentEvents } from '../../../api/dashboard';
 
 const Dashboard: React.FC = () => {
     const [selectedTimeRange, setSelectedTimeRange] = useState('mes');
     const [animateStats, setAnimateStats] = useState(false);
+    const [stats, setStats] = useState({
+        activeEvents: 0,
+        totalTickets: 0,
+        totalUsers: 0,
+        totalRevenue: 0
+    });
+    const [events, setEvents] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const timer = setTimeout(() => setAnimateStats(true), 100);
         return () => clearTimeout(timer);
     }, []);
 
-    const stats = [
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const [statsResponse, eventsResponse] = await Promise.all([
+                    getDashboardStats(),
+                    getRecentEvents()
+                ]);
+                setStats(statsResponse.data);
+                setEvents(eventsResponse.data.slice(0, 5));
+            } catch (error) {
+                console.error('Error fetching dashboard data:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, []);
+
+    const statsCards = [
         {
             title: 'Eventos Activos',
-            value: '12',
+            value: stats.activeEvents.toString(),
             change: '+2.5%',
             trend: 'up',
             color: 'from-blue-500 to-blue-600',
@@ -23,7 +50,7 @@ const Dashboard: React.FC = () => {
         },
         {
             title: 'Entradas Vendidas',
-            value: '1,234',
+            value: stats.totalTickets.toLocaleString(),
             change: '+18.2%',
             trend: 'up',
             color: 'from-emerald-500 to-emerald-600',
@@ -33,7 +60,7 @@ const Dashboard: React.FC = () => {
         },
         {
             title: 'Usuarios Registrados',
-            value: '856',
+            value: stats.totalUsers.toString(),
             change: '+12.1%',
             trend: 'up',
             color: 'from-purple-500 to-purple-600',
@@ -42,8 +69,8 @@ const Dashboard: React.FC = () => {
             textColor: 'text-purple-600'
         },
         {
-            title: 'Ingresos del Mes',
-            value: '$45,670',
+            title: 'Ingresos Totales',
+            value: `$${stats.totalRevenue.toLocaleString()}`,
             change: '-3.4%',
             trend: 'down',
             color: 'from-rose-500 to-rose-600',
@@ -130,7 +157,7 @@ const Dashboard: React.FC = () => {
 
                 {/* Stats Cards Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {stats.map((stat, index) => {
+                    {statsCards.map((stat, index) => {
                         const IconComponent = stat.icon;
                         return (
                             <div
@@ -180,7 +207,16 @@ const Dashboard: React.FC = () => {
                     </div>
 
                     <div className="space-y-4">
-                        {recentEvents.map((event) => (
+                        {loading ? (
+                            <div className="text-center py-8 text-gray-500">
+                                Cargando eventos...
+                            </div>
+                        ) : events.length === 0 ? (
+                            <div className="text-center py-8 text-gray-500">
+                                No hay eventos disponibles
+                            </div>
+                        ) : (
+                            events.map((event: any) => (
                             <div
                                 key={event.id}
                                 className="group flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 rounded-xl transition-all duration-200 hover:shadow-md gap-3 sm:gap-4"
@@ -189,7 +225,7 @@ const Dashboard: React.FC = () => {
                                     <div className="w-2 h-2 bg-blue-500 rounded-full group-hover:scale-150 transition-transform flex-shrink-0 mt-1 sm:mt-0" />
                                     <div className="flex-1 min-w-0">
                                         <h4 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors truncate">
-                                            {event.name}
+                                            {event.title}
                                         </h4>
                                         <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-1 text-sm">
                                             <p className="text-gray-600 flex items-center gap-1 flex-shrink-0">
@@ -202,26 +238,27 @@ const Dashboard: React.FC = () => {
                                             </p>
                                             <p className="text-gray-600 flex items-center gap-1 flex-shrink-0">
                                                 <Users className="w-4 h-4" />
-                                                {event.attendees} asistentes
+                                                {event.sold || 0} vendidos
                                             </p>
                                             <p className="text-gray-600 flex items-center gap-1 flex-shrink-0">
                                                 <DollarSign className="w-4 h-4" />
-                                                {event.revenue}
+                                                ${event.price}
                                             </p>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div className="flex items-center gap-3 mt-2 sm:mt-0 flex-shrink-0">
-                                    <span className={`px-3 py-1 ${event.statusColor} rounded-full text-sm font-medium`}>
-                                        {event.status}
+                                    <span className={`px-3 py-1 ${event.isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-800'} rounded-full text-sm font-medium`}>
+                                        {event.isActive ? 'Activo' : 'Inactivo'}
                                     </span>
                                     <button className="opacity-0 group-hover:opacity-100 p-2 hover:bg-gray-200 rounded-lg transition-all">
                                         <Settings className="w-4 h-4 text-gray-600" />
                                     </button>
                                 </div>
                             </div>
-                        ))}
+                            ))
+                        )}
                     </div>
                 </div>
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     BarChart3,
     TrendingUp,
@@ -19,6 +19,7 @@ import {
     X
 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart as RechartsPieChart, Cell } from 'recharts';
+import { getReportsData, getTopEvents, getSalesChart } from '../../../api/reports';
 
 const Reportes: React.FC = () => {
     const [selectedPeriod, setSelectedPeriod] = useState('mes');
@@ -26,17 +27,30 @@ const Reportes: React.FC = () => {
     const [activeTab, setActiveTab] = useState('overview');
     const [showExportMenu, setShowExportMenu] = useState(false);
     const [showMobileMenu, setShowMobileMenu] = useState(false);
+    const [reportsData, setReportsData] = useState({
+        totalRevenue: 0,
+        totalEvents: 0,
+        totalAttendees: 0,
+        occupancyRate: 0
+    });
+    const [topEvents, setTopEvents] = useState([]);
+    const [salesData, setSalesData] = useState([]);
+    const [previousData, setPreviousData] = useState({
+        totalRevenue: 0,
+        totalEvents: 0,
+        totalAttendees: 0,
+        occupancyRate: 0
+    });
 
-    // Datos de ejemplo para gráficos
-    const salesData = [
-        { name: 'Ene', ventas: 4000, eventos: 12 },
-        { name: 'Feb', ventas: 3000, eventos: 8 },
-        { name: 'Mar', ventas: 5000, eventos: 15 },
-        { name: 'Abr', ventas: 4500, eventos: 18 },
-        { name: 'May', ventas: 6000, eventos: 22 },
-        { name: 'Jun', ventas: 5500, eventos: 20 },
-        { name: 'Jul', ventas: 7000, eventos: 25 }
-    ];
+    const calculateChange = (current: number, previous: number) => {
+        if (previous === 0) return '+0.0%';
+        const change = ((current - previous) / previous) * 100;
+        return `${change >= 0 ? '+' : ''}${change.toFixed(1)}%`;
+    };
+
+    const getTrendDirection = (current: number, previous: number) => {
+        return current >= previous ? 'up' : 'down';
+    };
 
     const eventTypeData = [
         { name: 'Conferencias', value: 35, color: '#3B82F6' },
@@ -45,66 +59,36 @@ const Reportes: React.FC = () => {
         { name: 'Seminarios', value: 17, color: '#EF4444' }
     ];
 
-    const topEvents = [
-        {
-            name: 'Conferencia Tech Summit 2025',
-            date: '2025-07-15',
-            attendees: 450,
-            revenue: '$15,750',
-            growth: '+25%',
-            trend: 'up',
-            location: 'Auditorio Principal'
-        },
-        {
-            name: 'Workshop React Advanced',
-            date: '2025-07-22',
-            attendees: 120,
-            revenue: '$4,200',
-            growth: '+18%',
-            trend: 'up',
-            location: 'Sala 2'
-        },
-        {
-            name: 'Meetup Developers',
-            date: '2025-07-28',
-            attendees: 85,
-            revenue: '$2,550',
-            growth: '-5%',
-            trend: 'down',
-            location: 'Sala 1'
-        }
-    ];
-
     const kpiData = [
         {
             title: 'Ingresos Totales',
-            value: '$127,450',
-            change: '+12.5%',
-            trend: 'up',
+            value: `$${reportsData.totalRevenue.toLocaleString()}`,
+            change: calculateChange(reportsData.totalRevenue, previousData.totalRevenue),
+            trend: getTrendDirection(reportsData.totalRevenue, previousData.totalRevenue),
             icon: DollarSign,
             color: 'from-emerald-500 to-emerald-600'
         },
         {
             title: 'Eventos Realizados',
-            value: '48',
-            change: '+8.2%',
-            trend: 'up',
+            value: reportsData.totalEvents.toString(),
+            change: calculateChange(reportsData.totalEvents, previousData.totalEvents),
+            trend: getTrendDirection(reportsData.totalEvents, previousData.totalEvents),
             icon: Calendar,
             color: 'from-blue-500 to-blue-600'
         },
         {
             title: 'Asistentes Totales',
-            value: '2,847',
-            change: '+15.3%',
-            trend: 'up',
+            value: reportsData.totalAttendees.toLocaleString(),
+            change: calculateChange(reportsData.totalAttendees, previousData.totalAttendees),
+            trend: getTrendDirection(reportsData.totalAttendees, previousData.totalAttendees),
             icon: Users,
             color: 'from-purple-500 to-purple-600'
         },
         {
             title: 'Tasa de Ocupación',
-            value: '87%',
-            change: '+3.1%',
-            trend: 'up',
+            value: `${reportsData.occupancyRate}%`,
+            change: calculateChange(reportsData.occupancyRate, previousData.occupancyRate),
+            trend: getTrendDirection(reportsData.occupancyRate, previousData.occupancyRate),
             icon: Target,
             color: 'from-orange-500 to-orange-600'
         }
@@ -119,12 +103,37 @@ const Reportes: React.FC = () => {
         }, 1500);
     };
 
-    const refreshData = () => {
+    const refreshData = async () => {
         setLoading(true);
-        setTimeout(() => {
+        try {
+            const [reportsResponse, eventsResponse, salesResponse] = await Promise.all([
+                getReportsData(selectedPeriod),
+                getTopEvents(selectedPeriod),
+                getSalesChart(selectedPeriod)
+            ]);
+            
+            // Simular datos anteriores para calcular cambios
+            const mockPrevious = {
+                totalRevenue: reportsResponse.data.totalRevenue * 0.9,
+                totalEvents: Math.max(1, reportsResponse.data.totalEvents - 2),
+                totalAttendees: reportsResponse.data.totalAttendees * 0.85,
+                occupancyRate: Math.max(0, reportsResponse.data.occupancyRate - 5)
+            };
+            
+            setReportsData(reportsResponse.data);
+            setTopEvents(eventsResponse.data);
+            setSalesData(salesResponse.data);
+            setPreviousData(mockPrevious);
+        } catch (error) {
+            console.error('Error fetching reports data:', error);
+        } finally {
             setLoading(false);
-        }, 1000);
+        }
     };
+
+    useEffect(() => {
+        refreshData();
+    }, [selectedPeriod]);
 
     const tabs = [
         { id: 'overview', label: 'Resumen', icon: BarChart3 },
@@ -346,7 +355,7 @@ const Reportes: React.FC = () => {
                                 </div>
                             </div>
                             <ResponsiveContainer width="100%" height={250}>
-                                <LineChart data={salesData}>
+                                <LineChart data={salesData.slice(0, 7)}>
                                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                                     <XAxis dataKey="name" stroke="#666" fontSize={12} />
                                     <YAxis stroke="#666" fontSize={12} />
@@ -409,120 +418,189 @@ const Reportes: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Top Events */}
-                    <div className="bg-white rounded-xl lg:rounded-2xl shadow-lg p-4 lg:p-6 border border-gray-100">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 lg:mb-6 gap-3">
-                            <h3 className="text-lg lg:text-xl font-bold text-gray-900">Eventos Más Exitosos</h3>
-                            <button className="flex items-center gap-2 px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors self-start sm:self-center">
-                                <Eye className="w-4 h-4" />
-                                Ver todos
-                            </button>
-                        </div>
+                    {/* Top Events - Solo en overview */}
+                    {activeTab === 'overview' && (
+                        <div className="bg-white rounded-xl lg:rounded-2xl shadow-lg p-4 lg:p-6 border border-gray-100">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 lg:mb-6 gap-3">
+                                <h3 className="text-lg lg:text-xl font-bold text-gray-900">Eventos Más Exitosos</h3>
+                                <button className="flex items-center gap-2 px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors self-start sm:self-center">
+                                    <Eye className="w-4 h-4" />
+                                    Ver todos
+                                </button>
+                            </div>
 
-                        {/* Desktop Table */}
-                        <div className="hidden lg:block overflow-x-auto">
-                            <table className="w-full">
-                                <thead>
-                                    <tr className="border-b border-gray-200">
-                                        <th className="text-left py-3 px-4 font-semibold text-gray-900">Evento</th>
-                                        <th className="text-left py-3 px-4 font-semibold text-gray-900">Fecha</th>
-                                        <th className="text-left py-3 px-4 font-semibold text-gray-900">Asistentes</th>
-                                        <th className="text-left py-3 px-4 font-semibold text-gray-900">Ingresos</th>
-                                        <th className="text-left py-3 px-4 font-semibold text-gray-900">Crecimiento</th>
-                                        <th className="text-left py-3 px-4 font-semibold text-gray-900">Ubicación</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {topEvents.map((event, index) => (
-                                        <tr key={index} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                                            <td className="py-4 px-4">
-                                                <div className="font-medium text-gray-900">{event.name}</div>
-                                            </td>
-                                            <td className="py-4 px-4">
-                                                <div className="flex items-center gap-2 text-gray-600">
-                                                    <Calendar className="w-4 h-4" />
-                                                    {new Date(event.date).toLocaleDateString('es-ES', {
-                                                        day: 'numeric',
-                                                        month: 'short'
-                                                    })}
-                                                </div>
-                                            </td>
-                                            <td className="py-4 px-4">
-                                                <div className="flex items-center gap-2 text-gray-600">
-                                                    <Users className="w-4 h-4" />
-                                                    {event.attendees}
-                                                </div>
-                                            </td>
-                                            <td className="py-4 px-4">
-                                                <div className="flex items-center gap-2 text-gray-600">
-                                                    <DollarSign className="w-4 h-4" />
-                                                    {event.revenue}
-                                                </div>
-                                            </td>
-                                            <td className="py-4 px-4">
-                                                <div className={`flex items-center gap-1 ${event.trend === 'up' ? 'text-emerald-600' : 'text-red-600'
-                                                    }`}>
-                                                    {event.trend === 'up' ? (
-                                                        <ArrowUpRight className="w-4 h-4" />
-                                                    ) : (
-                                                        <ArrowDownRight className="w-4 h-4" />
-                                                    )}
-                                                    {event.growth}
-                                                </div>
-                                            </td>
-                                            <td className="py-4 px-4">
-                                                <div className="flex items-center gap-2 text-gray-600">
-                                                    <MapPin className="w-4 h-4" />
-                                                    {event.location}
-                                                </div>
-                                            </td>
+                            {/* Desktop Table */}
+                            <div className="hidden lg:block overflow-x-auto">
+                                <table className="w-full">
+                                    <thead>
+                                        <tr className="border-b border-gray-200">
+                                            <th className="text-left py-3 px-4 font-semibold text-gray-900">Evento</th>
+                                            <th className="text-left py-3 px-4 font-semibold text-gray-900">Fecha</th>
+                                            <th className="text-left py-3 px-4 font-semibold text-gray-900">Asistentes</th>
+                                            <th className="text-left py-3 px-4 font-semibold text-gray-900">Ingresos</th>
+                                            <th className="text-left py-3 px-4 font-semibold text-gray-900">Crecimiento</th>
+                                            <th className="text-left py-3 px-4 font-semibold text-gray-900">Ubicación</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
+                                    </thead>
+                                    <tbody>
+                                        {topEvents.slice(0, 5).map((event: any, index) => (
+                                            <tr key={index} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                                                <td className="py-4 px-4">
+                                                    <div className="font-medium text-gray-900">{event.name}</div>
+                                                </td>
+                                                <td className="py-4 px-4">
+                                                    <div className="flex items-center gap-2 text-gray-600">
+                                                        <Calendar className="w-4 h-4" />
+                                                        {new Date(event.date).toLocaleDateString('es-ES', {
+                                                            day: 'numeric',
+                                                            month: 'short'
+                                                        })}
+                                                    </div>
+                                                </td>
+                                                <td className="py-4 px-4">
+                                                    <div className="flex items-center gap-2 text-gray-600">
+                                                        <Users className="w-4 h-4" />
+                                                        {event.attendees}
+                                                    </div>
+                                                </td>
+                                                <td className="py-4 px-4">
+                                                    <div className="flex items-center gap-2 text-gray-600">
+                                                        <DollarSign className="w-4 h-4" />
+                                                        ${event.revenue.toLocaleString()}
+                                                    </div>
+                                                </td>
+                                                <td className="py-4 px-4">
+                                                    <div className="flex items-center gap-1 text-emerald-600">
+                                                        <ArrowUpRight className="w-4 h-4" />
+                                                        +5%
+                                                    </div>
+                                                </td>
+                                                <td className="py-4 px-4">
+                                                    <div className="flex items-center gap-2 text-gray-600">
+                                                        <MapPin className="w-4 h-4" />
+                                                        {event.location}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
 
-                        {/* Mobile Cards */}
-                        <div className="lg:hidden space-y-4">
-                            {topEvents.map((event, index) => (
-                                <div key={index} className="bg-gray-50 rounded-lg p-4 space-y-3">
-                                    <div className="font-medium text-gray-900 text-sm">{event.name}</div>
+                            {/* Mobile Cards */}
+                            <div className="lg:hidden space-y-4">
+                                {topEvents.slice(0, 5).map((event: any, index) => (
+                                    <div key={index} className="bg-gray-50 rounded-lg p-4 space-y-3">
+                                        <div className="font-medium text-gray-900 text-sm">{event.name}</div>
 
-                                    <div className="grid grid-cols-2 gap-3 text-sm">
-                                        <div className="flex items-center gap-2 text-gray-600">
-                                            <Calendar className="w-4 h-4" />
-                                            {new Date(event.date).toLocaleDateString('es-ES', {
-                                                day: 'numeric',
-                                                month: 'short'
-                                            })}
-                                        </div>
-                                        <div className="flex items-center gap-2 text-gray-600">
-                                            <Users className="w-4 h-4" />
-                                            {event.attendees}
-                                        </div>
-                                        <div className="flex items-center gap-2 text-gray-600">
-                                            <DollarSign className="w-4 h-4" />
-                                            {event.revenue}
-                                        </div>
-                                        <div className={`flex items-center gap-1 ${event.trend === 'up' ? 'text-emerald-600' : 'text-red-600'
-                                            }`}>
-                                            {event.trend === 'up' ? (
+                                        <div className="grid grid-cols-2 gap-3 text-sm">
+                                            <div className="flex items-center gap-2 text-gray-600">
+                                                <Calendar className="w-4 h-4" />
+                                                {new Date(event.date).toLocaleDateString('es-ES', {
+                                                    day: 'numeric',
+                                                    month: 'short'
+                                                })}
+                                            </div>
+                                            <div className="flex items-center gap-2 text-gray-600">
+                                                <Users className="w-4 h-4" />
+                                                {event.attendees}
+                                            </div>
+                                            <div className="flex items-center gap-2 text-gray-600">
+                                                <DollarSign className="w-4 h-4" />
+                                                ${event.revenue.toLocaleString()}
+                                            </div>
+                                            <div className="flex items-center gap-1 text-emerald-600">
                                                 <ArrowUpRight className="w-4 h-4" />
-                                            ) : (
-                                                <ArrowDownRight className="w-4 h-4" />
-                                            )}
-                                            {event.growth}
+                                                +5%
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-center gap-2 text-gray-600 text-sm">
+                                            <MapPin className="w-4 h-4" />
+                                            {event.location}
                                         </div>
                                     </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
-                                    <div className="flex items-center gap-2 text-gray-600 text-sm">
-                                        <MapPin className="w-4 h-4" />
-                                        {event.location}
+                    {activeTab === 'sales' && (
+                        <div className="bg-white rounded-xl lg:rounded-2xl shadow-lg p-4 lg:p-6 border border-gray-100">
+                            <h3 className="text-lg lg:text-xl font-bold text-gray-900 mb-6">Análisis de Ventas</h3>
+                            <ResponsiveContainer width="100%" height={400}>
+                                <LineChart data={salesData}>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                                    <XAxis dataKey="date" stroke="#666" fontSize={12} />
+                                    <YAxis stroke="#666" fontSize={12} />
+                                    <Tooltip />
+                                    <Line type="monotone" dataKey="ventas" stroke="#3B82F6" strokeWidth={3} />
+                                </LineChart>
+                            </ResponsiveContainer>
+                        </div>
+                    )}
+
+                    {activeTab === 'events' && (
+                        <div className="bg-white rounded-xl lg:rounded-2xl shadow-lg p-4 lg:p-6 border border-gray-100">
+                            <h3 className="text-lg lg:text-xl font-bold text-gray-900 mb-6">Gestión de Eventos</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {topEvents.map((event: any, index) => (
+                                    <div key={index} className="border border-gray-200 rounded-lg p-4">
+                                        <h4 className="font-semibold text-gray-900 mb-2">{event.name}</h4>
+                                        <div className="space-y-2 text-sm text-gray-600">
+                                            <div className="flex items-center gap-2">
+                                                <Calendar className="w-4 h-4" />
+                                                {new Date(event.date).toLocaleDateString()}
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <Users className="w-4 h-4" />
+                                                {event.attendees} asistentes
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <DollarSign className="w-4 h-4" />
+                                                ${event.revenue.toLocaleString()}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {activeTab === 'analytics' && (
+                        <div className="bg-white rounded-xl lg:rounded-2xl shadow-lg p-4 lg:p-6 border border-gray-100">
+                            <h3 className="text-lg lg:text-xl font-bold text-gray-900 mb-6">Análisis Avanzado</h3>
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <div>
+                                    <h4 className="font-semibold text-gray-900 mb-4">Distribución por Tipo</h4>
+                                    <div className="space-y-3">
+                                        {eventTypeData.map((item, index) => (
+                                            <div key={index} className="flex items-center justify-between">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-4 h-4 rounded-full" style={{ backgroundColor: item.color }}></div>
+                                                    <span className="text-sm text-gray-700">{item.name}</span>
+                                                </div>
+                                                <span className="text-sm font-medium text-gray-900">{item.value}%</span>
+                                            </div>
+                                        ))}
                                     </div>
                                 </div>
-                            ))}
+                                <div>
+                                    <h4 className="font-semibold text-gray-900 mb-4">Métricas Clave</h4>
+                                    <div className="space-y-4">
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-sm text-gray-600">Promedio por evento</span>
+                                            <span className="font-medium">${(reportsData.totalRevenue / Math.max(reportsData.totalEvents, 1)).toLocaleString()}</span>
+                                        </div>
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-sm text-gray-600">Asistentes por evento</span>
+                                            <span className="font-medium">{Math.round(reportsData.totalAttendees / Math.max(reportsData.totalEvents, 1))}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    )}
 
                     {/* Quick Actions */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">

@@ -5,6 +5,7 @@ import {
   updateEventHandler,
   deleteEventHandler,
   listEventsHandler,
+  getDashboardStatsHandler,
 } from "../controllers/eventController";
 import { authenticateToken } from "../middleware/authTokenMiddleware"; // Asegúrate de importar
 import { verifyAdmin } from "../middleware/verifyAdmin"; // Asegúrate de importar
@@ -22,5 +23,8 @@ router.delete(
   "/events/:id",
   deleteEventHandler
 );
+
+// Estadísticas del dashboard (admin)
+router.get("/dashboard/stats", authenticateToken, verifyAdmin, getDashboardStatsHandler);
 
 export default router;

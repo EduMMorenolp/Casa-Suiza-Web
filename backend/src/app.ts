@@ -18,6 +18,7 @@ import subscriberRoutes from "./routes/subscriberRoutes";
 import couponRoutes from "./routes/couponRoutes";
 import orderRoutes from "./routes/orderRoutes";
 import categoryRoutes from "./routes/categoryRoutes";
+import reportRoutes from "./routes/reportRoutes";
 
 // Configuracion
 dotenv.config();
@@ -54,7 +55,8 @@ app.use(
   subscriberRoutes,
   couponRoutes,
   orderRoutes,
-  categoryRoutes
+  categoryRoutes,
+  reportRoutes
 );
 
 // Middleware para manejar errores
