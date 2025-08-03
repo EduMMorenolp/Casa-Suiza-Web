@@ -2,6 +2,7 @@
 
 import express from "express";
 import dotenv from "dotenv";
+import path from "path";
 import { corsMiddleware } from "./middleware/corsMiddleware";
 
 // Import Middleware
@@ -27,6 +28,9 @@ app.use(express.json());
 
 // Aplicar el middleware de CORS
 app.use(corsMiddleware);
+
+// Servir archivos estáticos (imágenes)
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Swagger
 // @ts-ignore

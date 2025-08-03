@@ -6,7 +6,7 @@ import { getEvents, deleteEvent } from "../../../api/events";
 import AddEventForm from "./AddEventForm";
 
 interface Event extends EventData {
-    status: "active" | "soldout";
+    status: "active" | "soldout" | "expired";
 }
 
 interface EventsProps {
@@ -56,19 +56,11 @@ const EventCard: React.FC<{
 
     return (
         <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100 overflow-hidden">
-            {/* Header con imagen o placeholder */}
-            <div className="relative h-32 bg-gradient-to-r from-red-500 to-red-600 flex items-center justify-center">
-                {event.imageUrl ? (
-                    <img
-                        src={event.imageUrl}
-                        alt={event.title}
-                        className="w-full h-full object-cover"
-                    />
-                ) : (
-                    <div className="text-white font-bold text-lg">
-                        {event.title.slice(0, 2).toUpperCase()}
-                    </div>
-                )}
+            {/* Header sin imagen */}
+            <div className="relative h-20 bg-gradient-to-r from-red-500 to-red-600 flex items-center justify-center">
+                <div className="text-white font-bold text-lg">
+                    {event.title.slice(0, 2).toUpperCase()}
+                </div>
 
                 {/* Badge de promoción */}
                 {event.promo && (
@@ -79,11 +71,13 @@ const EventCard: React.FC<{
                 )}
 
                 {/* Badge de estado */}
-                <div className={`absolute top-2 left-2 px-2 py-1 rounded-full text-xs font-bold ${event.status === "active"
-                    ? "bg-green-100 text-green-800"
-                    : "bg-red-100 text-red-800"
+                <div className={`absolute top-2 left-2 px-2 py-1 rounded-full text-xs font-bold ${
+                    event.status === "active" ? "bg-green-100 text-green-800" :
+                    event.status === "soldout" ? "bg-red-100 text-red-800" :
+                    "bg-gray-100 text-gray-800"
                     }`}>
-                    {event.status === "active" ? "Activo" : "Agotado"}
+                    {event.status === "active" ? "Activo" : 
+                     event.status === "soldout" ? "Agotado" : "Vencido"}
                 </div>
             </div>
 
@@ -207,7 +201,7 @@ const ConfirmationModal: React.FC<{
 // Componente Principal
 const Events: React.FC<EventsProps> = ({ setActiveTab }) => {
     const [searchTerm, setSearchTerm] = useState("");
-    const [filterStatus, setFilterStatus] = useState<"all" | "active" | "soldout">("all");
+    const [filterStatus, setFilterStatus] = useState<"all" | "active" | "soldout" | "expired">("all");
     const [events, setEvents] = useState<Event[]>([]);
     const [loading, setLoading] = useState(false);
     const [showForm, setShowForm] = useState(false);
@@ -218,7 +212,10 @@ const Events: React.FC<EventsProps> = ({ setActiveTab }) => {
     const [uiMessageType, setUiMessageType] = useState<'success' | 'error' | ''>('');
 
     // Funciones utilitarias
-    const getStatus = (soldOut?: boolean | null): "active" | "soldout" => {
+    const getStatus = (soldOut?: boolean | null, eventDate?: string): "active" | "soldout" | "expired" => {
+        if (eventDate && new Date(eventDate) < new Date()) {
+            return "expired";
+        }
         return soldOut ? "soldout" : "active";
     };
 
@@ -261,7 +258,7 @@ const Events: React.FC<EventsProps> = ({ setActiveTab }) => {
                 const data = await getEvents();
                 const mapped = data.map((e) => ({
                     ...e,
-                    status: getStatus(e.soldOut),
+                    status: getStatus(e.soldOut, e.date),
                     sold: e.sold,
                 }));
                 setEvents(mapped);
@@ -276,7 +273,7 @@ const Events: React.FC<EventsProps> = ({ setActiveTab }) => {
                 // Fallback a datos dummy si la API falla
                 const mapped = dummyEvents.map((e) => ({
                     ...e,
-                    status: getStatus(e.soldOut),
+                    status: getStatus(e.soldOut, e.date),
                     sold: Math.floor(Math.random() * (e.capacity || 100)),
                 }));
                 setEvents(mapped);
@@ -349,14 +346,14 @@ const Events: React.FC<EventsProps> = ({ setActiveTab }) => {
         if (isEdit) {
             setEvents(prev => prev.map(e =>
                 e.id === eventData.id
-                    ? { ...eventData, status: getStatus(eventData.soldOut), sold: e.sold }
+                    ? { ...eventData, status: getStatus(eventData.soldOut, eventData.date), sold: e.sold }
                     : e
             ));
             showUiMessage("Evento actualizado correctamente.", 'success');
         } else {
             const newEvent: Event = {
                 ...eventData,
-                status: getStatus(eventData.soldOut),
+                status: getStatus(eventData.soldOut, eventData.date),
                 sold: 0
             };
             setEvents(prev => [...prev, newEvent]);
@@ -420,12 +417,13 @@ const Events: React.FC<EventsProps> = ({ setActiveTab }) => {
                         <div className="lg:w-48">
                             <select
                                 value={filterStatus}
-                                onChange={(e) => setFilterStatus(e.target.value as "all" | "active" | "soldout")}
+                                onChange={(e) => setFilterStatus(e.target.value as "all" | "active" | "soldout" | "expired")}
                                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
                             >
                                 <option value="all">Todos los estados</option>
                                 <option value="active">Activos</option>
                                 <option value="soldout">Agotados</option>
+                                <option value="expired">Vencidos</option>
                             </select>
                         </div>
                     </div>

@@ -48,7 +48,9 @@ export default function EventCard({ event, onBuyClick }: EventCardProps) {
     }
   }, [isFavorite, event.id]);
 
-  const displayImageUrl = event.imageUrl || foto;
+  const displayImageUrl = event.imageUrl 
+    ? `http://localhost:3000${event.imageUrl}` 
+    : foto;
   const displayLocation = event.location || 'Casa Suiza, La Plata';
   const displayDescription = event.description || 'Sin descripción disponible.';
 

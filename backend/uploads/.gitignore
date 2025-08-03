@@ -1,0 +1,7 @@
+# Ignorar todas las imágenes subidas
+*
+# Pero mantener la estructura de carpetas
+!.gitignore
+!events/
+events/*
+!events/.gitkeep

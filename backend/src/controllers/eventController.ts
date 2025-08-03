@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import * as eventService from "../services/eventService";
 import { CustomError } from "../utils/CustomError";
+import path from "path";
 
 // Crear un nuevo evento
 export async function createEventHandler(
@@ -18,13 +19,21 @@ export async function createEventHandler(
       promo,
       soldOut,
       price,
-      imageUrl,
       categoryId,
       organizerId,
     } = req.body;
 
+    // Obtener la ruta de la imagen si se subió un archivo
+    const imageUrl = req.file ? `/uploads/events/${req.file.filename}` : null;
+
+    // Convertir strings de FormData a tipos correctos
+    const parsedPrice = typeof price === 'string' ? parseFloat(price) : price;
+    const parsedCapacity = typeof capacity === 'string' ? parseInt(capacity) : capacity;
+    const parsedPromo = typeof promo === 'string' ? promo === 'true' : promo;
+    const parsedSoldOut = typeof soldOut === 'string' ? soldOut === 'true' : soldOut;
+
     // Validaciones básicas
-    if (!title || !date || price === undefined || price === null) {
+    if (!title || !date || parsedPrice === undefined || parsedPrice === null) {
       throw new CustomError(
         "Faltan datos obligatorios para crear el evento (título, fecha, precio).",
         400
@@ -36,24 +45,18 @@ export async function createEventHandler(
     if (isNaN(new Date(date).getTime())) {
       throw new CustomError("Formato de fecha inválido.", 400);
     }
-    if (typeof price !== "number" || price < 0) {
+    if (isNaN(parsedPrice) || parsedPrice < 0) {
       throw new CustomError("El precio debe ser un número positivo.", 400);
     }
     if (
-      capacity !== undefined &&
-      capacity !== null &&
-      (typeof capacity !== "number" || capacity < 0)
+      parsedCapacity !== undefined &&
+      parsedCapacity !== null &&
+      (isNaN(parsedCapacity) || parsedCapacity < 0)
     ) {
       throw new CustomError(
         "La capacidad debe ser un número positivo o nulo.",
         400
       );
-    }
-    if (promo !== undefined && typeof promo !== "boolean") {
-      throw new CustomError("El campo 'promo' debe ser un booleano.", 400);
-    }
-    if (soldOut !== undefined && typeof soldOut !== "boolean") {
-      throw new CustomError("El campo 'soldOut' debe ser un booleano.", 400);
     }
     if (
       categoryId !== undefined &&
@@ -75,10 +78,10 @@ export async function createEventHandler(
       description,
       location,
       date,
-      capacity,
-      promo,
-      soldOut,
-      price,
+      capacity: parsedCapacity,
+      promo: parsedPromo,
+      soldOut: parsedSoldOut,
+      price: parsedPrice,
       imageUrl,
       categoryId,
       organizerId,
@@ -127,10 +130,12 @@ export async function updateEventHandler(
       promo,
       soldOut,
       price,
-      imageUrl,
       categoryId,
       organizerId,
     } = req.body;
+
+    // Obtener la ruta de la imagen si se subió un archivo nuevo
+    const imageUrl = req.file ? `/uploads/events/${req.file.filename}` : undefined;
 
     // Construir objeto de datos a actualizar, solo con campos presentes
     const updateData: eventService.UpdateEventInput = {};
@@ -147,27 +152,27 @@ export async function updateEventHandler(
       updateData.date = new Date(date);
     }
     if (capacity !== undefined) {
-      if (capacity !== null && (typeof capacity !== "number" || capacity < 0))
+      const parsedCapacity = typeof capacity === 'string' ? parseInt(capacity) : capacity;
+      if (parsedCapacity !== null && (isNaN(parsedCapacity) || parsedCapacity < 0))
         throw new CustomError(
           "La capacidad debe ser un número positivo o nulo.",
           400
         );
-      updateData.capacity = capacity;
+      updateData.capacity = parsedCapacity;
     }
     if (promo !== undefined) {
-      if (typeof promo !== "boolean")
-        throw new CustomError("El campo 'promo' debe ser un booleano.", 400);
-      updateData.promo = promo;
+      const parsedPromo = typeof promo === 'string' ? promo === 'true' : promo;
+      updateData.promo = parsedPromo;
     }
     if (soldOut !== undefined) {
-      if (typeof soldOut !== "boolean")
-        throw new CustomError("El campo 'soldOut' debe ser un booleano.", 400);
-      updateData.soldOut = soldOut;
+      const parsedSoldOut = typeof soldOut === 'string' ? soldOut === 'true' : soldOut;
+      updateData.soldOut = parsedSoldOut;
     }
     if (price !== undefined) {
-      if (typeof price !== "number" || price < 0)
+      const parsedPrice = typeof price === 'string' ? parseFloat(price) : price;
+      if (isNaN(parsedPrice) || parsedPrice < 0)
         throw new CustomError("El precio debe ser un número positivo.", 400);
-      updateData.price = price;
+      updateData.price = parsedPrice;
     }
     if (imageUrl !== undefined) updateData.imageUrl = imageUrl;
     if (categoryId !== undefined) {

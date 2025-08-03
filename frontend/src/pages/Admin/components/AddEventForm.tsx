@@ -37,10 +37,13 @@ const AddEventForm: React.FC<AddEventFormProps> = ({
         promo: false,
         soldOut: false,
         categoryId: "",
-        organizerId: user?.id || "", // Set organizerId to current user's ID
+        organizerId: user?.id || "",
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
     });
+
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [preview, setPreview] = useState<string | null>(null);
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -74,6 +77,19 @@ const AddEventForm: React.FC<AddEventFormProps> = ({
         }
     }, [initialData]);
 
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        setSelectedFile(file || null);
+        
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => setPreview(reader.result as string);
+            reader.readAsDataURL(file);
+        } else {
+            setPreview(null);
+        }
+    };
+
     const handleSubmit = async () => {
         setLoading(true);
         setError(null);
@@ -89,11 +105,27 @@ const AddEventForm: React.FC<AddEventFormProps> = ({
             let result: EventData;
             const isEdit = !!formData.id;
 
+            // Crear FormData si hay archivo, sino usar JSON
+            let dataToSend: EventData | FormData;
+            
+            if (selectedFile) {
+                const formDataToSend = new FormData();
+                Object.entries(formData).forEach(([key, value]) => {
+                    if (value !== null && value !== undefined) {
+                        formDataToSend.append(key, value.toString());
+                    }
+                });
+                formDataToSend.append('image', selectedFile);
+                dataToSend = formDataToSend;
+            } else {
+                dataToSend = formData;
+            }
+
             if (isEdit) {
-                result = await updateEvent(formData.id!, formData);
+                result = await updateEvent(formData.id!, dataToSend);
                 setSuccessMessage(`Evento "${result.title}" actualizado con éxito!`);
             } else {
-                result = await createEvent(formData);
+                result = await createEvent(dataToSend);
                 setSuccessMessage(`Evento "${result.title}" creado con éxito!`);
             }
 
@@ -114,10 +146,12 @@ const AddEventForm: React.FC<AddEventFormProps> = ({
                     promo: false,
                     soldOut: false,
                     categoryId: "",
-                    organizerId: user?.id || "", // Set organizerId to current user's ID
+                    organizerId: user?.id || "",
                     createdAt: new Date().toISOString(),
                     updatedAt: new Date().toISOString(),
                 });
+                setSelectedFile(null);
+                setPreview(null);
             }
         } catch (err) {
             if (err instanceof Error) {
@@ -380,20 +414,36 @@ const AddEventForm: React.FC<AddEventFormProps> = ({
                         </div>
                     </div>
 
-                    {/* URL de Imagen */}
+                    {/* Imagen del Evento */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                            URL de Imagen
+                            Imagen del Evento
                         </label>
                         <input
-                            type="url"
-                            value={formData.imageUrl || ""}
-                            onChange={(e) =>
-                                setFormData({ ...formData, imageUrl: e.target.value })
-                            }
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileChange}
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                            placeholder="https://ejemplo.com/imagen.jpg"
                         />
+                        {preview && (
+                            <div className="mt-4">
+                                <img 
+                                    src={preview} 
+                                    alt="Preview" 
+                                    className="w-32 h-32 object-cover rounded-lg border"
+                                />
+                            </div>
+                        )}
+                        {formData.imageUrl && !preview && (
+                            <div className="mt-4">
+                                <img 
+                                    src={`http://localhost:3000${formData.imageUrl}`} 
+                                    alt="Imagen actual" 
+                                    className="w-32 h-32 object-cover rounded-lg border"
+                                />
+                                <p className="text-sm text-gray-500 mt-1">Imagen actual</p>
+                            </div>
+                        )}
                     </div>
 
                     {/* Promo y SoldOut */}

@@ -31,17 +31,21 @@ export async function getEventById(id: string): Promise<EventData> {
 }
 
 // Crear nuevo evento
-export async function createEvent(event: EventData): Promise<EventData> {
-  const res = await api.post("/event", event);
+export async function createEvent(event: EventData | FormData): Promise<EventData> {
+  const res = await api.post("/event", event, {
+    headers: event instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : {}
+  });
   return res.data;
 }
 
 // Actualizar evento
 export async function updateEvent(
   id: string,
-  event: EventData
+  event: EventData | FormData
 ): Promise<EventData> {
-  const res = await api.put(`/events/${id}`, event);
+  const res = await api.put(`/events/${id}`, event, {
+    headers: event instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : {}
+  });
   return res.data;
 }
 

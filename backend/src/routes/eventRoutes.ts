@@ -7,8 +7,9 @@ import {
   listEventsHandler,
   getDashboardStatsHandler,
 } from "../controllers/eventController";
-import { authenticateToken } from "../middleware/authTokenMiddleware"; // Asegúrate de importar
-import { verifyAdmin } from "../middleware/verifyAdmin"; // Asegúrate de importar
+import { authenticateToken } from "../middleware/authTokenMiddleware";
+import { verifyAdmin } from "../middleware/verifyAdmin";
+import { uploadImage } from "../middleware/uploadMiddleware";
 
 const router = Router();
 
@@ -17,8 +18,8 @@ router.get("/events", listEventsHandler); // Listar eventos con filtros opcional
 router.get("/events/:id", getEventByIdHandler);
 
 // Rutas protegidas para administradores (crear, actualizar, eliminar)
-router.post("/event", createEventHandler);
-router.put("/events/:id", updateEventHandler);
+router.post("/event", uploadImage.single('image'), createEventHandler);
+router.put("/events/:id", uploadImage.single('image'), updateEventHandler);
 router.delete(
   "/events/:id",
   deleteEventHandler
