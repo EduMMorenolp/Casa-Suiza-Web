@@ -5,6 +5,7 @@ import {
   getUserById,
   updateUser,
   getUsersWithTicketStats,
+  toggleUserActive,
 } from "../repositories/userRepository";
 import { hashPassword } from "../utils/bcrypt";
 import { CustomError } from "../utils/CustomError";
@@ -68,4 +69,8 @@ export const deleteUserService = async (id: string) => {
  */
 export const getUsersWithTicketStatsService = async () => {
   return await getUsersWithTicketStats();
+};
+
+export const toggleUserActiveService = async (id: string, isActive: boolean) => {
+  return await toggleUserActive(id, isActive);
 };

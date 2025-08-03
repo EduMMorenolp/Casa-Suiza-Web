@@ -7,6 +7,7 @@ import {
   getUserByIdService,
   updateUserService,
   getUsersWithTicketStatsService,
+  toggleUserActiveService,
 } from "../services/userService";
 // Importar la clase de error personalizado
 import { CustomError } from "../utils/CustomError";
@@ -114,6 +115,21 @@ export const getUsersWithTicketStats = async (
   try {
     const usersWithStats = await getUsersWithTicketStatsService();
     res.status(200).json(usersWithStats);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const toggleUserActiveController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const { isActive } = req.body;
+    const updatedUser = await toggleUserActiveService(id, isActive);
+    res.status(200).json({ message: "Estado actualizado", user: updatedUser });
   } catch (error) {
     next(error);
   }

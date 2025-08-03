@@ -211,3 +211,44 @@ export const restoreUser = async (id: string) => {
     throw new CustomError("Error al restaurar usuario", 500);
   }
 };
+
+/**
+ * Obtener todos los usuarios
+ * @returns
+ */
+export const getUsersWithTicketStats = async () => {
+  try {
+    const users = await prisma.user.findMany({
+      where: { isDeleted: false },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        isActive: true,
+        role: true,
+        createdAt: true
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
+
+    return users;
+  } catch (error: any) {
+    console.error("❌ Error al obtener usuarios:", error.message);
+    throw new CustomError("Error al obtener usuarios", 500);
+  }
+};
+
+export const toggleUserActive = async (id: string, isActive: boolean) => {
+  try {
+    const updatedUser = await prisma.user.update({
+      where: { id },
+      data: { isActive }
+    });
+    return updatedUser;
+  } catch (error: any) {
+    console.error("❌ Error al cambiar estado del usuario:", error.message);
+    throw new CustomError("Error al cambiar estado del usuario", 500);
+  }
+};

@@ -6,6 +6,7 @@ import {
   getUserById,
   updateUser,
   getUsersWithTicketStats,
+  toggleUserActiveController,
 } from "../controllers/userController";
 
 // Middlewares
@@ -42,6 +43,13 @@ router.get(
   authenticateToken,
   checkUserActiveMiddleware,
   getUsersWithTicketStats
+);
+
+router.patch(
+  "/user/:id/toggle",
+  authenticateToken,
+  checkUserActiveMiddleware,
+  toggleUserActiveController
 );
 
 export default router;

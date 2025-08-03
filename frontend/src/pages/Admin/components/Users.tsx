@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Users as UsersIcon, Search, Plus, Edit, Trash2, Mail, Phone, Calendar } from 'lucide-react';
-import { getUsersWithStats } from '../../../api/users';
+import { Users as UsersIcon, Search, Plus, Edit, Trash2, Mail, Shield, UserCheck, UserX, Calendar, Crown } from 'lucide-react';
+import { getUsersWithStats, toggleUserActive } from '../../../api/users';
+import UserModal from './UserModal';
 
 interface User {
     id: string;
@@ -9,9 +10,6 @@ interface User {
     isActive: boolean;
     role: string;
     createdAt: string;
-    ticketsPurchased: number;
-    totalSpent: number;
-    orderCount: number;
 }
 
 interface UserCardProps {
@@ -44,49 +42,76 @@ const UserCard: React.FC<UserCardProps> = ({ user, onEdit, onDelete, onContact }
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm text-gray-600">
-                        <div>
-                            <span className="font-medium">Rol:</span> {user.role}
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 text-sm text-gray-600">
+                        <div className="flex items-center gap-2">
+                            {user.role === 'ADMIN' ? (
+                                <Crown className="w-4 h-4 text-yellow-500" />
+                            ) : (
+                                <UserCheck className="w-4 h-4 text-blue-500" />
+                            )}
+                            <span className="font-medium">Rol:</span> 
+                            <span className={`px-2 py-1 rounded text-xs font-medium ${
+                                user.role === 'ADMIN' ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800'
+                            }`}>
+                                {user.role}
+                            </span>
                         </div>
-                        <div>
+                        <div className="flex items-center gap-2">
+                            <Calendar className="w-4 h-4 text-gray-400" />
                             <span className="font-medium">Registro:</span> {new Date(user.createdAt).toLocaleDateString()}
                         </div>
-                        <div>
-                            <span className="font-medium">Entradas:</span> {user.ticketsPurchased}
-                        </div>
-                        <div>
-                            <span className="font-medium">Total gastado:</span> ${user.totalSpent.toLocaleString()}
+                        <div className="flex items-center gap-2">
+                            <Mail className="w-4 h-4 text-gray-400" />
+                            <span className="font-medium">ID:</span> 
+                            <code className="bg-gray-100 px-2 py-1 rounded text-xs">{user.id.substring(0, 8)}...</code>
                         </div>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3">
-                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(user.isActive ? 'active' : 'inactive')}`}>
-                        {getStatusText(user.isActive ? 'active' : 'inactive')}
-                    </span>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                    <div className="flex items-center gap-2">
+                        {user.isActive ? (
+                            <UserCheck className="w-4 h-4 text-green-500" />
+                        ) : (
+                            <UserX className="w-4 h-4 text-red-500" />
+                        )}
+                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(user.isActive ? 'active' : 'inactive')}`}>
+                            {getStatusText(user.isActive ? 'active' : 'inactive')}
+                        </span>
+                    </div>
 
                     <div className="flex gap-1">
                         <button
                             onClick={() => onContact(user.id)}
                             className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                            title="Contactar"
+                            title="Enviar email"
                         >
                             <Mail className="w-4 h-4" />
                         </button>
                         <button
                             onClick={() => onEdit(user.id)}
-                            className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                            title="Editar"
+                            className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
+                            title="Editar usuario"
                         >
                             <Edit className="w-4 h-4" />
                         </button>
-                        <button
-                            onClick={() => onDelete(user.id)}
-                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                            title="Eliminar"
-                        >
-                            <Trash2 className="w-4 h-4" />
-                        </button>
+                        {user.isActive ? (
+                            <button
+                                onClick={() => onDelete(user.id)}
+                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                title="Desactivar usuario"
+                            >
+                                <UserX className="w-4 h-4" />
+                            </button>
+                        ) : (
+                            <button
+                                onClick={() => onDelete(user.id)}
+                                className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                                title="Activar usuario"
+                            >
+                                <UserCheck className="w-4 h-4" />
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>
@@ -96,18 +121,18 @@ const UserCard: React.FC<UserCardProps> = ({ user, onEdit, onDelete, onContact }
 
 const UserStats: React.FC<{ users: User[] }> = ({ users }) => {
     const activeUsers = users.filter(user => user.isActive).length;
-    const totalRevenue = users.reduce((sum, user) => sum + user.totalSpent, 0);
-    const avgTicketsPerUser = users.length > 0 ? users.reduce((sum, user) => sum + user.ticketsPurchased, 0) / users.length : 0;
+    const adminUsers = users.filter(user => user.role === 'ADMIN').length;
+    const totalUsers = users.length;
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             <div className="bg-white rounded-lg shadow-lg p-6">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h3 className="text-sm font-medium text-gray-600">Usuarios Activos</h3>
-                        <p className="text-2xl font-bold text-gray-800">{activeUsers}</p>
+                        <h3 className="text-sm font-medium text-gray-600">Total Usuarios</h3>
+                        <p className="text-2xl font-bold text-gray-800">{totalUsers}</p>
                     </div>
-                    <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center">
+                    <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center">
                         <UsersIcon className="w-6 h-6 text-white" />
                     </div>
                 </div>
@@ -116,11 +141,11 @@ const UserStats: React.FC<{ users: User[] }> = ({ users }) => {
             <div className="bg-white rounded-lg shadow-lg p-6">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h3 className="text-sm font-medium text-gray-600">Ingresos Totales</h3>
-                        <p className="text-2xl font-bold text-gray-800">${totalRevenue.toLocaleString()}</p>
+                        <h3 className="text-sm font-medium text-gray-600">Usuarios Activos</h3>
+                        <p className="text-2xl font-bold text-gray-800">{activeUsers}</p>
                     </div>
-                    <div className="w-12 h-12 bg-red-600 rounded-lg flex items-center justify-center">
-                        <Calendar className="w-6 h-6 text-white" />
+                    <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center">
+                        <UserCheck className="w-6 h-6 text-white" />
                     </div>
                 </div>
             </div>
@@ -128,11 +153,11 @@ const UserStats: React.FC<{ users: User[] }> = ({ users }) => {
             <div className="bg-white rounded-lg shadow-lg p-6">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h3 className="text-sm font-medium text-gray-600">Promedio Entradas</h3>
-                        <p className="text-2xl font-bold text-gray-800">{avgTicketsPerUser.toFixed(1)}</p>
+                        <h3 className="text-sm font-medium text-gray-600">Administradores</h3>
+                        <p className="text-2xl font-bold text-gray-800">{adminUsers}</p>
                     </div>
-                    <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center">
-                        <Phone className="w-6 h-6 text-white" />
+                    <div className="w-12 h-12 bg-yellow-500 rounded-lg flex items-center justify-center">
+                        <Crown className="w-6 h-6 text-white" />
                     </div>
                 </div>
             </div>
@@ -143,8 +168,11 @@ const UserStats: React.FC<{ users: User[] }> = ({ users }) => {
 export default function Users() {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState('all');
+    const [filterRole, setFilterRole] = useState('all');
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
+    const [modalOpen, setModalOpen] = useState(false);
+    const [editingUser, setEditingUser] = useState<User | null>(null);
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -216,26 +244,53 @@ export default function Users() {
     const filteredUsers = users.filter(user => {
         const matchesSearch = user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
             user.email.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesFilter = filterStatus === 'all' || 
+        const matchesStatus = filterStatus === 'all' || 
             (filterStatus === 'active' && user.isActive) ||
             (filterStatus === 'inactive' && !user.isActive);
-        return matchesSearch && matchesFilter;
+        const matchesRole = filterRole === 'all' || user.role === filterRole;
+        return matchesSearch && matchesStatus && matchesRole;
     });
 
     const handleEdit = (id: string) => {
-        console.log('Editar usuario:', id);
+        const user = users.find(u => u.id === id);
+        if (user) {
+            setEditingUser(user);
+            setModalOpen(true);
+        }
     };
 
-    const handleDelete = (id: string) => {
-        console.log('Eliminar usuario:', id);
+    const handleToggleActive = async (id: string) => {
+        const user = users.find(u => u.id === id);
+        if (user) {
+            try {
+                await toggleUserActive(id, !user.isActive);
+                // Recargar usuarios
+                const response = await getUsersWithStats();
+                setUsers(response.data);
+            } catch (error) {
+                console.error('Error al cambiar estado:', error);
+            }
+        }
     };
 
     const handleContact = (id: string) => {
-        console.log('Contactar usuario:', id);
+        const user = users.find(u => u.id === id);
+        if (user) {
+            window.open(`mailto:${user.email}`, '_blank');
+        }
     };
 
     const handleNewUser = () => {
-        console.log('Crear nuevo usuario');
+        setEditingUser(null);
+        setModalOpen(true);
+    };
+
+    const handleSaveUser = (userData: any) => {
+        if (editingUser) {
+            console.log('Actualizar usuario:', editingUser.id, userData);
+        } else {
+            console.log('Crear usuario:', userData);
+        }
     };
 
     return (
@@ -279,6 +334,16 @@ export default function Users() {
                         <option value="active">Activos</option>
                         <option value="inactive">Inactivos</option>
                     </select>
+                    
+                    <select
+                        value={filterRole}
+                        onChange={(e) => setFilterRole(e.target.value)}
+                        className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    >
+                        <option value="all">Todos los roles</option>
+                        <option value="ADMIN">Administradores</option>
+                        <option value="USER">Usuarios</option>
+                    </select>
                 </div>
 
                 {/* Lista de usuarios */}
@@ -294,7 +359,7 @@ export default function Users() {
                                     key={user.id}
                                     user={user}
                                     onEdit={handleEdit}
-                                    onDelete={handleDelete}
+                                    onDelete={handleToggleActive}
                                     onContact={handleContact}
                                 />
                             ))}
@@ -308,6 +373,14 @@ export default function Users() {
                     )}
                 </div>
             </div>
+
+            <UserModal
+                isOpen={modalOpen}
+                onClose={() => setModalOpen(false)}
+                onSave={handleSaveUser}
+                user={editingUser}
+                title={editingUser ? 'Editar Usuario' : 'Nuevo Usuario'}
+            />
         </div>
     );
 }
