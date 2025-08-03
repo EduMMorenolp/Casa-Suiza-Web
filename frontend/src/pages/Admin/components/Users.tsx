@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Users as UsersIcon, Search, Plus, Edit, Trash2, Mail, Shield, UserCheck, UserX, Calendar, Crown } from 'lucide-react';
+import { Users as UsersIcon, Search, Plus, Edit, Mail, UserCheck, UserX, Calendar, Crown } from 'lucide-react';
 import { getUsersWithStats, toggleUserActive } from '../../../api/users';
 import UserModal from './UserModal';
 
@@ -188,58 +188,7 @@ export default function Users() {
         fetchUsers();
     }, []);
 
-    const mockUsers: User[] = [
-        {
-            id: 1,
-            name: 'María González',
-            email: 'maria@email.com',
-            phone: '+54 11 1234-5678',
-            registrationDate: '2025-01-15',
-            status: 'active',
-            ticketsPurchased: 5,
-            totalSpent: 42500
-        },
-        {
-            id: 2,
-            name: 'Carlos Rodríguez',
-            email: 'carlos@email.com',
-            phone: '+54 11 9876-5432',
-            registrationDate: '2025-02-20',
-            status: 'active',
-            ticketsPurchased: 3,
-            totalSpent: 25500
-        },
-        {
-            id: 3,
-            name: 'Ana López',
-            email: 'ana@email.com',
-            phone: '+54 11 5555-1234',
-            registrationDate: '2025-03-10',
-            status: 'inactive',
-            ticketsPurchased: 1,
-            totalSpent: 8500
-        },
-        {
-            id: 4,
-            name: 'Roberto Fernández',
-            email: 'roberto@email.com',
-            phone: '+54 11 7777-8888',
-            registrationDate: '2025-01-30',
-            status: 'active',
-            ticketsPurchased: 8,
-            totalSpent: 68000
-        },
-        {
-            id: 5,
-            name: 'Laura Martínez',
-            email: 'laura@email.com',
-            phone: '+54 11 3333-4444',
-            registrationDate: '2025-02-14',
-            status: 'active',
-            ticketsPurchased: 2,
-            totalSpent: 17000
-        }
-    ];
+
 
     const filteredUsers = users.filter(user => {
         const matchesSearch = user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||

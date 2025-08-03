@@ -80,53 +80,7 @@ const Dashboard: React.FC = () => {
         }
     ];
 
-    const recentEvents = [
-        {
-            id: 1,
-            name: 'Conferencia Tech 2025',
-            date: '2025-08-15',
-            status: 'Activo',
-            attendees: 450,
-            revenue: '$12,500',
-            statusColor: 'bg-emerald-100 text-emerald-800'
-        },
-        {
-            id: 2,
-            name: 'Workshop React Avanzado',
-            date: '2025-08-22',
-            status: 'Próximo',
-            attendees: 120,
-            revenue: '$3,600',
-            statusColor: 'bg-blue-100 text-blue-800'
-        },
-        {
-            id: 3,
-            name: 'Meetup Developers',
-            date: '2025-08-28',
-            status: 'Planificando',
-            attendees: 80,
-            revenue: '$2,400',
-            statusColor: 'bg-amber-100 text-amber-800'
-        },
-        {
-            id: 4,
-            name: 'Hackathon de Innovación',
-            date: '2025-09-05',
-            status: 'Próximo',
-            attendees: 200,
-            revenue: '$7,000',
-            statusColor: 'bg-blue-100 text-blue-800'
-        },
-        {
-            id: 5,
-            name: 'Festival de Música Indie',
-            date: '2025-09-10',
-            status: 'Activo',
-            attendees: 1500,
-            revenue: '$35,000',
-            statusColor: 'bg-emerald-100 text-emerald-800'
-        },
-    ];
+
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 sm:p-6 lg:p-8">
