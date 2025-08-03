@@ -50,20 +50,34 @@ export interface ListEventsFilters {
  */
 export async function createEvent(data: CreateEventInput) {
   try {
+    const validationPromises = [];
+
     if (data.categoryId) {
-      const category = await prisma.category.findUnique({
-        where: { id: data.categoryId },
-      });
-      if (!category) {
-        throw new CustomError("Categoría no encontrada.", 404);
-      }
+      validationPromises.push(
+        prisma.category
+          .findUnique({ where: { id: data.categoryId } })
+          .then((category) => ({ type: "category", exists: !!category }))
+      );
     }
+
     if (data.organizerId) {
-      const organizer = await prisma.user.findUnique({
-        where: { id: data.organizerId },
-      });
-      if (!organizer) {
-        throw new CustomError("Organizador no encontrado.", 404);
+      validationPromises.push(
+        prisma.user
+          .findUnique({ where: { id: data.organizerId } })
+          .then((organizer) => ({ type: "organizer", exists: !!organizer }))
+      );
+    }
+
+    if (validationPromises.length > 0) {
+      const results = await Promise.all(validationPromises);
+      for (const result of results) {
+        if (!result.exists) {
+          const message =
+            result.type === "category"
+              ? "Categoría no encontrada."
+              : "Organizador no encontrado.";
+          throw new CustomError(message, 404);
+        }
       }
     }
 

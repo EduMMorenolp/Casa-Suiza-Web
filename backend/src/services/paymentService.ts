@@ -63,10 +63,10 @@ export async function createPreferenceForBricks(
         name: data.buyerName,
         surname: data.buyerLastName,
         email: data.buyerEmail,
-        phone: data.buyerPhone
+        phone: data.buyerPhone && data.buyerPhone.length >= 10
           ? {
-              area_code: data.buyerPhone.substring(0, 2),
-              number: data.buyerPhone.substring(2),
+              area_code: data.buyerPhone.substring(0, 3),
+              number: data.buyerPhone.substring(3),
             }
           : undefined,
         identification: {
@@ -81,7 +81,7 @@ export async function createPreferenceForBricks(
       //   pending: "http://localhost:5173/"
       // },
       // auto_return: "approved",
-      notification_url: "http://localhost:3000/api/v1/payment/webhook",
+      notification_url: `${process.env.BASE_URL || 'http://localhost:3000'}/api/v1/payment/webhook`,
       statement_descriptor: "Casa Suiza",
       expires: false,
       binary_mode: false,
@@ -105,10 +105,12 @@ export async function createPreferenceForBricks(
     }
     return { preferenceId: response.id };
   } catch (error: unknown) {
-    console.error(
-      "Error creando preferencia de pago para Bricks en MercadoPago:",
-      error
-    );
+    if (process.env.NODE_ENV !== 'production') {
+      console.error(
+        "Error creando preferencia de pago para Bricks en MercadoPago:",
+        error
+      );
+    }
     throw new CustomError(
       "Error al crear la preferencia de pago en MercadoPago.",
       500
@@ -162,10 +164,12 @@ export async function processPaymentFromBrick(
       orderId: paymentResult.external_reference ?? "",
     };
   } catch (error: any) {
-    console.error(
-      "Error al procesar el pago desde el Brick:",
-      error.response ? error.response.data : error.message
-    );
+    if (process.env.NODE_ENV !== 'production') {
+      console.error(
+        "Error al procesar el pago desde el Brick:",
+        error.response ? error.response.data : error.message
+      );
+    }
     const errorMessage =
       error.response?.data?.message ||
       "Error al procesar el pago con Mercado Pago.";
@@ -209,16 +213,19 @@ async function handlePaymentResult(
       newTicketStatus = TicketStatus.PAID;
       
       // Enviar email de confirmación
-      try {
-        await sendPurchaseConfirmation({
-          to: order.buyerEmail,
-          eventTitle: "Evento Casa Suiza",
-          quantity: order.tickets.length,
-          total: transactionAmount,
-          paymentId: mpPaymentId
-        });
-      } catch (emailError) {
-        console.error("Error enviando email de confirmación:", emailError);
+      const buyerEmail = order.tickets[0]?.buyerEmail;
+      if (buyerEmail) {
+        try {
+          await sendPurchaseConfirmation({
+            to: buyerEmail,
+            eventTitle: "Evento Casa Suiza",
+            quantity: order.tickets.length,
+            total: transactionAmount,
+            paymentId: mpPaymentId
+          });
+        } catch (emailError) {
+          console.error("Error enviando email de confirmación:", emailError);
+        }
       }
       break;
     case "rejected":

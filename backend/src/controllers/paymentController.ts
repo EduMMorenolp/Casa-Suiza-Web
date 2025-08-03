@@ -99,8 +99,6 @@ export async function processPaymentHandler(
       description,
     });
 
-    const now = new Date().toLocaleString();
-
     res.status(200).json(paymentResult);
   } catch (error) {
     next(error);
@@ -131,25 +129,40 @@ export async function handleMercadoPagoWebhookController(
 
 export async function handlePaymentSuccess(
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ): Promise<void> {
-  res.status(200).send("¡Pago exitoso! La confirmación está en camino.");
+  try {
+    res.status(200).send("¡Pago exitoso! La confirmación está en camino.");
+  } catch (error) {
+    next(error);
+  }
 }
 
 export async function handlePaymentFailure(
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ): Promise<void> {
-  res.status(200).send("El pago ha fallado. Por favor, inténtalo de nuevo.");
+  try {
+    res.status(200).send("El pago ha fallado. Por favor, inténtalo de nuevo.");
+  } catch (error) {
+    next(error);
+  }
 }
 
 export async function handlePaymentPending(
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ): Promise<void> {
-  res
-    .status(200)
-    .send(
-      "Tu pago está pendiente de aprobación. Te notificaremos cuando se complete."
-    );
+  try {
+    res
+      .status(200)
+      .send(
+        "Tu pago está pendiente de aprobación. Te notificaremos cuando se complete."
+      );
+  } catch (error) {
+    next(error);
+  }
 }

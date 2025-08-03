@@ -34,6 +34,15 @@ export const getCategoryById = async (
   }
 };
 
+function validateCategoryName(name: string): void {
+  if (!name || typeof name !== "string" || name.trim() === "") {
+    throw new CustomError(
+      "El nombre de la categoría es obligatorio y debe ser una cadena de texto válida.",
+      400
+    );
+  }
+}
+
 // Crear una nueva categoría
 export const createCategory = async (
   req: Request,
@@ -42,12 +51,7 @@ export const createCategory = async (
 ) => {
   try {
     const { name } = req.body;
-    if (!name || typeof name !== "string" || name.trim() === "") {
-      throw new CustomError(
-        "El nombre de la categoría es obligatorio y debe ser una cadena de texto válida.",
-        400
-      );
-    }
+    validateCategoryName(name);
     const newCategory = await categoryService.createCategory(name);
     res.status(201).json(newCategory);
   } catch (error) {
@@ -64,14 +68,8 @@ export const updateCategory = async (
   try {
     const { id } = req.params;
     const { name } = req.body;
-    if (!name || typeof name !== "string" || name.trim() === "") {
-      throw new CustomError(
-        "El nombre de la categoría es obligatorio para la actualización y debe ser una cadena de texto válida.",
-        400
-      );
-    }
+    validateCategoryName(name);
     const updatedCategory = await categoryService.updateCategory(id, name);
-    // El servicio ya lanza un 404 si no lo encuentra, así que no es necesario el if (!updatedCategory) aquí.
     res.status(200).json(updatedCategory);
   } catch (error) {
     next(error);

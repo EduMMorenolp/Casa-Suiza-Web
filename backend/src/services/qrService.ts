@@ -5,7 +5,9 @@ export const generateQRCode = async (paymentId: string): Promise<string> => {
     const qrDataURL = await QRCode.toDataURL(paymentId);
     return qrDataURL;
   } catch (error) {
-    console.error('Error generando QR:', error);
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('Error generando QR:', error);
+    }
     throw error;
   }
 };
